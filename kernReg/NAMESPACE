@@ -1,0 +1,12 @@
+export(k_radial_basis, k_anova_basis)
+export(K_matrix)
+export(K_vector)
+export(center_kernel_matrix)
+export(center_kernel_test_vec)
+export(kernel_pca)
+export(kpca_regression)
+export(kpca_logistic_regression)
+export(kernReg_predict)
+export(get_num_pcs)
+
+#S3method(predict, kernReg)
