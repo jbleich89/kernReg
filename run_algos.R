@@ -85,6 +85,19 @@ summary(split3_preds)
 # save(split3_preds, file = "split3_fitted.Rdata")
 
 
+##Plot of kernel variance by gamma
+X = Split2Design
+gamma_seq = c(seq(.1,1, by = .2), seq(1,10, by = 1))
+kernvar_vec = numeric(length(gamma_seq))
+for(i in 1 : length(gamma_seq)){
+  k_params = c(gamma_seq[i], 3)
+  kernmat = K_matrix(X = X, fun = k_anova_basis, params = k_params)
+  kpcaobj = kernel_pca(K_object = kernmat)
+  kernvar_vec[i] = sum(kpcaobj$eigenvals)
+  print(i)
+}
+plot(gamma_seq, kernvar_vec, type = "o", xlab = "Gamma value", ylab = "Kernel Variance")
+
 ##################################
 ##A Fun Simulated example 
 library(kernReg)
@@ -110,16 +123,16 @@ points(xstar,preds, col = "forestgreen", type = "l", lwd = 3) ##plot
 ##M2
 kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(2,1)) ##use radial basis with gamma = 2
 kernregpca = kernel_pca(K_object = kobj) #run pca
-get_num_pcs(kpca_object = kernregpca, .95) #8 pcs for 95%
-kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 8) ##build model
+get_num_pcs(kpca_object = kernregpca, .95) #24 pcs for 95%
+kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 24) ##build model
 preds = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
 points(xstar,preds, col = "red", type = "l", lwd = 3) ##plot
 
 ##M3
 kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(10,1)) ##use radial basis with gamma = 10
 kernregpca = kernel_pca(K_object = kobj) #run pca
-get_num_pcs(kpca_object = kernregpca, .95) #8 pcs for 95%
-kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 8) ##build model
+get_num_pcs(kpca_object = kernregpca, .95) #48 pcs for 95%
+kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 48) ##build model
 preds = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
 points(xstar,preds, col = "blue", type = "l", lwd = 3) ##plot
 
@@ -150,16 +163,16 @@ points(xstar,preds, col = "black", type = "l", lty = 1, lwd = 3) ##plot
 ##M2
 kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(2,1)) ##use radial basis with gamma = 2
 kernregpca = kernel_pca(K_object = kobj) #run pca
-get_num_pcs(kpca_object = kernregpca, .95) #8 pcs for 95%
-kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 8) ##build model
+get_num_pcs(kpca_object = kernregpca, .95) #24 pcs for 95%
+kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 24) ##build model
 preds = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
 points(xstar,preds, col = "black", type = "l", lty = 2, lwd = 3) ##plot
 
 ##M3
 kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(10,1)) ##use radial basis with gamma = 10
 kernregpca = kernel_pca(K_object = kobj) #run pca
-get_num_pcs(kpca_object = kernregpca, .95) #8 pcs for 95%
-kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 8) ##build model
+get_num_pcs(kpca_object = kernregpca, .95) #48 pcs for 95%
+kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 48) ##build model
 preds = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
 points(xstar,preds, col = "black", type = "l", lty = 3, lwd = 3) ##plot
 
