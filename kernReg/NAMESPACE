@@ -1,4 +1,4 @@
-export(k_radial_basis, k_anova_basis)
+export(k_radial_basis, k_anova_basis, k_polynomial_basis, k_vanilla_basis)
 export(K_matrix)
 export(K_vector)
 export(center_kernel_matrix)
@@ -8,5 +8,3 @@ export(kpca_regression)
 export(kpca_logistic_regression)
 export(kernReg_predict)
 export(get_num_pcs)
-
-#S3method(predict, kernReg)
