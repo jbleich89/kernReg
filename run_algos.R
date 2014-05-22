@@ -1,6 +1,15 @@
 ##using our software
 library(kernReg) ##load package
 
+get_weights = function(y, fn_to_fp_ratio){
+  n1 = sum(y == 1)
+  n0 = sum(y == 0)
+  weight0 = (n1 + n0)/(n0 * (fn_to_fp_ratio + 1))
+  weight1 = (n1 + n0 - n0 * weight0)/n1
+  weights = ifelse(y == 1, weight1, weight0)
+  weights
+}
+
 setwd("C:/Users/jbleich/Dropbox/Research_Crim/kernels/") ##my directory
 load("Split1.rdata"); load("Split2.rdata"); load("Split3.rdata")
 
@@ -13,6 +22,8 @@ Fail1 = as.numeric(ifelse(Split1$FailToAppear=="YesFta",1,0)) ## validation
 Fail2 = as.numeric(ifelse(Split2$FailToAppear=="YesFta",1,0)) ##training 
 Fail3 = as.numeric(ifelse(Split3$FailToAppear=="YesFta",1,0)) ## holdout
 
+##Set up weights for plots
+weight_vec = get_weights(Fail2, 1/2)
 
 ##First see example that doesn't really seem to converge
 k_params = c(.1, 2) ##set params for ANOVA radial basis function
@@ -21,12 +32,12 @@ kpca_object = kernel_pca(K_object = Kobj) ## get kernel pca of object -- same ca
 
 var_seq = seq(.05, .90, by = .05) ## seq of % variance to explain in kernel 
 
-threshold = 2/3 ##threshold for positive class
+threshold = .5 ##threshold for positive class
 err_mat = matrix(nrow = length(var_seq), ncol = 2) ##
 colnames(err_mat) = c("Class 0", "Class 1")#, "Cost-Weighted")
 
 for(i in 1 : length(var_seq)){
-  mod = kpca_logistic_regression(y = Fail2, kpca_object = kpca_object, num_pcs = get_num_pcs(kpca_object, var_seq[i])) ##build model 
+  mod = kpca_logistic_regression(y = Fail2, kpca_object = kpca_object, num_pcs = get_num_pcs(kpca_object, var_seq[i]), weight_vec) ##build model 
   preds = kernReg_predict(object = mod, new_data = Split1Design, training_data = Split2Design) ## predict on validation - Split1
   tab = table(factor(Fail1, levels = c(0,1)), factor(as.numeric(preds > threshold), levels = c(0,1))) #build table
   fp = tab[1,2]/sum(tab[1,]) ##FP compute
@@ -52,12 +63,12 @@ kpca_object = kernel_pca(K_object = Kobj) ## get kernel pca of object -- same ca
 
 var_seq = seq(.05, .95, by = .10) ## seq of % variance to explain in kernel 
 
-threshold = 2/3 ##threshold for positive class
+threshold = .5 ##threshold for positive class
 err_mat = matrix(nrow = length(var_seq), ncol = 2) ##
 colnames(err_mat) = c("Class 0", "Class 1")#, "Cost-Weighted")
 
 for(i in 1 : length(var_seq)){
-  mod = kpca_logistic_regression(y = Fail2, kpca_object = kpca_object, num_pcs = get_num_pcs(kpca_object, var_seq[i])) ##build model 
+  mod = kpca_logistic_regression(y = Fail2, kpca_object = kpca_object, num_pcs = get_num_pcs(kpca_object, var_seq[i]), weights = weight_vec) ##build model 
   preds = kernReg_predict(object = mod, new_data = Split1Design, training_data = Split2Design) ## predict on validation - Split1
   tab = table(factor(Fail1, levels = c(0,1)), factor(as.numeric(preds > threshold), levels = c(0,1))) #build table
   fp = tab[1,2]/sum(tab[1,]) ##FP compute
@@ -71,7 +82,6 @@ par(mgp=c(1.8, .5,0), mar=c(4.4, 2.7, 0.1, 0.1))
 plot(var_seq, err_mat[,1], type = "l", col = "blue", ylim = c(0,1), xlab = "Variance of Kernel Matrix", ylab = "Class Error")
 points(var_seq, err_mat[,2], type = "l", col = "red")
 legend("topright", legend = c("No Fail", "Fail"), col = c("blue", "red"), lty = 1)
-
 
 
 kernel_pca_model = kpca_logistic_regression(y = Fail2, kpca_object = kpca_object, num_pcs = get_num_pcs(kpca_object, 0.75))
@@ -94,14 +104,15 @@ plot(kernel_pca_model_ice,
 		colorvec = rgb(rep(1, nrow(Split2Design)), rep(1, nrow(Split2Design)), rep(1, nrow(Split2Design))))
 
 
-
 ##Now pick a model and evaluate on final holdout
 ##let's say .75 
 np = get_num_pcs(kpca_object = kpca_object, frac_var_to_explain = .75) ##based on plot
+weight_vec = get_weights(Fail2, 1/2)
+threshold = .5
 
-log_reg2 = kpca_logistic_regression(y = Fail2, kpca_object = kpca_object, num_pcs = 201) #rebuild "best" model
+log_reg2 = kpca_logistic_regression(y = Fail2, kpca_object = kpca_object, num_pcs = np, weights = weight_vec) #rebuild "best" model
 split3_preds = kernReg_predict(log_reg2, new_data = Split3Design, training_data = Split2Design) #get some predictions
-table(Fail3, split3_preds > .67) ##confusion table for holdout
+table(Fail3, split3_preds > threshold) ##confusion table for holdout
 
 par(mgp=c(1.8,.5,0), mar=c(4.4,2.7,0.1,0.1)) ##plot histogram
 hist(split3_preds, col = "grey", breaks = 20, main = "", xlab = "Probability of Failure to Appear")
@@ -110,25 +121,12 @@ summary(split3_preds)
 # save(split3_preds, file = "split3_fitted.Rdata")
 
 
-##Plot of kernel variance by gamma
-X = Split2Design
-gamma_seq = c(seq(.1,1, by = .2), seq(1,10, by = 1))
-kernvar_vec = numeric(length(gamma_seq))
-for(i in 1 : length(gamma_seq)){
-  k_params = c(gamma_seq[i], 3)
-  kernmat = K_matrix(X = X, fun = k_anova_basis, params = k_params)
-  kpcaobj = kernel_pca(K_object = kernmat)
-  kernvar_vec[i] = sum(kpcaobj$eigenvals)
-  print(i)
-}
-plot(gamma_seq, kernvar_vec, type = "o", xlab = "Gamma value", ylab = "Kernel Variance")
-
 ##################################
 ##A Fun Simulated example 
 library(kernReg)
 set.seed(15)
 n = 200
-x = sort(runif(n, -10, 10))
+x = as.matrix(sort(runif(n, -10, 10)))
 ce = sin(abs(x))/abs(x) - mean(sin(abs(x))/abs(x))
 y = ce + rnorm(n, 0, .15)
 windows()
