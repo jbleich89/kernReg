@@ -7,4 +7,4 @@ Author: Justin Bleich, Adam Kapelner
 Maintainer: Justin Bleich <jbleich@wharton.upenn.edu>
 Description: A tool to run kernel PCA linear models for regression and classification
 License: MIT + file LICENSE
-Depends: R (>= 3.0)
+Depends: R (>= 3.0), ICEbox

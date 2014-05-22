@@ -1,4 +1,3 @@
-export(k_radial_basis, k_anova_basis)
 export(K_matrix)
 export(K_vector)
 export(center_kernel_matrix)
@@ -10,3 +9,7 @@ export(kernReg_predict)
 export(get_num_pcs)
 
 #S3method(predict, kernReg)
+S3method(print, kernel_matrix)
+S3method(summary, kernel_matrix)
+S3method(print, kernel_pca)
+S3method(summary, kernel_pca)
