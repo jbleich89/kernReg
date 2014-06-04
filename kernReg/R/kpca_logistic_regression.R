@@ -1,37 +1,40 @@
-#' Run a linear regression using Kernel PCA
+#' Run a logistic regression using Kernel PCA
 #' 
-#' \code{kpca_regression} runs a linear regression on features created from an eigendecomposition
+#' \code{kpca_logistic_regression} runs a logistic regression on features created from an eigendecomposition
 #' of a certain dimension of the kernelized data
 #' 
 #' @param kpca_object 		The object that contains the kernel, the kernelized data with its eigendecomposition 
 #' @param y 				The response to be regressed on the features which are the principal components of the kernelized data
 #' @param num_pcs 			The number of principal components to use for the regression (this or \code{frac_var} must be specified)
 #' @param frac_var			Pick the number of principal components to use based on the fraction of variance to explain (this or \code{num_pcs} must be specified)
-#' @returnType 				kernReg lm
+#' @param weights			Weights to be used on each observation in a weighted generalized least squares implementation. If not specified (default), uniform weights are used
+#' @returnType 				kernLogReg kernReg glm lm   	
 #' @return 					An lm object with the kpca_object embedded as well as the number of principal components used
 #' 
 #' @author 					Justin Bleich and Adam Kapelner
 #' @export
-#' @seealso \code{\link{kpca_logistic_regression}}
-kpca_regression = function(kpca_object, y, num_pcs = NULL, frac_var = NULL){
+#' @seealso \code{\link{kpca_regression}}
+kpca_logistic_regression = function(kpca_object, y, num_pcs = NULL, frac_var = NULL, weights = NULL){
 	checkObjectType(kpca_object, "kpca_object", "kpca", "build_kpca_object")
-
+	
 	#ensure the user gave us either a number of PC's or a way to calculate a number of PC's from a fraction of variance explained
 	if (is.null(num_pcs) && is.null(frac_var)){
 		stop("Either \"num_pcs\" or \"frac_var\" must be specified.")
 	} else if (is.null(num_pcs)){
 		num_pcs = get_num_pcs_from_frac(kpca_object, frac_var)
-	}	
+	}
 	
-    #regress the response on the data which has been kernelized 
-    #then rotated onto a subset of the principal components
+	#regress the response on the data which has been kernelized 
+	#then rotated onto a subset of the principal components. Use glm's binomial
+	#method for a vanilla logistic regression implementation
 	X_kern_pca_red = as.data.frame(kpca_object$pc_mat[, 1 : num_pcs, drop = FALSE]) #creating a variable here makes the print statement nicer
-    mod = lm(y ~ ., data = X_kern_pca_red)
-  
-    #return some other data to the user and mark this object as type "kernReg"
-    mod$kpca_object = kpca_object
-    mod$num_pcs = num_pcs
+	mod = glm(y ~ ., data = X_kern_pca_red, family = "binomial", weights = weights)
+	
+	#return some other data to the user and mark this object as type "kernLogReg" et al.
+	mod$kpca_object = kpca_object
+	mod$num_pcs = num_pcs
 	mod$frac_var = frac_var
-    class(mod) = c("kernReg", "lm") #kernReg is first in order to invoke it in the print statement
-    mod
+	mod$weights = weights
+	class(mod) = c("kernLogReg", "kernReg", "glm", "lm") #kernLogReg is first in order to invoke it in the predict and print methods
+	mod
 }
