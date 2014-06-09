@@ -3,23 +3,23 @@
 \alias{kernel_finder_logistic_regression}
 \title{Searches Kernel Space}
 \usage{
-kernel_finder_logistic_regression(kernel_list, xtrain, ytrain, xtest, ytest,
-  var_seq = seq(0.05, 0.95, by = 0.1), threshold = 0.5, weights = NULL,
-  ...)
+kernel_finder_logistic_regression(kernel_list, X_train, y_train, X_validate,
+  y_validate, var_seq = seq(0.05, 0.95, by = 0.1), threshold = 0.5,
+  weights = NULL, ...)
 }
 \arguments{
 \item{kernel_list}{A list of kernels to assess performance of over a variety of PC's by \% explained.
 Each element of this list is a list itself with keys "kernel_type" and "params."}
 
-\item{xtrain}{The training data}
+\item{X_train}{The training data}
 
-\item{ytrain}{The responses for the original training data}
+\item{y_train}{The responses for the original training data}
 
-\item{ytest}{The responses for the new testing data}
+\item{y_validate}{The responses for the new validation data}
 
-\item{xtest}{The features for the new testing data}
+\item{X_validate}{The features for the new validation data}
 
-\item{var_seq}{A collection of proportions of the number of PC's to use when plotting performance}
+\item{var_seq}{A collection of proportions of the variance explained of the kernel matrix to use when plotting performance}
 
 \item{threshold}{The threshold of the probability estimate after which to call the estimate a "1"}
 
@@ -28,7 +28,8 @@ Each element of this list is a list itself with keys "kernel_type" and "params."
 \item{...}{Other parameters to be passed to the plot function}
 }
 \value{
-A matrix of error rates for each proportion of the number of PC's in \code{var_seq}
+A list where each kernel of interest is paired with a matrix of error rates for
+											each proportion of the number of PC's in \code{var_seq}
 }
 \description{
 Plots the performance in terms of the false negative and false positive error of a kernel PCA

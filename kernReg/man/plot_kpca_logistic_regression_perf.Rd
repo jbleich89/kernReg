@@ -3,24 +3,26 @@
 \alias{plot_kpca_logistic_regression_perf}
 \title{Performance plot by \%PC's of a Kernel PCA Logistic Regression}
 \usage{
-plot_kpca_logistic_regression_perf(kpca_object, ytrain, ytest, xtest,
+plot_kpca_logistic_regression_perf(kpca_object, y_train, y_test, X_test,
   var_seq = seq(0.05, 0.9, by = 0.05), threshold = 0.5, weights = NULL,
-  ...)
+  legend = TRUE, ...)
 }
 \arguments{
 \item{kpca_object}{The kernel PCA logistic regression model}
 
-\item{ytrain}{The responses for the original training data}
+\item{y_train}{The responses for the original training data}
 
-\item{ytest}{The responses for the new testing data}
+\item{y_test}{The responses for the new testing data}
 
-\item{xtest}{The features for the new testing data}
+\item{X_test}{The features for the new testing data}
 
-\item{var_seq}{A collection of proportions of the number of PC's to use when plotting performance}
+\item{var_seq}{A collection of proportions of the variance explained of the kernel matrix to use when plotting performance}
 
 \item{threshold}{The threshold of the probability estimate after which to call the estimate a "1"}
 
 \item{weights}{A weight vector to use for the original training data}
+
+\item{legend}{Whether or not to show the legend (defaults to \code{TRUE})}
 
 \item{...}{Other parameters to be passed to the plot function}
 }

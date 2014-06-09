@@ -19,7 +19,7 @@ kernel_description = function(kpca_object){
 	vals = paste(kpar(kpca_object$kernel))
 	
 	if (is.null(parameters)){
-		paste("\"", kernel_name, "\" kernel (no parameters)", sep = "")
+		paste("\"", kernel_name, "\" kernel\n(no params)", sep = "")
 	} else {
 		paste("\"", kernel_name, "\" kernel w/params\n", 
 			paste(parameters, vals, sep = " = ", collapse = ", "), sep = "")		
