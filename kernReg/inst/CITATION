@@ -2,7 +2,8 @@ citHeader("")
 
 citEntry(
      entry       = "unpublished",
-	 title       = "Using Regression Kernels to Forecast A Failure to Appear in Court,
+	 title       = "Using Regression Kernels to Forecast A Failure to Appear in Court",
+	 note		 = "working paper",
 	 author      = personList(as.person("Richard Berk"), as.person("Justin Bleich"), as.person("Adam Kapelner"), as.person("Jaime Henderson"), as.person("Ellen Kurtz")),
 	 year        = "2014", 
 	 textVersion = "Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., 

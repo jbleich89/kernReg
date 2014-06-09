@@ -38,8 +38,8 @@ colnames(err_mat) = c("Class 0", "Class 1")#, "Cost-Weighted")
 
 for (i in 1 : length(prop_var_seq)){
   mod = kpca_logistic_regression(kpca_object, Fail2, frac_var = prop_var_seq[i], weights = weights) ##build model 
-  preds = predict(mod, new_data = Split1Design) ## predict on validation - Split1
-  tab = table(factor(Fail1, levels = c(0, 1)), factor(as.numeric(preds > threshold), levels = c(0,1))) #build table
+  p_hats = predict(mod, new_data = Split1Design) ## predict on validation - Split1
+  tab = table(factor(Fail1, levels = c(0, 1)), factor(as.numeric(p_hats > threshold), levels = c(0,1))) #build table
   fp = tab[1,2] / sum(tab[1,]) ##FP compute
   fn = tab[2,1] / sum(tab[2,]) ##FN compute
   err_mat[i,] = c(fp, fn) ##store errror
@@ -57,51 +57,38 @@ legend("topright", legend = c("No Fail", "Fail"), col = c("blue", "red"), lty = 
 
 
 ##Now show example that does seem to converge
-k_params = c(10, 2) ##set params for ANOVA radial basis function
-Kobj = K_matrix(X = Split2Design, fun = k_anova_basis, params = k_params) ##build kernel object on split2
-kpca_object = kernel_pca(K_object = Kobj) ## get kernel pca of object -- same call as kpca() essentially
+kpca_object = build_kpca_object(Split2Design, "anova", c(10, 2))
+plot_kpca_logistic_regression_perf(kpca_object, ytrain = Fail2, ytest = Fail1, xtest = Split1Design, weights = weights)
+##function(kpca_object, ytrain, ytest, xtest, var_seq = seq(.05, .90, by = .05), threshold = .5, weights = NULL, ...){
+#
+#
+#prop_var_seq = seq(.05, .95, by = .10) ## seq of % variance to explain in kernel 
+#
+#threshold = .5 ##threshold for positive class
+#err_mat = matrix(nrow = length(prop_var_seq), ncol = 2) ##
+#colnames(err_mat) = c("Class 0", "Class 1")#, "Cost-Weighted")
+#
+#for (i in 1 : length(prop_var_seq)){
+#	mod = kpca_logistic_regression(kpca_object, Fail2, frac_var = prop_var_seq[i], weights = weights) ##build model 
+#	p_hats = predict(mod, new_data = Split1Design) ## predict on validation - Split1
+#	tab = table(factor(Fail1, levels = c(0,1)), factor(as.numeric(p_hats > threshold), levels = c(0,1))) #build table
+#    fp = tab[1,2]/sum(tab[1,]) ##FP compute
+#    fn = tab[2,1]/sum(tab[2,]) ##FN compute
+#    err_mat[i,] = c(fp, fn) ##store errror
+#    print(i) ## counter
+#}
+#
+#
+#par(mgp=c(1.8, .5,0), mar=c(4.4, 2.7, 0.1, 0.1)) 
+#plot(prop_var_seq, err_mat[,1], type = "l", col = "blue", ylim = c(0,1), xlab = "Variance of Kernel Matrix", ylab = "Class Error")
+#points(prop_var_seq, err_mat[,2], type = "l", col = "red")
+#legend("topright", legend = c("No Fail", "Fail"), col = c("blue", "red"), lty = 1)
 
-prop_var_seq = seq(.05, .95, by = .10) ## seq of % variance to explain in kernel 
 
-threshold = .5 ##threshold for positive class
-err_mat = matrix(nrow = length(prop_var_seq), ncol = 2) ##
-colnames(err_mat) = c("Class 0", "Class 1")#, "Cost-Weighted")
+mod = kpca_logistic_regression(kpca_object, Fail2, frac_var = 0.75, weights = weights) ##build model 
+p_hats = predict(mod, new_data = Split1Design, type = "link")
 
-for(i in 1 : length(prop_var_seq)){
-  mod = kpca_logistic_regression(y = Fail2, kpca_object = kpca_object, num_pcs = get_num_pcs(kpca_object, prop_var_seq[i]), weights = weights) ##build model 
-  preds = kernReg_predict(object = mod, new_data = Split1Design, training_data = Split2Design) ## predict on validation - Split1
-  tab = table(factor(Fail1, levels = c(0,1)), factor(as.numeric(preds > threshold), levels = c(0,1))) #build table
-  fp = tab[1,2]/sum(tab[1,]) ##FP compute
-  fn = tab[2,1]/sum(tab[2,]) ##FN compute
-  err_mat[i,] = c(fp, fn) ##store errror
-  print(i) ## counter
-}
-
-
-par(mgp=c(1.8, .5,0), mar=c(4.4, 2.7, 0.1, 0.1)) 
-plot(prop_var_seq, err_mat[,1], type = "l", col = "blue", ylim = c(0,1), xlab = "Variance of Kernel Matrix", ylab = "Class Error")
-points(prop_var_seq, err_mat[,2], type = "l", col = "red")
-legend("topright", legend = c("No Fail", "Fail"), col = c("blue", "red"), lty = 1)
-
-
-kernel_pca_model = kpca_logistic_regression(y = Fail2, kpca_object = kpca_object, num_pcs = get_num_pcs(kpca_object, 0.75))
-preds = kernReg_predict(object = kernel_pca_model, new_data = Split1Design, training_data = Split2Design, type = "link")
-
-plot_pdp(kernel_pca_model, Split2Design, predictor = "FollowUpYears", frac_to_build = 0.1)
-
-kernel_pca_model_ice = ice(kernel_pca_model, Split2Design, predictor = "FollowUpYears", 
-		predictfcn = function(object, newdata){kernReg_predict(object, newdata, Split2Design, type = "link")},
-		frac_to_build = 0.1)
-#windows()
-plot(kernel_pca_model_ice, 
-		x_quantile = F, 
-		plot_pdp = T, 
-		frac_to_plot = 0.2, 
-		xlab = "Number of Follow-up Years",
-		ylab = "Predicted Log Odds of Failure to Appear",
-#		ylim = c(-1, 0.5),
-		plot_orig_pts_preds = FALSE, 
-		colorvec = rgb(rep(1, nrow(Split2Design)), rep(1, nrow(Split2Design)), rep(1, nrow(Split2Design))))
+plot_pdp(mod, Split2Design, predictor = "FollowUpYears", frac_to_build = 0.1)
 
 
 ##Now pick a model and evaluate on final holdout
@@ -140,24 +127,24 @@ kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(1/5,1)) ##use radial basis wi
 kernregpca = kernel_pca(K_object = kobj) #run pca
 get_num_pcs(kpca_object = kernregpca, .95) #8 pcs for 95%
 kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 8) ##build model
-preds = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
-points(xstar,preds, col = "forestgreen", type = "l", lwd = 3) ##plot
+p_hats = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
+points(xstar,p_hats, col = "forestgreen", type = "l", lwd = 3) ##plot
 
 ##M2
 kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(2,1)) ##use radial basis with gamma = 2
 kernregpca = kernel_pca(K_object = kobj) #run pca
 get_num_pcs(kpca_object = kernregpca, .95) #24 pcs for 95%
 kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 24) ##build model
-preds = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
-points(xstar,preds, col = "red", type = "l", lwd = 3) ##plot
+p_hats = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
+points(xstar,p_hats, col = "red", type = "l", lwd = 3) ##plot
 
 ##M3
 kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(10,1)) ##use radial basis with gamma = 10
 kernregpca = kernel_pca(K_object = kobj) #run pca
 get_num_pcs(kpca_object = kernregpca, .95) #48 pcs for 95%
 kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 48) ##build model
-preds = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
-points(xstar,preds, col = "blue", type = "l", lwd = 3) ##plot
+p_hats = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
+points(xstar,p_hats, col = "blue", type = "l", lwd = 3) ##plot
 
 legend("topright", legend = paste("gamma =", c(.2,2,10), sep = ""), col = c("forestgreen","red","blue"), lty = 1, lwd = 3)
 
@@ -205,24 +192,24 @@ kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(1/5,1)) ##use radial basis wi
 kernregpca = kernel_pca(K_object = kobj) #run pca
 get_num_pcs(kpca_object = kernregpca, .95) #8 pcs for 95%
 kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 8) ##build model
-preds = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
-points(xstar,preds, col = "black", type = "l", lty = 1, lwd = 3) ##plot
+p_hats = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
+points(xstar,p_hats, col = "black", type = "l", lty = 1, lwd = 3) ##plot
 
 ##M2
 kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(2,1)) ##use radial basis with gamma = 2
 kernregpca = kernel_pca(K_object = kobj) #run pca
 get_num_pcs(kpca_object = kernregpca, .95) #24 pcs for 95%
 kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 24) ##build model
-preds = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
-points(xstar,preds, col = "black", type = "l", lty = 2, lwd = 3) ##plot
+p_hats = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
+points(xstar,p_hats, col = "black", type = "l", lty = 2, lwd = 3) ##plot
 
 ##M3
 kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(10,1)) ##use radial basis with gamma = 10
 kernregpca = kernel_pca(K_object = kobj) #run pca
 get_num_pcs(kpca_object = kernregpca, .95) #48 pcs for 95%
 kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 48) ##build model
-preds = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
-points(xstar,preds, col = "black", type = "l", lty = 3, lwd = 3) ##plot
+p_hats = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
+points(xstar,p_hats, col = "black", type = "l", lty = 3, lwd = 3) ##plot
 
 legend("topright", legend = paste("gamma =", c(.2,2,10), sep = ""), lty = 1: 3, lwd = 3)
 

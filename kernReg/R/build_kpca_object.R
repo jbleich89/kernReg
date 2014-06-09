@@ -9,12 +9,15 @@ MIN_POSITIVE_EIGENVALUE = 1e-4
 #' the data in a transformed / kernelized space based on a kernel of the user's choice.
 #'  
 #' @param X				The original design matrix 
-#' @param kernel_type 	One of many kernel types
-#' @param params 		A list of parameters specific to the kernel of the user's choice
-#' @returnType 			kpca
+#' @param kernel_type 	One of the valid kernel types: vanilla, rbf, poly, tanh, bessel, laplace, anova, spline. 
+#' @param params 		A list of parameters specific to the kernel of the user's choice. Each kernel type has 
+#' 						a required number of parameters that must be passed otherwise the function will throw
+#' 						an error.
 #' @return 				A list composed of the original data, the kernel, the matrix K, the non-zero eigenvalues and eigenvectors of K and K in the eigenbasis	
 #' 
 #' @author 				Justin Bleich and Adam Kapelner
+#' @seealso 			See \code{\link[kernlab]{dots}} for more information.
+#' @references 			Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 #' @export
 build_kpca_object = function(X, kernel_type, params = c()){
 	checkObjectType(X, "X", "matrix")
@@ -87,12 +90,12 @@ build_kpca_object = function(X, kernel_type, params = c()){
 }
 
 
-#' Centers a kernel matrix
-#' 
-#' @param K		The kernel matrix to be centered 
-#' @return		The centered kernel matrix 
-#' 
-#' @author 		Justin Bleich and Adam Kapelner
+# A private helper function which centers a kernel matrix
+# 
+# @param K		The kernel matrix to be centered 
+# @return		The centered kernel matrix 
+# 
+# @author 		Justin Bleich and Adam Kapelner
 center_kernel_matrix = function(K){
   m = dim(K)[1]
   t(t(K - colSums(K) / m) - rowSums(K) / m) + sum(K) / m^2

@@ -7,12 +7,12 @@
 #' @param y 				The response to be regressed on the features which are the principal components of the kernelized data
 #' @param num_pcs 			The number of principal components to use for the regression (this or \code{frac_var} must be specified)
 #' @param frac_var			Pick the number of principal components to use based on the fraction of variance to explain (this or \code{num_pcs} must be specified)
-#' @returnType 				kernReg lm
 #' @return 					An lm object with the kpca_object embedded as well as the number of principal components used
 #' 
 #' @author 					Justin Bleich and Adam Kapelner
+#' @seealso 				\code{\link{kpca_logistic_regression}}
+#' @references 				Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 #' @export
-#' @seealso \code{\link{kpca_logistic_regression}}
 kpca_regression = function(kpca_object, y, num_pcs = NULL, frac_var = NULL){
 	checkObjectType(kpca_object, "kpca_object", "kpca", "build_kpca_object")
 
