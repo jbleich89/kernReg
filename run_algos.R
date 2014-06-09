@@ -1,13 +1,12 @@
 ##using our software
 library(kernReg) ##load package
 
-get_weights = function(y, fn_to_fp_ratio){
-  n1 = sum(y == 1)
-  n0 = sum(y == 0)
-  weight0 = (n1 + n0)/(n0 * (fn_to_fp_ratio + 1))
-  weight1 = (n1 + n0 - n0 * weight0)/n1
-  weights = ifelse(y == 1, weight1, weight0)
-  weights
+weights_for_kpca_logistic_regression = function(y_train, fn_to_fp_ratio){
+  n_1 = sum(y_train == 1)
+  n_0 = sum(y_train == 0)
+  weight0 = (n_1 + n_0) / (n_0 * (fn_to_fp_ratio + 1))
+  weight1 = (n_1 + n_0 - n_0 * weight0) / n_1
+  ifelse(y_train == 1, weight1, weight0)
 }
 
 #setwd("C:/Users/jbleich/Dropbox/Research_Crim/kernels/") ##my directory
@@ -23,7 +22,7 @@ Fail2 = as.numeric(ifelse(Split2$FailToAppear=="YesFta",1,0)) ##training
 Fail3 = as.numeric(ifelse(Split3$FailToAppear=="YesFta",1,0)) ## holdout
 
 ##Set up weights for plots
-weights = get_weights(Fail2, 1/2)
+weights = weights_for_kpca_logistic_regression(Fail2, 1/2)
 
 ##First see example that doesn't really seem to converge
 kpca_object = build_kpca_object(Split2Design, "anova", c(.1, 2))
@@ -60,6 +59,19 @@ legend("topright", legend = c("No Fail", "Fail"), col = c("blue", "red"), lty = 
 library(kernReg)
 kpca_object = build_kpca_object(Split2Design, "anova", c(10, 2))
 plot_kpca_logistic_regression_perf(kpca_object, ytrain = Fail2, ytest = Fail1, xtest = Split1Design, weights = weights)
+
+
+#try a bunch
+
+kernel_list = list(
+	"1" = list(kernel_type = "anova", params = c(0.1, 2)),
+	"2" = list(kernel_type = "poly", params = c(3, 1, 0)),
+	"3" = list(kernel_type = "spline", params = c()),
+	"4" = list(kernel_type = "tanh", params = c(1, 0)),
+	"5" = list(kernel_type = "vanilla", params = c()),
+	"6" = list(kernel_type = "anova", params = c(1, 2))
+)
+kernel_finder_logistic_regression(kernel_list, xtrain = Split2Design, ytrain = Fail2, xtest = Split1Design, ytest = Fail1, weights = weights)
 ##function(kpca_object, ytrain, ytest, xtest, var_seq = seq(.05, .90, by = .05), threshold = .5, weights = NULL, ...){
 #
 #
@@ -95,7 +107,7 @@ plot_pdp(mod, Split2Design, predictor = "FollowUpYears", frac_to_build = 0.1)
 ##Now pick a model and evaluate on final holdout
 ##let's say .75 
 np = get_num_pcs(kpca_object = kpca_object, frac_var_to_explain = .75) ##based on plot
-weights = get_weights(Fail2, 1/2)
+weights = weights_for_kpca_logistic_regression(Fail2, 1/2)
 threshold = .5
 
 log_reg2 = kpca_logistic_regression(y = Fail2, kpca_object = kpca_object, num_pcs = np, weights = weights) #rebuild "best" model

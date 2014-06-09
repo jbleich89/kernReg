@@ -39,8 +39,8 @@ build_kpca_object = function(X, kernel_type, params = c()){
 		}
 		kernel = rbfdot(params[1])
 	} else if (kernel_type == "poly"){
-		if (length(params) != 2){
-			stop("polynomial kernels require two parameters: scale and offset in that order")
+		if (length(params) != 3){
+			stop("polynomial kernels require three parameters: degree, scale and offset in that order")
 		}
 		kernel = polydot(params[1], params[2])
 	} else if (kernel_type == "tanh"){

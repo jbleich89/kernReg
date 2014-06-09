@@ -7,18 +7,23 @@
 #' @method print kpca
 #' @export
 print.kpca = function(x, ...){
-	kernel_name = gsub("kernel", "", class(x$kernel)[1])
 	parameters = names(kpar(x$kernel))
-	vals = paste(kpar(x$kernel))
 	n = nrow(x$X)
+	cat("Kernel PCA: ", n," x ", n, " matrix built with the ", kernel_description(x), "\n", sep = "")
+}
+
+#private method which generates a description of this kernel as a string
+kernel_description = function(kpca_object){
+	kernel_name = gsub("kernel", "", class(kpca_object$kernel)[1])
+	parameters = names(kpar(kpca_object$kernel))
+	vals = paste(kpar(kpca_object$kernel))
 	
 	if (is.null(parameters)){
-		cat("Kernel PCA: ", n," x ", n, " matrix built with kernel \"", kernel_name, "\"\n", sep = "")
+		paste("\"", kernel_name, "\" kernel (no parameters)", sep = "")
 	} else {
-		cat("Kernel PCA: ", n," x ", n, " matrix built with the \"", kernel_name, "\" kernel with parameters ", 
-			paste(parameters, vals, sep = " = ", collapse = ", "), "\n", sep = "")		
+		paste("\"", kernel_name, "\" kernel w/params\n", 
+			paste(parameters, vals, sep = " = ", collapse = ", "), sep = "")		
 	}
-
 }
 
 #' Prints a summary of a kpca object

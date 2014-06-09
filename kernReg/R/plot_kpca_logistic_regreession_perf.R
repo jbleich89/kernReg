@@ -9,7 +9,7 @@
 #' @param ytrain							The responses for the original training data
 #' @param ytest 							The responses for the new testing data
 #' @param xtest 							The features for the new testing data
-#' @param var_seq 							A collection of proportions of the number of PC's to use when plotting performance
+#' @param var_seq 							A collection of proportions of the variance explained of the kernel matrix to use when plotting performance
 #' @param threshold 						The threshold of the probability estimate after which to call the estimate a "1"
 #' @param weights 							A weight vector to use for the original training data
 #' @param ...								Other parameters to be passed to the plot function
@@ -25,8 +25,13 @@ plot_kpca_logistic_regression_perf = function(kpca_object, ytrain, ytest, xtest,
 	colnames(err_mat) = c("Class 0", "Class 1")#, "Cost-Weighted")
 	
 	for (i in 1 : length(var_seq)){
+		#build the model with the % variance explained of interest and let the user know where we are
 		mod = kpca_logistic_regression(y = ytrain, kpca_object = kpca_object, num_pcs = get_num_pcs_from_frac(kpca_object, var_seq[i]) , weights = weights)
+		cat("calculating errors using a model with ", (var_seq[i] * 100), "% variance of the kernel\n", sep = "")
+		
+		#predict using the model on the test data (this takes the longest
 		preds = predict(mod, xtest, ...) #by default, this returns probability estimates which is what we want
+		#now tabulate, calculate and record the errors
 		tab = table(factor(ytest, levels = c(0,1)), factor(as.numeric(preds > threshold), levels = c(0,1)))
 		fp = tab[1,2]/sum(tab[1,]) ##FP
 		fn = tab[2,1]/sum(tab[2,]) ##FN
@@ -35,11 +40,10 @@ plot_kpca_logistic_regression_perf = function(kpca_object, ytrain, ytest, xtest,
 		#cost = 2 * tab[1,1]*tab[1,2]/sum(tab[1,])^2 + tab[2,1]*tab[2,2]/sum(tab[2,])^2
 		#cost = tab[1,2]/tab[2,1]
 		##put cost here
-		err_mat[i,] = c(fp, fn)#, cost)
-		print(i)
+		err_mat[i,] = c(fp, fn)#, cost)		
 	}
 	
-	
+	#now plot both types of errors as a function of variance explained
 	plot(var_seq, err_mat[,1], type = "l", col = "blue", ylim = c(0, 1), xlab = "Variance of Kernel Matrix", ylab = "Class Error", ...)
 	points(var_seq, err_mat[,2], type = "l", col = "red")
 	legend("topright", legend = c("No Fail", "Fail"), col = c("blue", "red"), lty = 1)

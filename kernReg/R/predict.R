@@ -59,9 +59,9 @@ kpca_predict_common = function(kpca_model_object, new_data, X_kernel_dim_red_nam
 	#now we have to center the kernelized new data vectors
 	K = kpca_model_object$kpca_object$K
 	k_vecs_c = sapply(1 : nrow(new_data), function(s) center_kernel_test_vec(k_vecs[s, ], K))
-	#now we have to take those kernelezied vectors and represent them in the lower dimensional space based on the PC's we chose
+	#now we have to take those kernelezied vectors and represent them in the basis of the eigenspace
 	rotated_kvecs = (t(k_vecs_c) %*% kpca_model_object$kpca_object$keigenvecs)
-	#now truncate at the dimension we wish
+	#now truncate at the dimension we wish to represent them in the lower dimensional space based on the PC's we chose
 	rotated_kvecs = as.matrix(rotated_kvecs[, 1 : kpca_model_object$num_pcs, drop = FALSE])
 
 	#if the inputted new_data that was different in size than the original data, throw an error
@@ -69,7 +69,7 @@ kpca_predict_common = function(kpca_model_object, new_data, X_kernel_dim_red_nam
 		stop("Need same number of columns in newdata as original data.")
 	} 
 	
-	#make sure they get the correct names
+	#make sure the new columns get the correct names so predict.lm can function properly
 	colnames(rotated_kvecs) = X_kernel_dim_red_names
 	
 	#now predict using glm for logistic regression and lm for continuous regression
