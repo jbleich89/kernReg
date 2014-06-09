@@ -57,6 +57,7 @@ legend("topright", legend = c("No Fail", "Fail"), col = c("blue", "red"), lty = 
 
 
 ##Now show example that does seem to converge
+library(kernReg)
 kpca_object = build_kpca_object(Split2Design, "anova", c(10, 2))
 plot_kpca_logistic_regression_perf(kpca_object, ytrain = Fail2, ytest = Fail1, xtest = Split1Design, weights = weights)
 ##function(kpca_object, ytrain, ytest, xtest, var_seq = seq(.05, .90, by = .05), threshold = .5, weights = NULL, ...){

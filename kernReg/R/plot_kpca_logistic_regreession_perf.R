@@ -19,7 +19,7 @@
 #' @references 								Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 #' @export
 plot_kpca_logistic_regression_perf = function(kpca_object, ytrain, ytest, xtest, var_seq = seq(.05, .90, by = .05), threshold = .5, weights = NULL, ...){
-	checkObjectType(kpca_object, "kpca_logistic_regression_object", "kernLogReg", "kpca_logistic_regression")
+	checkObjectType(kpca_object, "kpca_object", "kpca", "build_kpca_object")
 	
 	err_mat = matrix(nrow = length(var_seq), ncol = 2)
 	colnames(err_mat) = c("Class 0", "Class 1")#, "Cost-Weighted")
