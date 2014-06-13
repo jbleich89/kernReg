@@ -5,7 +5,7 @@
 \usage{
 kernel_finder_logistic_regression(kernel_list, X_train, y_train, X_validate,
   y_validate, var_seq = seq(0.05, 0.95, by = 0.1), threshold = 0.5,
-  weights = NULL, ...)
+  weights = NULL, tile_cols = 3, ...)
 }
 \arguments{
 \item{kernel_list}{A list of kernels to assess performance of over a variety of PC's by \% explained.
@@ -24,6 +24,8 @@ Each element of this list is a list itself with keys "kernel_type" and "params."
 \item{threshold}{The threshold of the probability estimate after which to call the estimate a "1"}
 
 \item{weights}{A weight vector to use for the original training data}
+
+\item{tile_cols}{The number of columns in the plot array.}
 
 \item{...}{Other parameters to be passed to the plot function}
 }

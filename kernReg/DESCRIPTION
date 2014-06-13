@@ -10,5 +10,6 @@ Description: A tool to select and run kernel PCA linear models for regression
 License: MIT + file LICENSE
 Depends:
     R (>= 3.0),
+    lattice,
     kernlab,
     ICEbox

@@ -1,20 +1,58 @@
 library(kernReg)
 
 #training data
-X_train = as.matrix(Split2[, 5 : 49]) # design matrix for kernlab -- training split
-X_validate = as.matrix(Split1[, 5 : 49]) # design matrix for kernlab -- validation split
-X_test = as.matrix(Split3[, 5 : 49]) # design matrix for kernlab -- true holdout split
+X_train = as.matrix(Split2[, 5 : 49]) 
+X_validate = as.matrix(Split1[, 5 : 49]) 
+X_test = as.matrix(Split3[, 5 : 49]) 
 
 #response
-y_train = as.numeric(ifelse(Split2$FailToAppear=="YesFta",1,0)) ##training
-y_validate = as.numeric(ifelse(Split1$FailToAppear=="YesFta",1,0)) ## validation 
-y_test = as.numeric(ifelse(Split3$FailToAppear=="YesFta",1,0)) ## holdout
+y_train = as.numeric(ifelse(Split2$FailToAppear=="YesFta",1,0)) 
+y_validate = as.numeric(ifelse(Split1$FailToAppear=="YesFta",1,0)) 
+y_test = as.numeric(ifelse(Split3$FailToAppear=="YesFta",1,0)) 
 
 ##Set up weights for plots
 weights = weights_for_kpca_logistic_regression(y_train, 0.5)
 
 ##First see example that doesn't really seem to converge
+### see https://stat.ethz.ch/pipermail/r-devel/2005-June/033508.html for better code
+kpca_object = build_kpca_object(X_train, "anova", c(.0001, 2))
+plot(kpca_object, at = seq(0, 2000, by = 20))
+kpca_object = build_kpca_object(X_train, "anova", c(.001, 2))
+plot(kpca_object, at = seq(0, 2000, by = 20))
+kpca_object = build_kpca_object(X_train, "anova", c(.01, 2))
+plot(kpca_object, at = seq(0, 2000, by = 20))
 kpca_object = build_kpca_object(X_train, "anova", c(.1, 2))
+plot(kpca_object, at = seq(0, 2000, by = 20))
+kpca_object = build_kpca_object(X_train, "anova", c(10, 2))
+plot(kpca_object, at = seq(0, 2000, by = 20))
+windows()
+plot(kpca_object, at = seq(0, 2000, by = 20))
+kpca_object = build_kpca_object(X_train, "anova", c(100, 2))
+plot(kpca_object, at = seq(0, 2000, by = 20))
+
+kpca_object = build_kpca_object(X_train, "anova", c(1e-10, 2))
+plot(kpca_object)
+windows()
+plot(kpca_object, at = seq(0, 2000, by = 20))
+
+#graphics.off()
+#kpca_object = build_kpca_object(X_train, "rbf", c(0.00000001))
+#plot(kpca_object)
+#windows()
+#kpca_object = build_kpca_object(X_train, "rbf", c(0.0001))
+#plot(kpca_object)
+#windows()
+#kpca_object = build_kpca_object(X_train, "rbf", c(0.001))
+#plot(kpca_object)
+#windows()
+#kpca_object = build_kpca_object(X_train, "rbf", c(0.01))
+#plot(kpca_object)
+#windows()
+#kpca_object = build_kpca_object(X_train, "rbf", c(0.1))
+#plot(kpca_object)
+#windows()
+#kpca_object = build_kpca_object(X_train, "rbf", c(1))
+#plot(kpca_object)
 
 prop_var_seq = seq(.05, .90, by = .05) ## seq of % variance to explain in kernel 
 

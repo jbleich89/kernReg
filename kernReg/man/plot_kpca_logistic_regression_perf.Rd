@@ -3,7 +3,7 @@
 \alias{plot_kpca_logistic_regression_perf}
 \title{Performance plot by \%PC's of a Kernel PCA Logistic Regression}
 \usage{
-plot_kpca_logistic_regression_perf(kpca_object, y_train, y_test, X_test,
+plot_kpca_logistic_regression_perf(kpca_object, y_train, X_validate, y_validate,
   var_seq = seq(0.05, 0.9, by = 0.05), threshold = 0.5, weights = NULL,
   legend = TRUE, ...)
 }
@@ -12,9 +12,9 @@ plot_kpca_logistic_regression_perf(kpca_object, y_train, y_test, X_test,
 
 \item{y_train}{The responses for the original training data}
 
-\item{y_test}{The responses for the new testing data}
+\item{X_validate}{The features for the new validation data}
 
-\item{X_test}{The features for the new testing data}
+\item{y_validate}{The responses for the new validation data}
 
 \item{var_seq}{A collection of proportions of the variance explained of the kernel matrix to use when plotting performance}
 

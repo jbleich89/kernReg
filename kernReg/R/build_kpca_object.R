@@ -84,7 +84,7 @@ build_kpca_object = function(X, kernel_type, params = c()){
 	pc_mat = Kc %*% keigenvecs
 	
 	#let's pass back all information as a list
-	obj = list(X = X, kernel = kernel, K = K, keigenvals = keigen$values[1 : num_pos_eigenvecs], keigenvecs = keigenvecs, pc_mat = pc_mat)
+	obj = list(X = X, kernel = kernel, K = K, n = nrow(K), keigenvals = keigen$values[1 : num_pos_eigenvecs], keigenvecs = keigenvecs, pc_mat = pc_mat)
 	class(obj) = "kpca"
 	obj
 }
