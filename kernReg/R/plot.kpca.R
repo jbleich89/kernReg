@@ -5,9 +5,8 @@
 #' @param kpca_object 					The kpca object to plot
 #' @param lower_triangular				If the kernel is symmetric (the usual case), setting this to \code{TRUE}
 #' 										will only plot the lower triangle. Default is \code{TRUE}.
-#' @param col.regions 					How to color the heatmap. The default is white (low) to black (high)
-#' 										because most users will be using grayscale images for publications. More
-#' 										recommented if you can use color is something like \code{rainbow(200, end = 0.78)}.
+#' @param col.regions 					How to color the heatmap. The default is color but if you would like to produce a
+#' 										grayscale images for publication, you can use something like \code{gray(100 : 0 / 100)}.
 #' @param transform						An optional function to transform the entries of \code{K}. 
 #' @param main							Title of the plot. Default is the description of the kernel.
 #' @param ... 							Other parameters to pass to levelplot. 
@@ -19,10 +18,10 @@
 #' 										apples : apples comparisons across the same kernel with different hyperparameters (e.g.
 #' 										the radial basis kernel with different gamma values).
 #' 
-#' @author kapelner
+#' @author 								Adam Kapelner and Justin Bleich
 #' @method plot kpca
 #' @export
-plot.kpca = function(kpca_object, lower_triangular = TRUE, transform = NULL, col.regions = gray(100 : 0 / 100), main = NULL, ...){
+plot.kpca = function(kpca_object, lower_triangular = TRUE, transform = NULL, col.regions = rainbow(200, end = 0.78), main = NULL, ...){
 	n = kpca_object$n
 	mat = as.matrix(kpca_object$K[1 : n, 1 : n]) #the kernelMatrix class is resistant to change
 	colnames(mat) = NULL

@@ -15,25 +15,25 @@ weights = weights_for_kpca_logistic_regression(y_train, 0.5)
 
 ##First see example that doesn't really seem to converge
 ### see https://stat.ethz.ch/pipermail/r-devel/2005-June/033508.html for better code
-kpca_object = build_kpca_object(X_train, "anova", c(.0001, 2))
-plot(kpca_object, at = seq(0, 2000, by = 20))
-kpca_object = build_kpca_object(X_train, "anova", c(.001, 2))
-plot(kpca_object, at = seq(0, 2000, by = 20))
-kpca_object = build_kpca_object(X_train, "anova", c(.01, 2))
-plot(kpca_object, at = seq(0, 2000, by = 20))
-kpca_object = build_kpca_object(X_train, "anova", c(.1, 2))
-plot(kpca_object, at = seq(0, 2000, by = 20))
-kpca_object = build_kpca_object(X_train, "anova", c(10, 2))
-plot(kpca_object, at = seq(0, 2000, by = 20))
+kpca1 = build_kpca_object(X_train, "anova", c(.0001, 2))
+plot(kpca1, at = seq(0, 2000, by = 20))
+kpca1 = build_kpca_object(X_train, "anova", c(.001, 2))
+plot(kpca1, at = seq(0, 2000, by = 20))
+kpca1 = build_kpca_object(X_train, "anova", c(.01, 2))
+plot(kpca1, at = seq(0, 2000, by = 20))
+kpca1 = build_kpca_object(X_train, "anova", c(.1, 2))
+plot(kpca1, at = seq(0, 2000, by = 20))
+kpca1 = build_kpca_object(X_train, "anova", c(10, 2))
+plot(kpca1, at = seq(0, 2000, by = 20))
 windows()
-plot(kpca_object, at = seq(0, 2000, by = 20))
-kpca_object = build_kpca_object(X_train, "anova", c(100, 2))
-plot(kpca_object, at = seq(0, 2000, by = 20))
+plot(kpca1, at = seq(0, 2000, by = 20))
+kpca1 = build_kpca_object(X_train, "anova", c(100, 2))
+plot(kpca1, at = seq(0, 2000, by = 20))
 
-kpca_object = build_kpca_object(X_train, "anova", c(1e-10, 2))
-plot(kpca_object)
+kpca1 = build_kpca_object(X_train, "anova", c(1e-10, 2))
+plot(kpca1)
 windows()
-plot(kpca_object, at = seq(0, 2000, by = 20))
+plot(kpca1, at = seq(0, 2000, by = 20))
 
 #graphics.off()
 #kpca_object = build_kpca_object(X_train, "rbf", c(0.00000001))
@@ -63,7 +63,7 @@ colnames(err_mat) = c("Class 0", "Class 1")#, "Cost-Weighted")
 
 
 for (i in 1 : length(prop_var_seq)){
-  mod = kpca_logistic_regression(kpca_object, y_train, frac_var = prop_var_seq[i], weights = weights) ##build model 
+  mod = kpca_logistic_regression(kpca1, y_train, frac_var = prop_var_seq[i], weights = weights) ##build model 
   p_hats = predict(mod, new_data = X_validate) ## predict on validation - Split1
   tab = table(factor(y_validate, levels = c(0, 1)), factor(as.numeric(p_hats > threshold), levels = c(0,1))) #build table
   fp = tab[1,2] / sum(tab[1,]) ##FP compute
@@ -84,8 +84,8 @@ legend("topright", legend = c("No Fail", "Fail"), col = c("blue", "red"), lty = 
 
 ##Now show example that does seem to converge
 library(kernReg)
-kpca_object = build_kpca_object(X_train, "anova", c(10, 2))
-plot_kpca_logistic_regression_perf(kpca_object, y_train = y_train, y_validate = y_validate, X_validate = X_validate, weights = weights)
+kpca1 = build_kpca_object(X_train, "anova", c(10, 2))
+plot_kpca_logistic_regression_perf(kpca1, y_train = y_train, y_validate = y_validate, X_validate = X_validate, weights = weights)
 
 
 #try a bunch
@@ -102,7 +102,7 @@ kernel_list[[8]] = list(kernel_type = "vanilla", params = c())
 kernel_list[[9]] = list(kernel_type = "anova", params = c(1, 2))
 results = kernel_finder_logistic_regression(kernel_list, X_train = X_train, y_train = y_train, X_validate = X_validate, y_validate = y_validate, weights = weights)
 
-mod = kpca_logistic_regression(kpca_object, y_train, frac_var = 0.75, weights = weights) ##build model 
+mod = kpca_logistic_regression(kpca1, y_train, frac_var = 0.75, weights = weights) ##build model 
 p_hats = predict(mod, new_data = X_validate, type = "link")
 
 plot_pdp(mod, X_train, predictor = "FollowUpYears", frac_to_build = 0.1)
@@ -110,11 +110,11 @@ plot_pdp(mod, X_train, predictor = "FollowUpYears", frac_to_build = 0.1)
 
 ##Now pick a model and evaluate on final holdout
 ##let's say .75 
-np = get_num_pcs(kpca_object = kpca_object, frac_var_to_explain = .75) ##based on plot
+np = get_num_pcs(kpca_object = kpca1, frac_var_to_explain = .75) ##based on plot
 weights = weights_for_kpca_logistic_regression(y_train, 1/2)
 threshold = .5
 
-log_reg2 = kpca_logistic_regression(y = y_train, kpca_object = kpca_object, num_pcs = np, weights = weights) #rebuild "best" model
+log_reg2 = kpca_logistic_regression(y = y_train, kpca_object = kpca1, num_pcs = np, weights = weights) #rebuild "best" model
 split3_preds = kernReg_predict(log_reg2, new_data = X_test, training_data = X_train) #get some predictions
 table(y_test, split3_preds > threshold) ##confusion table for holdout
 
@@ -137,34 +137,50 @@ windows()
 par(mgp=c(1.8,.5,0), mar=c(4.4,2.7,0.1,0.1)) ##plot histogram
 plot(x, y, pch = 16, xlab = "X", ylab = "Y") #training points
 #points(x, ce, type = "l", col = "blue", lwd = 4) ##true cond. exp. function
-xstar = seq(-10, 10, length.out = 500) ##testing points
+xstar = as.matrix(seq(-10, 10, length.out = 500)) ##testing points
+
+##M0
+kpca0 = build_kpca_object(x, "rbf", 0.02)
+mod0 = kpca_regression(kpca0, y, frac_var = 0.95) ##build model 
+y_hats0 = predict(mod0, xstar) ##predict
+points(xstar, y_hats0, col = "brown", type = "l", lwd = 3) ##plot
 
 ##M1
-kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(1/5,1)) ##use radial basis with gamma = 1/5
-kernregpca = kernel_pca(K_object = kobj) #run pca
-get_num_pcs(kpca_object = kernregpca, .95) #8 pcs for 95%
-kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 8) ##build model
-p_hats = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
-points(xstar,p_hats, col = "forestgreen", type = "l", lwd = 3) ##plot
+kpca1 = build_kpca_object(x, "rbf", 0.2)
+mod1 = kpca_regression(kpca1, y, frac_var = 0.95) ##build model 
+y_hats1 = predict(mod1, xstar) ##predict
+points(xstar, y_hats1, col = "forestgreen", type = "l", lwd = 3) ##plot
 
 ##M2
-kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(2,1)) ##use radial basis with gamma = 2
-kernregpca = kernel_pca(K_object = kobj) #run pca
-get_num_pcs(kpca_object = kernregpca, .95) #24 pcs for 95%
-kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 24) ##build model
-p_hats = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
-points(xstar,p_hats, col = "red", type = "l", lwd = 3) ##plot
+kpca2 = build_kpca_object(x, "rbf", 2)
+mod2 = kpca_regression(kpca2, y, frac_var = 0.95) ##build model 
+y_hats2 = predict(mod2, xstar) ##predict
+points(xstar, y_hats2, col = "red", type = "l", lwd = 3) ##plot
 
 ##M3
-kobj = K_matrix(X = as.matrix(x), k_anova_basis, c(10,1)) ##use radial basis with gamma = 10
-kernregpca = kernel_pca(K_object = kobj) #run pca
-get_num_pcs(kpca_object = kernregpca, .95) #48 pcs for 95%
-kpr = kpca_regression(y = y, kpca_object = kernregpca, num_pcs = 48) ##build model
-p_hats = kernReg_predict(object = kpr, new_data = as.matrix(xstar), training_data = as.matrix(x)) ##predict
-points(xstar,p_hats, col = "blue", type = "l", lwd = 3) ##plot
+kpca3 = build_kpca_object(x, "rbf", 10)
+mod3 = kpca_regression(kpca3, y, frac_var = 0.95) ##build model 
+y_hats3 = predict(mod3, xstar) ##predict
+points(xstar, y_hats3, col = "blue", type = "l", lwd = 3) ##plot
+
+##M4
+kpca4 = build_kpca_object(x, "rbf", 50)
+mod4 = kpca_regression(kpca4, y, frac_var = 0.95) ##build model 
+y_hats4 = predict(mod4, xstar) ##predict
+points(xstar, y_hats4, col = "yellow", type = "l", lwd = 3) ##plot
 
 legend("topright", legend = paste("gamma =", c(.2,2,10), sep = ""), col = c("forestgreen","red","blue"), lty = 1, lwd = 3)
 
+windows()
+plot(kpca0, col.regions = rainbow(200, end = 0.78))
+windows()
+plot(kpca1)
+windows()
+plot(kpca2)
+windows()
+plot(kpca3)
+windows()
+plot(kpca4)
 
 ##Alt version without color
 library(kernReg)
@@ -213,9 +229,9 @@ X_train = matrix(c(1,2,3,4,5,6), ncol=3)
 X_train = rbind(X_train, X_train + 2, X_train + 4)
 ytrainr = seq(10,15)
 ytrainc = c(1,0,1,0,1,0)
-kpca = build_kpca_object(X_train, "anova", c(0.1, 2))
-kpca
-kpcareg_mod = kpca_regression(kpca, ytrainr, frac_var = 0.5)
+kpca1 = build_kpca_object(X_train, "anova", c(0.1, 2))
+kpca1
+kpcareg_mod = kpca_regression(kpca1, ytrainr, frac_var = 0.5)
 kpcareg_mod
-kpcalreg_mod = kpca_logistic_regression(kpca, ytrainc, frac_var = 0.2)
+kpcalreg_mod = kpca_logistic_regression(kpca1, ytrainc, frac_var = 0.2)
 kpcalreg_mod

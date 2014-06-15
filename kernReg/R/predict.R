@@ -42,7 +42,8 @@ predict.kernLogReg = function(object, new_data, type = "response", ...){
 }
 
 # Private method that does the heavy lifting for the predictions for new data 
-# (see two functions above this for information)
+# (see two functions above this for information). This can be significantly
+# sped up if implemented in a lower level language like C++.
 # 
 # @param kpca_model_object		The Kernel PCA logistic model used to predict 
 # @param new_data 				The new data the user wishes to predict
@@ -104,6 +105,6 @@ K_vector = function(xstar, X, kernel){
 # 
 # @author 			Justin Bleich and Adam Kapelner
 center_kernel_test_vec = function(k_vec, K){
-	m = length(k_vec)
-	t(k_vec) - colSums(K) / m  - rep(sum(k_vec) / m , m) + sum(K) / m^2
+	n = length(k_vec)
+	t(k_vec) - colSums(K) / n  - rep(sum(k_vec) / n , n) + sum(K) / n^2
 }
