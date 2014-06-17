@@ -146,16 +146,16 @@ y_hats0 = predict(mod0, xstar) ##predict
 points(xstar, y_hats0, col = "brown", type = "l", lwd = 3) ##plot
 
 ##M1
-kpca1 = build_kpca_object(x, "rbf", 0.2)
+kpca1 = build_kpca_object(x, "rbf", 0.1)
 mod1 = kpca_regression(kpca1, y, frac_var = 0.95) ##build model 
 y_hats1 = predict(mod1, xstar) ##predict
-points(xstar, y_hats1, col = "forestgreen", type = "l", lwd = 3) ##plot
+points(xstar, y_hats1, col = "red", type = "l", lwd = 3) ##plot
 
 ##M2
-kpca2 = build_kpca_object(x, "rbf", 2)
+kpca2 = build_kpca_object(x, "rbf", 5)
 mod2 = kpca_regression(kpca2, y, frac_var = 0.95) ##build model 
 y_hats2 = predict(mod2, xstar) ##predict
-points(xstar, y_hats2, col = "red", type = "l", lwd = 3) ##plot
+points(xstar, y_hats2, col = "forestgreen", type = "l", lwd = 3) ##plot
 
 ##M3
 kpca3 = build_kpca_object(x, "rbf", 10)
@@ -167,9 +167,9 @@ points(xstar, y_hats3, col = "blue", type = "l", lwd = 3) ##plot
 kpca4 = build_kpca_object(x, "rbf", 50)
 mod4 = kpca_regression(kpca4, y, frac_var = 0.95) ##build model 
 y_hats4 = predict(mod4, xstar) ##predict
-points(xstar, y_hats4, col = "yellow", type = "l", lwd = 3) ##plot
+points(xstar, y_hats4, col = "grey", type = "l", lwd = 3) ##plot
 
-legend("topright", legend = paste("gamma =", c(.2,2,10), sep = ""), col = c("forestgreen","red","blue"), lty = 1, lwd = 3)
+legend("topright", legend = paste("gamma =", c(0.1,5,50), sep = ""), col = c("red","forestgreen","grey"), lty = 1, lwd = 3)
 
 windows()
 plot(kpca0, col.regions = rainbow(200, end = 0.78))

@@ -13,7 +13,7 @@ MIN_POSITIVE_EIGENVALUE = 1e-4
 #' @param params 		A list of parameters specific to the kernel of the user's choice. Each kernel type has 
 #' 						a required number of parameters that must be passed otherwise the function will throw
 #' 						an error.
-#' @return 				A list composed of the original data, the kernel, the matrix K, the non-zero eigenvalues and eigenvectors of K and K in the eigenbasis	
+#' @return 				A list composed of the original data, the kernel, the K matrix, the centered K matrix, the non-zero eigenvalues and eigenvectors of K and K in the eigenbasis	
 #' 
 #' @author 				Justin Bleich and Adam Kapelner
 #' @seealso 			See \code{\link[kernlab]{dots}} for more information.
@@ -78,13 +78,13 @@ build_kpca_object = function(X, kernel_type, params = c()){
 	keigen = eigen(Kc / nrow(Kc), symmetric = TRUE) #it is faster to specify symmetric as true
 	#calculate the number of positive eigenvalues up to numerical stability
 	num_pos_eigenvecs = sum(keigen$values > MIN_POSITIVE_EIGENVALUE)
-	#now pull out the eigenvectors
+	#now pull out the eigenvectors and scale by -1/2 power of the eigenvalues
 	keigenvecs = t(t(keigen$vectors[, 1 : num_pos_eigenvecs]) / sqrt(keigen$values[1 : num_pos_eigenvecs]))
 	#rotate the eigenvectors onto the data
 	pc_mat = Kc %*% keigenvecs
 	
 	#let's pass back all information as a list
-	obj = list(X = X, kernel = kernel, K = K, n = nrow(K), keigenvals = keigen$values[1 : num_pos_eigenvecs], keigenvecs = keigenvecs, pc_mat = pc_mat)
+	obj = list(X = X, kernel = kernel, K = K, Kc = Kc, n = nrow(K), keigenvals = keigen$values[1 : num_pos_eigenvecs], keigenvecs = keigenvecs, pc_mat = pc_mat)
 	class(obj) = "kpca"
 	obj
 }
