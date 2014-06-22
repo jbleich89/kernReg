@@ -6,7 +6,8 @@ MIN_POSITIVE_EIGENVALUE = 1e-4
 #' Builds a Kernel PCA Object
 #' 
 #' Based on the original design matrix (the "data"), build an object which houses information about
-#' the data in a transformed / kernelized space based on a kernel of the user's choice.
+#' the data in a transformed / kernelized space based on a kernel of the user's choice. This function
+#' will standardize (i.e. center and scale) each predictor column.
 #'  
 #' @param X				The original design matrix 
 #' @param kernel_type 	One of the valid kernel types: vanilla, rbf, poly, tanh, bessel, laplace, anova, spline. 
@@ -21,6 +22,7 @@ MIN_POSITIVE_EIGENVALUE = 1e-4
 #' @export
 build_kpca_object = function(X, kernel_type, params = c()){
 	checkObjectType(X, "X", "matrix")
+	n = nrow(X)
 	
 	#ensure that the kernel_type is valid
   	if (!(kernel_type %in% VALID_KERNEL_TYPES)){
@@ -70,8 +72,13 @@ build_kpca_object = function(X, kernel_type, params = c()){
 		kernel = splinedot()
 	}
 	
+	#let's standardize each predictor in the design matrix
+	X_j_averages = apply(X, 2, mean)
+	X_j_standard_deviations = apply(X, 2, sd)
+	Xs = (X - vec_to_mat(X_j_averages, n)) / vec_to_mat(X_j_standard_deviations, n)
+	
 	#now we have built the kernel, let's compute the kernel matrix
-	K = kernelMatrix(kernel, X)
+	K = kernelMatrix(kernel, Xs)
 	#now let's center it
 	Kc = center_kernel_matrix(K)
 	#from the centered kernel matrix, we can compute
@@ -84,7 +91,18 @@ build_kpca_object = function(X, kernel_type, params = c()){
 	pc_mat = Kc %*% keigenvecs
 	
 	#let's pass back all information as a list
-	obj = list(X = X, kernel = kernel, K = K, Kc = Kc, n = nrow(K), keigenvals = keigen$values[1 : num_pos_eigenvecs], keigenvecs = keigenvecs, pc_mat = pc_mat)
+	obj = list(
+		X_j_averages = X_j_averages,
+		X_j_standard_deviations = X_j_standard_deviations,
+		Xs = Xs, 
+		kernel = kernel, 
+		K = K, 
+		Kc = Kc, 
+		n = n, 
+		keigenvals = keigen$values[1 : num_pos_eigenvecs], 
+		keigenvecs = keigenvecs, 
+		pc_mat = pc_mat
+	)
 	class(obj) = "kpca"
 	obj
 }
@@ -101,4 +119,13 @@ center_kernel_matrix = function(K){
   t(t(K - colSums(K) / m) - rowSums(K) / m) + sum(K) / m^2
 }
 
-
+# A private helper function which turns a vector into a matrix by 
+# replicating the vector n times as new rows
+# 
+# @param K		The vec
+# @param n		The number of rows
+# 
+# @author 		Justin Bleich and Adam Kapelner
+vec_to_mat = function(vec, n){
+	matrix(rep(vec, n), nrow = n, byrow = TRUE)
+}

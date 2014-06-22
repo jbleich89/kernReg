@@ -11,7 +11,7 @@
 #' 
 #' @author 					Justin Bleich and Adam Kapelner
 #' @export
-weights_for_kpca_logistic_regression = function(y_train, fn_to_fp_ratio = 1){
+weights_for_kpclr = function(y_train, fn_to_fp_ratio = 1){
 	n_1 = sum(y_train == 1)
 	n_0 = sum(y_train == 0)
 	weight0 = (n_1 + n_0) / (n_0 * (fn_to_fp_ratio + 1))

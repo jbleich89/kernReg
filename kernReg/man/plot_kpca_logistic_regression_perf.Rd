@@ -4,7 +4,7 @@
 \title{Performance plot by \%PC's of a Kernel PCA Logistic Regression}
 \usage{
 plot_kpca_logistic_regression_perf(kpca_object, y_train, X_validate, y_validate,
-  var_seq = seq(0.05, 0.9, by = 0.05), threshold = 0.5, weights = NULL,
+  rho_seq = seq(0.05, 0.9, by = 0.05), threshold = 0.5, weights = NULL,
   legend = TRUE, ...)
 }
 \arguments{
@@ -16,7 +16,7 @@ plot_kpca_logistic_regression_perf(kpca_object, y_train, X_validate, y_validate,
 
 \item{y_validate}{The responses for the new validation data}
 
-\item{var_seq}{A collection of proportions of the variance explained of the kernel matrix to use when plotting performance}
+\item{rho_seq}{A collection of proportions of the variance explained of the kernel matrix to use when plotting performance}
 
 \item{threshold}{The threshold of the probability estimate after which to call the estimate a "1"}
 
@@ -27,7 +27,7 @@ plot_kpca_logistic_regression_perf(kpca_object, y_train, X_validate, y_validate,
 \item{...}{Other parameters to be passed to the plot function}
 }
 \value{
-A matrix of error rates for each proportion of the number of PC's in \code{var_seq}
+A matrix of error rates for each proportion of the number of PC's in \code{rho_seq}
 }
 \description{
 Plots the performance in terms of the false negative and false positive error of a kernel PCA

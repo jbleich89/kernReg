@@ -11,16 +11,16 @@
 #' @param ... 				Other parameters to pass to the \code{plot} function
 #' 
 #' @author 					Justin Bleich and Adam Kapelner
-#' @seealso 				\code{\link{predict.kernReg}}, \code{\link{predict.kernLogReg}}, \code{\link{plot}}
+#' @seealso 				\code{\link{predict.kpcr}}, \code{\link{predict.kpclr}}, \code{\link{plot}}
 #' @references 				Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 #' @export
 plot_pdp = function(kpca_model, predictor, type = "link", frac_to_build = 1, ...){
-	checkObjectType(kpca_model, "kpca_model", "kernReg", c("kpca_regression", "kpca_logistic_regression"))
+	checkObjectType(kpca_model, "kpca_model", "kpcr", c("kpcr", "kpclr"))
 	
-	kernel_pca_model_ice = ice(kpca_model, kpca_model$kpca_object$X, predictor = predictor, 
+	kernel_pca_model_ice = ice(kpca_model, kpca_model$kpca_object$Xs, predictor = predictor, 
 			predictfcn = function(object, newdata){predict(object, newdata, type = type)},
 			frac_to_build = frac_to_build)	
-	n = nrow(kpca_model$kpca_object$X)
+	n = kpca_model$kpca_object$n
 	plot(kernel_pca_model_ice, 
 			x_quantile = F, 
 			plot_pdp = TRUE, 

@@ -15,7 +15,7 @@ a required number of parameters that must be passed otherwise the function will 
 an error.}
 }
 \value{
-A list composed of the original data, the kernel, the matrix K, the non-zero eigenvalues and eigenvectors of K and K in the eigenbasis
+A list composed of the original data, the kernel, the K matrix, the centered K matrix, the non-zero eigenvalues and eigenvectors of K and K in the eigenbasis
 }
 \description{
 Based on the original design matrix (the "data"), build an object which houses information about

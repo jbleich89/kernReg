@@ -4,7 +4,7 @@
 \title{Plots the kernel matrix}
 \usage{
 \method{plot}{kpca}(kpca_object, lower_triangular = TRUE, transform = NULL,
-  col.regions = gray(100:0/100), main = NULL, ...)
+  col.regions = rainbow(200, end = 0.78), main = NULL, ...)
 }
 \arguments{
 \item{kpca_object}{The kpca object to plot}
@@ -12,9 +12,8 @@
 \item{lower_triangular}{If the kernel is symmetric (the usual case), setting this to \code{TRUE}
 will only plot the lower triangle. Default is \code{TRUE}.}
 
-\item{col.regions}{How to color the heatmap. The default is white (low) to black (high)
-because most users will be using grayscale images for publications. More
-recommented if you can use color is something like \code{rainbow(200, end = 0.78)}.}
+\item{col.regions}{How to color the heatmap. The default is color but if you would like to produce a
+grayscale images for publication, you can use something like \code{gray(100 : 0 / 100)}.}
 
 \item{transform}{An optional function to transform the entries of \code{K}.}
 
@@ -33,6 +32,6 @@ recommented if you can use color is something like \code{rainbow(200, end = 0.78
 Illustrates the kernel matrix as a heatmap.
 }
 \author{
-kapelner
+Adam Kapelner and Justin Bleich
 }
 

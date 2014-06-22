@@ -54,16 +54,16 @@ plot(kpca1, at = seq(0, 2000, by = 20))
 #kpca_object = build_kpca_object(X_train, "rbf", c(1))
 #plot(kpca_object)
 
-prop_var_seq = seq(.05, .90, by = .05) ## seq of % variance to explain in kernel 
+rho_seq = seq(.05, .90, by = .05) ## seq of % variance to explain in kernel 
 
 threshold = .5 ##threshold for positive class
-err_mat = matrix(nrow = length(prop_var_seq), ncol = 2) ##
+err_mat = matrix(nrow = length(rho_seq), ncol = 2) ##
 colnames(err_mat) = c("Class 0", "Class 1")#, "Cost-Weighted")
 #kpca_logistic_regression = function(kpca_object, y, num_pcs = NULL, frac_var = NULL, weights = NULL){
 
 
-for (i in 1 : length(prop_var_seq)){
-  mod = kpca_logistic_regression(kpca1, y_train, frac_var = prop_var_seq[i], weights = weights) ##build model 
+for (i in 1 : length(rho_seq)){
+  mod = kpca_logistic_regression(kpca1, y_train, frac_var = rho_seq[i], weights = weights) ##build model 
   p_hats = predict(mod, new_data = X_validate) ## predict on validation - Split1
   tab = table(factor(y_validate, levels = c(0, 1)), factor(as.numeric(p_hats > threshold), levels = c(0,1))) #build table
   fp = tab[1,2] / sum(tab[1,]) ##FP compute
@@ -73,8 +73,8 @@ for (i in 1 : length(prop_var_seq)){
 }
 
 par(mgp = c(1.8, .5,0), mar = c(4.4, 2.7, 0.1, 0.1)) 
-plot(prop_var_seq, err_mat[,1], type = "l", col = "blue", ylim = c(0,1), xlab = "Variance of Kernel Matrix", ylab = "Class Error")
-points(prop_var_seq, err_mat[,2], type = "l", col = "red")
+plot(rho_seq, err_mat[,1], type = "l", col = "blue", ylim = c(0,1), xlab = "Variance of Kernel Matrix", ylab = "Class Error")
+points(rho_seq, err_mat[,2], type = "l", col = "red")
 legend("topright", legend = c("No Fail", "Fail"), col = c("blue", "red"), lty = 1)
 
 
