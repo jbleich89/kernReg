@@ -20,8 +20,8 @@
 #' 							proportions are assigned to each set? This must be numeric of size 3 and the numbers
 #' 							will be normalized to sum to one. The default split is uniform (1/3, 1/3, 1/3).  
 #' @param rho_seq			A collection of proportions of the variance explained of the kernel matrix to use
-#' @param fn_over_fp_ratio	The ratio of the "severity" of the false negative to the "severity" of the false positive 
-#' 							(defaults to 1)
+#' @param fn_cost			The costof a false negative (defaults to 1)
+#' @param fp_cost			The costof a false positive (defaults to 1)
 #' @param plot				Plot the fp/fn as a function of rho for each kernel. Default is \code{TRUE}.
 #' @param plot_tile_cols	In the plot, how many performance plots displayed per row. Default is \code{3}.
 #' @param eval_test_data	After the "best" model is found using the training and validation data, should we evaluate
@@ -41,7 +41,8 @@ best_kpclr_three_splits = function(X, y,
 							seed = 0, 
 							split_props = c(1/3, 1/3, 1/3), 
 							rho_seq = seq(0.05, 0.95, 0.05), 
-							fn_over_fp_ratio = 1, 
+							fn_cost = 1,
+							fp_cost = 1,
 							plot = TRUE, 
 							plot_tile_cols = 3, 
 							eval_test_data = FALSE){
@@ -101,7 +102,7 @@ best_kpclr_three_splits = function(X, y,
 	X_validate = X[i_validation, ]
 	y_validate = y[i_validation]
 	X_test = X[i_test, ]
-	y_yest = y[i_test]
+	y_test = y[i_test]
 	
 	#now build the kernels
 	num_kernels = length(kernel_list)
@@ -118,11 +119,16 @@ best_kpclr_three_splits = function(X, y,
 	}
 	cat("done\n")
 	
-	weights = weights_for_kpclr(y_train, fn_over_fp_ratio)
+	#set up weights
+	weights = weights_for_kpclr(y_train, fn_cost / fp_cost)
 	
 	cat("running all models...\n")
-	fn_over_fp_results = matrix(NA, nrow = num_kernels, ncol = length(rho_seq))
-	misclassification_error_results = matrix(NA, nrow = num_kernels, ncol = length(rho_seq))
+	fn_over_fp_validation_results = matrix(NA, nrow = num_kernels, ncol = length(rho_seq))
+	rownames(fn_over_fp_validation_results) = paste("kernel", 1 : num_kernels)
+	colnames(fn_over_fp_validation_results) = rho_seq
+	cost_weighted_errors_validation = matrix(NA, nrow = num_kernels, ncol = length(rho_seq))
+	rownames(cost_weighted_errors_validation) = paste("kernel", 1 : num_kernels)
+	colnames(cost_weighted_errors_validation) = rho_seq
 	for (k in 1 : num_kernels){
 		kpca = all_kernels[[k]]
 		desc = kernel_description(kpca)
@@ -141,51 +147,81 @@ best_kpclr_three_splits = function(X, y,
 			#in the (1,2) location in the 2x2 confusion table and the number of "false
 			#negatives" (i.e. actual = 1, predicted = 0) is located in the (2,1) location
 			#in the 2x2 confusion table
-			fn_over_fp_results[k, r] = confusion[2, 1] / confusion[1, 2]
-			misclassification_error_results[k, r] = (confusion[2, 1] + confusion[1, 2]) / nrow(X_validate)
+			fn_over_fp_validation_results[k, r] = confusion[2, 1] / confusion[1, 2]
+			cost_weighted_errors_validation[k, r] = confusion[2, 1] * fn_cost + confusion[1, 2] * fp_cost
 			cat(".")
 		}
 		cat("\n")
 	}
 	
 	#determine winner
-	closeness_to_desired_fn_over_fp_ratio = abs(fn_over_fp_results - fn_over_fp_ratio)
-	winner = which(closeness_to_desired_fn_over_fp_ratio == min(closeness_to_desired_fn_over_fp_ratio), arr.ind = TRUE)
-	winning_kernel_num = winner[1]
-	winning_rho_num = winner[2]
-	
+	winning = which(cost_weighted_errors_validation == min(cost_weighted_errors_validation), arr.ind = TRUE)
+	winning_kernel_num = winning[1]
+	winning_rho_num = winning[2]
+
 	
 	#now we're going to plot all fp/fn lines and mark the winning model with a vertical line
 	if (plot){
 		#set the plotting based on the number of kernels the user wishes to try
 		tile_rows = ceiling(num_kernels / plot_tile_cols)	
 		par(mfrow = c(tile_rows, plot_tile_cols))
-
-		ylim = c(min(fn_over_fp_results), max(fn_over_fp_results))
+		
+		#standardize all 
+		fn_over_fp_max = max(fn_over_fp_validation_results)
+		cost_max = max(cost_weighted_errors_validation)
+		ylim = c(min(fn_over_fp_validation_results), fn_over_fp_max)
+		cost_weighted_errors_validation_scaled = cost_weighted_errors_validation / max(cost_weighted_errors_validation) * fn_over_fp_max
 		for (k in 1 : num_kernels){
 			kpca = all_kernels[[k]]
 			desc = kernel_description(kpca)
 			
+			main = ifelse(k <= plot_tile_cols, paste("validation performance\n", desc), desc)
+			
 			plot(rho_seq, 
-				fn_over_fp_results[k, ], 
+				fn_over_fp_validation_results[k, ], 
 				xlab = "rho", 
 				ylab = "fp / fn", 
 				ylim = ylim,
-				main = paste("validation performance\n", desc), 
+				main = main, 
 				type = "l")
-			abline(h = fn_over_fp_ratio)
-			
+			points(rho_seq, cost_weighted_errors_validation_scaled[k, ], col = "red", type = "l")
+			abline(h = fn_over_fp_ratio, col = "gray")
+			axis(4, at = fn_over_fp_max, labels = round(cost_max), col = "red")
 			if (k == winning_kernel_num){
-				abline(v = rho_seq[winning_rho_num])
+				abline(v = rho_seq[winning_rho_num], col = "blue", lwd = 3)
 			}
 		}
-
 	}
 	
-	which(a == max(a), arr.ind = TRUE)
+	#now handle test data
+	if (eval_test_data){
+		kpca = all_kernels[[winning_kernel_num]]
+		mod = kpclr(kpca, y_test, frac_var = rho_seq[winning_rho_num], weights = weights)
+		#predict the model on validation data
+		y_test_hat = predict(mod, X_test)
+		test_confusion = table(y_test, ifelse(y_test_hat > 0.5, 1, 0)) ###FIX LATER!!!
+	}
 	
 	#return everything
-	obj = list(fn_over_fp_results = fn_over_fp_results, winning_kernel = )
+	obj = list(
+			kernel_list = kernel_list, 
+			seed = seed, 
+			split_props = split_props, 
+			rho_seq = rho_seq, 
+			fn_cost = fn_cost,
+			fp_cost = fp_cost,
+			fn_over_fp_validation_results = fn_over_fp_validation_results,
+			cost_weighted_errors_validation = cost_weighted_errors_validation,
+			winning_kernel = all_kernels[[winning_kernel_num]], 
+			winning_kernel_num = winning_kernel_num,
+			winning_rho = rho_seq[winning_rho_num]
+	)
+	if (eval_test_data){
+		obj[["test_confusion"]] = test_confusion
+		obj[["test_confusion_proportions"]] = test_confusion / length(y_test)
+		obj[["test_misclassification_error"]] = (test_confusion[1, 2] + test_confusion[2, 1]) / length(y_test)
+		obj[["test_weighted_cost"]] = test_confusion[2, 1] * fn_cost + test_confusion[1, 2] * fp_cost
+	}
 	class(obj) = "best_kplcr"
 	obj
 }
