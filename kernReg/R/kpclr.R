@@ -28,7 +28,7 @@ kpclr = function(kpca_object, y, num_pcs = NULL, frac_var = NULL, weights = NULL
 	#then rotated onto a subset of the principal components. Use glm's binomial
 	#method for a vanilla logistic regression implementation
 	X_kern_pca_red = as.data.frame(kpca_object$pc_mat[, 1 : num_pcs, drop = FALSE]) #creating a variable here makes the print statement nicer
-	mod = glm(y ~ ., data = X_kern_pca_red, family = "binomial", weights = weights)
+	mod = glm(y ~ ., data = X_kern_pca_red, family = "quasibinomial", weights = weights) #we use quasibinomial to avoid the non-integer successes warning
 	
 	#return some other data to the user and mark this object as type "kpclr" et al.
 	mod$kpca_object = kpca_object

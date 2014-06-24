@@ -19,7 +19,8 @@ A list composed of the original data, the kernel, the K matrix, the centered K m
 }
 \description{
 Based on the original design matrix (the "data"), build an object which houses information about
-the data in a transformed / kernelized space based on a kernel of the user's choice.
+the data in a transformed / kernelized space based on a kernel of the user's choice. This function
+will standardize (i.e. center and scale) each predictor column.
 }
 \author{
 Justin Bleich and Adam Kapelner

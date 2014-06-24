@@ -15,6 +15,7 @@ Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regressi
 }
 \keyword{Components}
 \keyword{Kernel}
+\keyword{Logistic}
 \keyword{Principal}
 \keyword{Regression}
 \keyword{Regression,}

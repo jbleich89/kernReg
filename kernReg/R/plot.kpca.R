@@ -23,7 +23,7 @@
 #' @export
 plot.kpca = function(kpca_object, lower_triangular = TRUE, transform = NULL, col.regions = rainbow(200, end = 0.78), main = NULL, ...){
 	n = kpca_object$n
-	mat = as.matrix(kpca_object$K[1 : n, 1 : n]) #the kernelMatrix class is resistant to change
+	mat = as.matrix(kpca_object$K[1 : n, 1 : n]) #the kernelMatrix class is resistant to be cast as a native matrix, this is the only way I could figure out how to do it
 	colnames(mat) = NULL
 	rownames(mat) = NULL
 	
