@@ -48,7 +48,7 @@
 #' @references 				Berk, R., Bleich, J., Kapelner, A., Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 #' @export
 explore_kpclr_models = function(X, y, 
-								kernel_list, 
+								kernel_list = NULL, 
 								seed = 0, 
 								split_props = c(1/3, 1/3, 1/3), 
 								rho_seq = seq(0.05, 0.95, 0.05), 
