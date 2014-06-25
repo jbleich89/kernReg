@@ -7,10 +7,10 @@
 #' out of sample (2) the AIC of the model (3) the cost-weighted error of the out-of-sample validation data.
 #' 
 #' @param explore_kpclr_obj 			An object of type \code{explore_kpclr} built with \code{\link{explore_kpclr_models}}
-#' @param plot_tile_cols 				When plotting all kernel model performances, how many kernels per plot window column?
+#' @param tile_cols 					When plotting all kernel model performances, how many kernels per plot window column?
 #' 										Default is \code{3}.
 #' @param quantile_aic_to_display 		When plotting the AICs for each model, which quantile should be truncated?
-#' 										Default is \code{90\%}.
+#' 										Default is \code{95\%}.
 #' @param quantile_cwe_to_display 		When plotting the cost-weighted-errors for each model, which quantile should be 
 #' 										truncated? Default is \code{75\%}.
 #' @param color_winning_model 			What color is the vertical line of the winning model. Default is blue.
@@ -25,9 +25,9 @@
 #' @method plot explore_kpclr
 #' @export
 plot.explore_kpclr = function(explore_kpclr_obj, 
-		plot_tile_cols = 3, 
+		tile_cols = 3, 
 		quantile_aic_to_display = 0.75, 
-		quantile_cwe_to_display = 0.90,
+		quantile_cwe_to_display = 0.95,
 		color_winning_model = "blue",
 		color_num_fn_fp_ratio = "black",
 		color_aic = "firebrick3",
@@ -47,8 +47,8 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 	
 	#now we're going to plot all fp/fn lines and mark the winning model with a vertical line
 	#set the plotting based on the number of kernels the user wishes to try
-	tile_rows = ceiling(explore_kpclr_obj$num_kernels / plot_tile_cols)	
-	par(mfrow = c(tile_rows, plot_tile_cols))
+	tile_rows = ceiling(explore_kpclr_obj$num_kernels / tile_cols)	
+	par(mfrow = c(tile_rows, tile_cols))
 	text_label_indices = seq(from = 1, to = length(rho_seq), by = 3)
 	
 	#standardize all plots to have the same axes
@@ -103,7 +103,7 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 #' of the out-of-sample validation data is plotted.
 #' 
 #' @param explore_kpcr_obj 				An object of type \code{explore_kpcr} built with \code{\link{explore_kpcr_models}}
-#' @param plot_tile_cols 				When plotting all kernel model performances, how many kernels per plot window column?
+#' @param tile_cols 					When plotting all kernel model performances, how many kernels per plot window column?
 #' 										Default is \code{3}.
 #' @param quantile_aic_to_display 		When plotting the AICs for each model, which quantile should be truncated?
 #' 										Default is \code{75\%}.
@@ -119,7 +119,7 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 #' @method plot explore_kpcr
 #' @export
 plot.explore_kpcr = function(explore_kpcr_obj, 
-		plot_tile_cols = 3, 
+		tile_cols = 3, 
 		quantile_aic_to_display = 0.75,
 		color_winning_model = "blue",
 		color_sse = "black",
@@ -136,8 +136,8 @@ plot.explore_kpcr = function(explore_kpcr_obj,
 	
 	#now we're going to plot all fp/fn lines and mark the winning model with a vertical line
 	#set the plotting based on the number of kernels the user wishes to try
-	tile_rows = ceiling(explore_kpcr_obj$num_kernels / plot_tile_cols)	
-	par(mfrow = c(tile_rows, plot_tile_cols))
+	tile_rows = ceiling(explore_kpcr_obj$num_kernels / tile_cols)	
+	par(mfrow = c(tile_rows, tile_cols))
 	text_label_indices = seq(from = 1, to = length(rho_seq), by = label_skip)
 	
 	#standardize all plots to have the same axes

@@ -23,7 +23,7 @@ library(kernReg)
 
 
 explore_kpclr_obj = explore_kpclr_models(X, y, fp_cost = 2)
-plot(explore_kpclr_obj, quantile_cwe_to_display = 0.99)
+plot(explore_kpclr_obj, tile_cols = 2)
 explore_kpclr_obj = eval_winning_lr_model_on_test_data(explore_kpclr_obj)
 
 

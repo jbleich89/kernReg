@@ -75,6 +75,11 @@ build_kpca_object = function(X, kernel_type, params = c()){
 	#let's standardize each predictor in the design matrix
 	X_j_averages = apply(X, 2, mean)
 	X_j_standard_deviations = apply(X, 2, sd)
+	#blow up if we have covariates with no variation
+	bad_covariates = which(X_j_standard_deviations == 0)
+	if (length(bad_covariates) > 0){
+		stop("The following covariates column(s) have no variation: ", paste(bad_covariates, collapse = ", "), ".\n  Please drop these covariates from the dataset and rebuild the kpca object.")
+	}
 	Xs = (X - vec_to_mat(X_j_averages, n)) / vec_to_mat(X_j_standard_deviations, n)
 	
 	#now we have built the kernel, let's compute the kernel matrix
