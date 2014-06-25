@@ -127,8 +127,8 @@ explore_kpclr_models = function(X, y,
 			fn_over_fp_validation_results[k, r] = confusion[2, 1] / confusion[1, 2]
 			cost_weighted_errors_validation[k, r] = confusion[2, 1] * fn_cost + confusion[1, 2] * fp_cost
 			cat(".")
-#			print(rho)
-#			print(confusion)
+			print(rho)
+			print(confusion)
 		}
 		cat("\n")
 	}
@@ -280,6 +280,8 @@ explore_common = function(X, y, kernel_list, seed, split_props, rho_seq){
 	checkObjectType(X, "X", "matrix")
 	checkObjectType(y, "y", "numeric")
 	
+	
+	
 	#create a default kernel if the user did not specify one
 	if (is.null(kernel_list)){
 		kernel_list = list()
@@ -293,10 +295,18 @@ explore_common = function(X, y, kernel_list, seed, split_props, rho_seq){
 	
 	n = nrow(X)
 	
+	#check that y is correctly formatted
 	if (length(y) != n){
 		stop("The response vector must have the same dimension as the predictor matrix")
 	}
+	if (length(names(table(y))) != 2){
+		stop("The response variable must be zeroes and ones and must have examples of each.")
+	}
+	if (names(table(y)) != c(0, 1)){
+		stop("The response variable must be zeroes and ones and must have examples of each.")
+	}
 	
+	#check that split_props is correctly formatted
 	if (length(split_props) != 3){
 		stop("The \"split_props\" parameter must be of length 3.")
 	}
