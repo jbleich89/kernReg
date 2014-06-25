@@ -33,13 +33,14 @@ eval_winning_lr_model_on_test_data = function(explore_kpclr_obj){
 	y_train_and_validate = c(explore_kpclr_obj$y_train, explore_kpclr_obj$y_validate)
 	weights = weights_for_kpclr(y_train_and_validate, explore_kpclr_obj$fn_cost / explore_kpclr_obj$fp_cost)
 	winning_model = kpclr(kpca, y_train_and_validate, frac_var = explore_kpclr_obj$rho_seq[explore_kpclr_obj$winning_rho_num], weights = weights, family = explore_kpclr_obj$family)	
-	y_test_hat = predict(winning_model, explore_kpclr_obj$X_test)
-	test_confusion = table(explore_kpclr_obj$y_test, ifelse(y_test_hat > 0.5, 1, 0)) ###FIX LATER!!!
+	p_test_hat = predict(winning_model, explore_kpclr_obj$X_test)
+	test_confusion = table(explore_kpclr_obj$y_test, ifelse(p_test_hat > 0.5, 1, 0)) ###FIX LATER!!!
 	#pass back the data
 	explore_kpclr_obj[["test_confusion"]] = test_confusion
 	explore_kpclr_obj[["test_confusion_proportions"]] = test_confusion / explore_kpclr_obj$n_test
 	explore_kpclr_obj[["test_misclassification_error"]] = (test_confusion[1, 2] + test_confusion[2, 1]) / explore_kpclr_obj$n_test
 	explore_kpclr_obj[["test_weighted_cost"]] = test_confusion[2, 1] * explore_kpclr_obj$fn_cost + test_confusion[1, 2] * explore_kpclr_obj$fp_cost
+	explore_kpclr_obj[["p_test_hat"]] = p_test_hat
 	explore_kpclr_obj
 }
 

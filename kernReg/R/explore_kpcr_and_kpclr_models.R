@@ -278,9 +278,7 @@ explore_common = function(X, y, kernel_list, seed, split_props, rho_seq){
 	#in order to divert the function blowing up without the user knowing
 	#how to fix it
 	checkObjectType(X, "X", "matrix")
-	checkObjectType(y, "y", "numeric")
-	
-	
+	checkObjectType(y, "y", "numeric")	
 	
 	#create a default kernel if the user did not specify one
 	if (is.null(kernel_list)){
