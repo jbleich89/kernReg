@@ -3,7 +3,8 @@
 \alias{kpclr}
 \title{Run a logistic regression using Kernel PCA}
 \usage{
-kpclr(kpca_object, y, num_pcs = NULL, frac_var = NULL, weights = NULL)
+kpclr(kpca_object, y, num_pcs = NULL, frac_var = NULL, weights = NULL,
+  family = "binomial")
 }
 \arguments{
 \item{kpca_object}{The object that contains the kernel and the kernelized data with its eigendecomposition}
@@ -15,6 +16,8 @@ kpclr(kpca_object, y, num_pcs = NULL, frac_var = NULL, weights = NULL)
 \item{frac_var}{Pick the number of principal components to use based on the fraction of variance to explain (this or \code{num_pcs} must be specified)}
 
 \item{weights}{Weights to be used on each observation in a weighted generalized least squares implementation. If not specified (default), uniform weights are used}
+
+\item{family}{The family parameter to be passed to the glm function. Default is "binomial." Note that with this default, AIC calculations are not possible.}
 }
 \value{
 An lm object with the kpca_object embedded as well as the number of principal components used

@@ -96,3 +96,52 @@ print.kpcr = function(x, ...){
 summary.kpcr = function(object, ...){
 	print(object, ...)
 }
+
+#' Prints a summary of a explore_kpclr object
+#' 
+#' @param x			The explore_kpclr object to be summarized in the console
+#' @param ...		Other parameters to pass to the default print function
+#' 
+#' @author 			Justin Bleich and Adam Kapelner
+#' @method print explore_kpclr
+#' @export
+print.explore_kpclr = function(x, ...){
+	cat("Explore Logistic models ", x$num_kernels, " kernels, rhos = [", paste(x$rho_seq, collapse = ", ", sep = ""), "],\n n_train/n_validate/n_test = ", x$n_train, "/", x$n_validate, "/", x$n_test, ", winning kernel/rho = ", x$winning_kernel_num, "/", x$winning_rho_num, "\n", sep = "")	
+}
+
+#' Prints a summary of a explore_kpclr object
+#' 
+#' @param object		The explore_kpclr object to be summarized in the console
+#' @param ...			Other parameters to pass to the default summary function
+#' 
+#' @author 				Justin Bleich and Adam Kapelner
+#' @method summary explore_kpclr
+#' @export
+summary.explore_kpclr = function(object, ...){
+	print(object, ...)
+}
+
+
+#' Prints a summary of a explore_kpcr object
+#' 
+#' @param x			The \code{explore_kpcr} object to be summarized in the console
+#' @param ...		Other parameters to pass to the default print function
+#' 
+#' @author 			Justin Bleich and Adam Kapelner
+#' @method print explore_kpcr
+#' @export
+print.explore_kpcr = function(x, ...){
+	cat("Explore Logistic models ", x$num_kernels, " kernels, rhos = [", paste(x$rho_seq, collapse = ", ", sep = ""), "],\n n_train/n_validate/n_test = ", x$n_train, "/", x$n_validate, "/", x$n_test, ", winning kernel/rho = ", x$winning_kernel_num, "/", x$winning_rho_num, "\n", sep = "")	
+}
+
+#' Prints a summary of a explore_kpcr object
+#' 
+#' @param object		The \code{explore_kpcr} object to be summarized in the console
+#' @param ...			Other parameters to pass to the default summary function
+#' 
+#' @author 				Justin Bleich and Adam Kapelner
+#' @method summary explore_kpcr
+#' @export
+summary.explore_kpcr = function(object, ...){
+	print(object, ...)
+}

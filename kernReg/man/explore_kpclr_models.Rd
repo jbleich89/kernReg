@@ -6,7 +6,7 @@
 explore_kpclr_models(X, y, kernel_list, seed = 0, split_props = c(1/3, 1/3,
   1/3), rho_seq = seq(0.05, 0.95, 0.05), fn_cost = 1, fp_cost = 1,
   fp_max_cost = NULL, fn_min_cost = NULL, fp_min_cost = NULL,
-  fn_max_cost = NULL, num_cores = 1)
+  fn_max_cost = NULL, family = "binomial", num_cores = 1)
 }
 \arguments{
 \item{X}{The data's predictor matrix.}
@@ -14,7 +14,9 @@ explore_kpclr_models(X, y, kernel_list, seed = 0, split_props = c(1/3, 1/3,
 \item{y}{The data's response vector.}
 
 \item{kernel_list}{A list of kernels to assess performance of over a variety of PC's by \% explained.
-Each element of this list is a list itself with keys "kernel_type" and "params."}
+Each element of this list is a list itself with keys "kernel_type" and "params." If
+left unspecified, the default are four ANOVA models: (1) sigma = 0.1, d = 2 (2) sigma = 100
+d = 2 (3) sigma = 0.1, d = 3 (4) sigma = 100, d = 3}
 
 \item{seed}{A seed to set the random generator. This is required because re-runs will result in
 different training-validation-test splits which would allow a user to snoop on the
@@ -45,8 +47,12 @@ the algorithm of the minimum cost ratio of fp:fn. If left to the default \code{N
 cost ratio will be 25\% less than the desired cost ratio.}
 
 \item{fn_max_cost}{The maximum cost of a false negative. Together with \code{fp_min_cost}, this will inform
-                            the algorithm of the minimum cost ratio of fp:fn. If left to the default \code{NULL}, the minimum
-                            cost ratio will be 25\% less than the desired cost ratio.}
+the algorithm of the minimum cost ratio of fp:fn. If left to the default \code{NULL}, the minimum
+cost ratio will be 25\% less than the desired cost ratio.}
+
+\item{family}{The family parameter to be passed to the glm function. Default is "binomial." Note that with this default, AIC calculations are not possible.}
+
+\item{num_cores}{The number of cores to use in parallel during computation.}
 }
 \value{
 An object of class \code{explore_kplcr} which is a list housing the results of the procedure

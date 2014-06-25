@@ -3,8 +3,9 @@
 \alias{explore_kpcr_models}
 \title{Explore KPCR for many kernels}
 \usage{
-explore_kpcr_models(X, y, kernel_list, seed = 0, split_props = c(1/3, 1/3,
-  1/3), rho_seq = seq(0.05, 0.95, 0.05), num_cores = 1)
+explore_kpcr_models(X, y, kernel_list = NULL, seed = 0,
+  split_props = c(1/3, 1/3, 1/3), rho_seq = seq(0.05, 0.95, 0.05),
+  num_cores = 1)
 }
 \arguments{
 \item{X}{The data's predictor matrix}
@@ -12,7 +13,9 @@ explore_kpcr_models(X, y, kernel_list, seed = 0, split_props = c(1/3, 1/3,
 \item{y}{The data's response vector}
 
 \item{kernel_list}{A list of kernels to assess performance of over a variety of PC's by \% explained.
-Each element of this list is a list itself with keys "kernel_type" and "params."}
+Each element of this list is a list itself with keys "kernel_type" and "params." If
+left unspecified, the default are four ANOVA models: (1) sigma = 0.1, d = 2 (2) sigma = 100
+d = 2 (3) sigma = 0.1, d = 3 (4) sigma = 100, d = 3}
 
 \item{seed}{A seed to set the random generator. This is required because re-runs will result in
 different training-validation-test splits which would allow a user to snoop on the

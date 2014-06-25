@@ -4,7 +4,7 @@
 \title{Explore kpclr plot}
 \usage{
 \method{plot}{explore_kpclr}(explore_kpclr_obj, plot_tile_cols = 3,
-  quantile_aic_to_display = 0.75, quantile_cwe_to_display = 0.75,
+  quantile_aic_to_display = 0.75, quantile_cwe_to_display = 0.9,
   color_winning_model = "blue", color_num_fn_fp_ratio = "black",
   color_aic = "firebrick3", color_cwe = "forestgreen",
   show_rho_numbers = TRUE, text_label_offset_pct = 0.1, ...)
@@ -16,7 +16,7 @@
 Default is \code{3}.}
 
 \item{quantile_aic_to_display}{When plotting the AICs for each model, which quantile should be truncated?
-Default is \code{75\%}.}
+Default is \code{90\%}.}
 
 \item{quantile_cwe_to_display}{When plotting the cost-weighted-errors for each model, which quantile should be
 truncated? Default is \code{75\%}.}

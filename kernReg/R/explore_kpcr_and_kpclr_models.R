@@ -12,7 +12,9 @@
 #' @param X			 		The data's predictor matrix.
 #' @param y 				The data's response vector.
 #' @param kernel_list		A list of kernels to assess performance of over a variety of PC's by \% explained. 
-#' 							Each element of this list is a list itself with keys "kernel_type" and "params." 
+#' 							Each element of this list is a list itself with keys "kernel_type" and "params." If
+#' 							left unspecified, the default are four ANOVA models: (1) sigma = 0.1, d = 2 (2) sigma = 100
+#' 							d = 2 (3) sigma = 0.1, d = 3 (4) sigma = 100, d = 3
 #' @param seed				A seed to set the random generator. This is required because re-runs will result in
 #' 							different training-validation-test splits which would allow a user to snoop on the 
 #' 							test data. We default this to 0 but please use your own seeds to avoid seed conflict.
@@ -36,7 +38,8 @@
 #' @param fn_max_cost		The maximum cost of a false negative. Together with \code{fp_min_cost}, this will inform
 #' 							the algorithm of the minimum cost ratio of fp:fn. If left to the default \code{NULL}, the minimum
 #' 							cost ratio will be 25\% less than the desired cost ratio. 
-#' 
+#' @param family			The family parameter to be passed to the glm function. Default is "binomial." Note that with this default, AIC calculations are not possible.
+#' @param num_cores			The number of cores to use in parallel during computation.
 #' 
 #' @return 					An object of class \code{explore_kplcr} which is a list housing the results of the procedure
 #' 
@@ -54,7 +57,8 @@ explore_kpclr_models = function(X, y,
 								fp_max_cost = NULL,
 								fn_min_cost = NULL,
 								fp_min_cost = NULL,
-								fn_max_cost = NULL,								
+								fn_max_cost = NULL,
+								family = "binomial",
 								num_cores = 1){
 							
 	if (is.null(fn_min_cost) && is.null(fn_max_cost) && is.null(fp_min_cost) && is.null(fp_max_cost)){
@@ -105,7 +109,7 @@ explore_kpclr_models = function(X, y,
 		for (r in 1 : num_rhos){
 			rho = rho_seq[r]
 			#build model on training data
-			mod = kpclr(kpca, y_train, frac_var = rho, weights = weights)
+			mod = kpclr(kpca, y_train, frac_var = rho, weights = weights, family = family)
 			mod_aics[k, r] = AIC(mod)
 			#predict the model on validation data
 			y_validate_hat = predict(mod, obj$X_validate)
@@ -128,7 +132,15 @@ explore_kpclr_models = function(X, y,
 	}
 	
 	#determine winner
-	cost_weighted_errors_validation_with_valid_ratio = ifelse(fn_over_fp_validation_results >= min_fn_fp_ratio && fn_over_fp_validation_results <= max_fn_fp_ratio, fn_over_fp_validation_results, NA)
+	cost_weighted_errors_validation_with_valid_ratio = matrix(NA, num_kernels, num_rhos)
+	for (k in 1 : num_kernels){
+		for (j in 1 : num_rhos){
+			if (fn_over_fp_validation_results[k, j] >= min_fn_fp_ratio && fn_over_fp_validation_results[k, j] <= max_fn_fp_ratio){
+				cost_weighted_errors_validation_with_valid_ratio[k, j] = fn_over_fp_validation_results[k, j]
+			}
+		}
+	}	
+	
 	if (sum(is.na(cost_weighted_errors_validation_with_valid_ratio)) == num_kernels * num_rhos){
 		cat("WARNING: None of the results were acceptable with the fn/fp ratio bounds provided.\n")
 		winning_kernel_num = NA
@@ -140,12 +152,14 @@ explore_kpclr_models = function(X, y,
 	}
 
 	#return everything
+	obj$family = family
 	obj$fn_cost = fn_cost
 	obj$fp_cost = fp_cost
 	obj$min_fn_fp_ratio = min_fn_fp_ratio
 	obj$max_fn_fp_ratio = max_fn_fp_ratio
 	obj$fn_over_fp_validation_results = fn_over_fp_validation_results
 	obj$cost_weighted_errors_validation = cost_weighted_errors_validation
+	obj$mod_aics = mod_aics
 	obj$winning_kernel = all_kernels[[winning_kernel_num]]
 	obj$winning_kernel_num = winning_kernel_num
 	obj$winning_rho_num = winning_rho_num
@@ -167,7 +181,9 @@ explore_kpclr_models = function(X, y,
 #' @param X			 		The data's predictor matrix
 #' @param y 				The data's response vector	
 #' @param kernel_list		A list of kernels to assess performance of over a variety of PC's by \% explained. 
-#' 							Each element of this list is a list itself with keys "kernel_type" and "params." 
+#' 							Each element of this list is a list itself with keys "kernel_type" and "params." If
+#' 							left unspecified, the default are four ANOVA models: (1) sigma = 0.1, d = 2 (2) sigma = 100
+#' 							d = 2 (3) sigma = 0.1, d = 3 (4) sigma = 100, d = 3
 #' @param seed				A seed to set the random generator. This is required because re-runs will result in
 #' 							different training-validation-test splits which would allow a user to snoop on the 
 #' 							test data. We default this to 0 but please use your own seeds to avoid seed conflict.
@@ -185,7 +201,7 @@ explore_kpclr_models = function(X, y,
 #' @references 				Berk, R., Bleich, J., Kapelner, A., Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 #' @export
 explore_kpcr_models = function(X, y, 
-		kernel_list, 
+		kernel_list = NULL, 
 		seed = 0, 
 		split_props = c(1/3, 1/3, 1/3), 
 		rho_seq = seq(0.05, 0.95, 0.05),
@@ -242,6 +258,7 @@ explore_kpcr_models = function(X, y,
 	
 	#return everything
 	obj$sse_validation_results = sse_validation_results
+	obj$mod_aics = mod_aics
 	obj$winning_kernel = all_kernels[[winning_kernel_num]]
 	obj$winning_kernel_num = winning_kernel_num
 	obj$winning_rho_num = winning_rho_num
@@ -257,6 +274,16 @@ explore_common = function(X, y, kernel_list, seed, split_props, rho_seq){
 	#how to fix it
 	checkObjectType(X, "X", "matrix")
 	checkObjectType(y, "y", "numeric")
+	
+	#create a default kernel if the user did not specify one
+	if (is.null(kernel_list)){
+		kernel_list = list()
+		kernel_list[[1]] = list(kernel_type = "anova", params = c(0.1, 2))
+		kernel_list[[2]] = list(kernel_type = "anova", params = c(100, 2))
+		kernel_list[[3]] = list(kernel_type = "anova", params = c(0.1, 3))
+		kernel_list[[4]] = list(kernel_type = "anova", params = c(100, 3))
+	}
+	
 	checkObjectType(kernel_list, "kernel_list", "list", "list()")
 	
 	n = nrow(X)
@@ -325,6 +352,7 @@ explore_common = function(X, y, kernel_list, seed, split_props, rho_seq){
 	cat("done\n")
 	
 	obj = list(
+		kernel_list = kernel_list,
 		n = n,
 		seed = seed,
 		split_props = split_props, 
@@ -353,7 +381,7 @@ explore_common = function(X, y, kernel_list, seed, split_props, rho_seq){
 #' would then be snooping. Run this function when you are ready to close the books on this data set and never
 #' look back.
 #' 
-#' @param explore_kpclr 			This object is built from \code{explore_kplcr_models}. We assume the user has updated 
+#' @param explore_kpclr_obj 		This object is built from \code{explore_kplcr_models}. We assume the user has updated 
 #' 									this object with a satisfactory model by settings \code{winning_kernel_num} to denote 
 #' 									which kernel is selected for the final model and setting \code{winning_rho_num} to 
 #' 									denote which proportion of the variance of the kernel matrix is selected for the 
@@ -371,23 +399,23 @@ explore_common = function(X, y, kernel_list, seed, split_props, rho_seq){
 #' @seealso 						code{explore_kplcr_models}
 #' @author 							Adam Kapelner and Justin Bleich
 #' @export
-eval_winning_lr_model_on_test_data = function(winning_model, explore_kpclr){
+eval_winning_lr_model_on_test_data = function(explore_kpclr_obj){
 	#predict the model on test data and build a confusion matrix
 	#predict the model on training and validation data
-	winning_kernel_info = explore_kpclr$kernel_list[[explore_kpclr$winning_kernel_num]]
-	X_train_and_validate = rbind(explore_kpclr$X_train, explore_kpclr$X_validate)
+	winning_kernel_info = explore_kpclr_obj$kernel_list[[explore_kpclr_obj$winning_kernel_num]]
+	X_train_and_validate = rbind(explore_kpclr_obj$X_train, explore_kpclr_obj$X_validate)
 	kpca = build_kpca_object(X_train_and_validate, winning_kernel_info$kernel_type, winning_kernel_info$params)
-	y_train_and_validate = c(explore_kpclr$y_train, explore_kpclr$y_validate)
-	weights = weights_for_kpclr(y_train_and_validate, explore_kpclr$fn_cost / explore_kpclr$fp_cost)
-	winning_model = kpclr(kpca, y_train_and_validate, frac_var = explore_kpclr$rho_seq[explore_kpclr$winning_rho_num], weights = weights)	
-	y_test_hat = predict(winning_model, explore_kpclr$X_test)
-	test_confusion = table(explore_kpclr$y_test, ifelse(y_test_hat > 0.5, 1, 0)) ###FIX LATER!!!
+	y_train_and_validate = c(explore_kpclr_obj$y_train, explore_kpclr_obj$y_validate)
+	weights = weights_for_kpclr(y_train_and_validate, explore_kpclr_obj$fn_cost / explore_kpclr_obj$fp_cost)
+	winning_model = kpclr(kpca, y_train_and_validate, frac_var = explore_kpclr_obj$rho_seq[explore_kpclr_obj$winning_rho_num], weights = weights, family = explore_kpclr_obj$family)	
+	y_test_hat = predict(winning_model, explore_kpclr_obj$X_test)
+	test_confusion = table(explore_kpclr_obj$y_test, ifelse(y_test_hat > 0.5, 1, 0)) ###FIX LATER!!!
 	#pass back the data
-	explore_kpclr[["test_confusion"]] = test_confusion
-	explore_kpclr[["test_confusion_proportions"]] = test_confusion / explore_kpclr$n_test
-	explore_kpclr[["test_misclassification_error"]] = (test_confusion[1, 2] + test_confusion[2, 1]) / explore_kpclr$n_test
-	explore_kpclr[["test_weighted_cost"]] = test_confusion[2, 1] * fn_cost + test_confusion[1, 2] * fp_cost
-	explore_kpclr
+	explore_kpclr_obj[["test_confusion"]] = test_confusion
+	explore_kpclr_obj[["test_confusion_proportions"]] = test_confusion / explore_kpclr_obj$n_test
+	explore_kpclr_obj[["test_misclassification_error"]] = (test_confusion[1, 2] + test_confusion[2, 1]) / explore_kpclr_obj$n_test
+	explore_kpclr_obj[["test_weighted_cost"]] = test_confusion[2, 1] * fn_cost + test_confusion[1, 2] * fp_cost
+	explore_kpclr_obj
 }
 
 #' Evaluate Test Data
@@ -419,12 +447,6 @@ eval_winning_r_model_on_test_data = function(explore_kpcr){
 	kpca = build_kpca_object(X_train_and_validate, winning_kernel_info$kernel_type, winning_kernel_info$params)
 	y_train_and_validate = c(explore_kpcr$y_train, explore_kpcr$y_validate)
 	winning_model = kpcr(kpca, y_train_and_validate, frac_var = explore_kpcr$rho_seq[explore_kpcr$winning_rho_num])
-	#build the model and return	
-		
-	
-	weights = weights_for_kpclr(y_train_and_validate, explore_kpcr$fn_cost / explore_kpcr$fp_cost)
-	kpclr(kpca, y_train_and_validate, frac_var = explore_kpcr$rho_seq[explore_kpcr$winning_rho_num], weights = weights)	
-
 	y_test_hat = predict(winning_model, explore_kpcr$X_test)
 	#pass back the performance data
 	sse = sum((y_test_hat - exploration_kpclr$y_test)^2)
@@ -457,7 +479,7 @@ build_final_kpclr_or_kpcr_model = function(explore_kpclr_or_kpcr){
 	#build the model and return
 	if (class(explore_kpclr_or_kpcr) == "explore_kpclr"){		
 		weights = weights_for_kpclr(y, explore_kpclr_or_kpcr$fn_cost / explore_kpclr_or_kpcr$fp_cost)
-		kpclr(kpca, y, frac_var = explore_kpclr_or_kpcr$rho_seq[explore_kpclr_or_kpcr$winning_rho_num], weights = weights)	
+		kpclr(kpca, y, frac_var = explore_kpclr_or_kpcr$rho_seq[explore_kpclr_or_kpcr$winning_rho_num], weights = weights, family = explore_kpclr_or_kpcr$family)	
 	} else if (class(explore_kpclr_or_kpcr) == "explore_kpclr"){
 		kpcr(kpca, y, frac_var = explore_kpclr_or_kpcr$rho_seq[explore_kpclr_or_kpcr$winning_rho_num])
 	}	

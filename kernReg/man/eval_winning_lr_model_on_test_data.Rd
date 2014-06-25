@@ -3,10 +3,10 @@
 \alias{eval_winning_lr_model_on_test_data}
 \title{Evaluate Test Data}
 \usage{
-eval_winning_lr_model_on_test_data(winning_model, explore_kpclr)
+eval_winning_lr_model_on_test_data(explore_kpclr_obj)
 }
 \arguments{
-\item{explore_kpclr}{This object is built from \code{explore_kplcr_models}. We assume the user has updated
+\item{explore_kpclr_obj}{This object is built from \code{explore_kplcr_models}. We assume the user has updated
                                     this object with a satisfactory model by settings \code{winning_kernel_num} to denote
                                     which kernel is selected for the final model and setting \code{winning_rho_num} to
                                     denote which proportion of the variance of the kernel matrix is selected for the
