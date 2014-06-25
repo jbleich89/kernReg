@@ -3,7 +3,7 @@
 \alias{plot.explore_kpcr}
 \title{Explore kpcr plot}
 \usage{
-\method{plot}{explore_kpcr}(explore_kpcr_obj, plot_tile_cols = 3,
+\method{plot}{explore_kpcr}(explore_kpcr_obj, tile_cols = 3,
   quantile_aic_to_display = 0.75, color_winning_model = "blue",
   color_sse = "black", color_aic = "firebrick3", show_rho_numbers = TRUE,
   text_label_offset_pct = 0.1, label_skip = 3, ...)
@@ -11,7 +11,7 @@
 \arguments{
 \item{explore_kpcr_obj}{An object of type \code{explore_kpcr} built with \code{\link{explore_kpcr_models}}}
 
-\item{plot_tile_cols}{When plotting all kernel model performances, how many kernels per plot window column?
+\item{tile_cols}{When plotting all kernel model performances, how many kernels per plot window column?
 Default is \code{3}.}
 
 \item{quantile_aic_to_display}{When plotting the AICs for each model, which quantile should be truncated?

@@ -3,10 +3,9 @@
 \alias{explore_kpclr_models}
 \title{Explore KPCLR for many kernels}
 \usage{
-explore_kpclr_models(X, y, kernel_list, seed = 0, split_props = c(1/3, 1/3,
-  1/3), rho_seq = seq(0.05, 0.95, 0.05), fn_cost = 1, fp_cost = 1,
-  fp_max_cost = NULL, fn_min_cost = NULL, fp_min_cost = NULL,
-  fn_max_cost = NULL, family = "binomial", num_cores = 1)
+explore_kpclr_models(X, y, kernel_list = NULL, seed = 0,
+  split_props = c(1/3, 1/3, 1/3), rho_seq = seq(from = 0.3, to = 0.95, by =
+  0.05), fn_cost = 1, fp_cost = 1, family = "binomial", num_cores = 1)
 }
 \arguments{
 \item{X}{The data's predictor matrix.}
@@ -26,7 +25,8 @@ test data. We default this to 0 but please use your own seeds to avoid seed conf
 proportions are assigned to each set? This must be numeric of size 3 and the numbers
 will be normalized to sum to one. The default split is uniform (1/3, 1/3, 1/3).}
 
-\item{rho_seq}{A collection of proportions of the variance explained of the kernel matrix to use.}
+\item{rho_seq}{A collection of proportions of the variance explained of the kernel matrix to use. The default
+is 30\%, 35\%, ..., 95\%.}
 
 \item{fn_cost}{The target cost of a false negative (defaults to 1). Together with \code{fp_cost},
 this will inform the algorithm of the desired ratio of costs.}
@@ -34,23 +34,8 @@ this will inform the algorithm of the desired ratio of costs.}
 \item{fp_cost}{The target cost of a false positive (defaults to 1). Together with \code{fn_cost},
 this will inform the algorithm of the desired cost ratio of fp:fn.}
 
-\item{fp_max_cost}{The maximum cost of a false positve. Together with \code{fn_min_cost}, this will inform
-the algorithm of the maximum cost ratio of fp:fn. If left to the default \code{NULL}, the maximum
-cost ratio will be 25\% more than the desired cost ratio.}
-
-\item{fn_min_cost}{The minimum cost of a false negative. Together with \code{fp_max_cost}, this will inform
-the algorithm of the maximum cost ratio of fp:fn. If left to the default \code{NULL}, the maximum
-cost ratio will be 25\% more than the desired cost ratio.}
-
-\item{fp_min_cost}{The minimum cost of a false positive. Together with \code{fn_max_cost}, this will inform
-the algorithm of the minimum cost ratio of fp:fn. If left to the default \code{NULL}, the minimum
-cost ratio will be 25\% less than the desired cost ratio.}
-
-\item{fn_max_cost}{The maximum cost of a false negative. Together with \code{fp_min_cost}, this will inform
-the algorithm of the minimum cost ratio of fp:fn. If left to the default \code{NULL}, the minimum
-cost ratio will be 25\% less than the desired cost ratio.}
-
-\item{family}{The family parameter to be passed to the glm function. Default is "binomial." Note that with this default, AIC calculations are not possible.}
+\item{family}{The family parameter to be passed to the glm function. Default is "binomial." Note that when family
+is set to "quasibinomial," AIC calculations are not possible.}
 
 \item{num_cores}{The number of cores to use in parallel during computation.}
 }

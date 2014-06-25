@@ -11,8 +11,9 @@
 library(kernReg)
 
 ## Section 2
+##
 
-### Fig 5
+### Figure 5
 set.seed(15)
 n = 200
 x = as.matrix(sort(runif(n, -10, 10)))
@@ -45,7 +46,10 @@ legend("topright", legend = paste("gamma =", gamma_seq), col = color_seq, lty = 
 
 
 
-## Section 3 - Application
+## Section 3
+##
+library(kernReg)
+
 #load("criminology_data.RData") ###this data is not released publically due to privacy concerns
 ###convert the data frame to a matrix
 X$ThreeWayFail = ifelse(X$ThreeWayFail == "Low", 1, ifelse(X$ThreeWayFail == "Moderate", 2, 3)) #this decision is arbitrary and the levels can be changed if you wish
@@ -53,26 +57,32 @@ X$FailAny = ifelse(X$FailAny == "fail", 1, 0)
 X$FailSerious = ifelse(X$FailSerious == "fail", 1, 0)
 X = as.matrix(X)
 
-### Fig 7
+### Figure 7
 explore_kpclr_obj = explore_kpclr_models(X, y, fp_cost = 2)
+#use the plot function to visualize all model choices
 par(mar = c(4,4,3,2))
 plot(explore_kpclr_obj, tile_cols = 2)
-#pick a model holistically
-explore_kpclr_obj$winning_kernel_num = 2
-explore_kpclr_obj$winning_rho_num = 9
+#pick a model holistically based on many considerations outlined in the paper
+explore_kpclr_obj = set_desired_model(explore_kpclr_obj, winning_kernel_num = 2, winning_rho_num = 9)
+#plot again so the desired model is marked with a blue line
+plot(explore_kpclr_obj, tile_cols = 2)
+#not in paper but almost made it: use the auto-selection method (not recommended)
+explore_kpclr_obj = auto_select_best_kpclr_model(explore_kpclr_obj)
 plot(explore_kpclr_obj, tile_cols = 2)
 
-###Fig 8
+### Figure 8
+#evaluate on the test data
 explore_kpclr_obj = eval_winning_lr_model_on_test_data(explore_kpclr_obj)
+#plot a histogram of the estimated probabilities
 par(mar = c(4,4,0,1))
 hist(explore_kpclr_obj$p_test_hat, br = 50, xlab = "Predicted Probability of an FTA", main = "")
-###Tab 2
+
+### Table 2
+#the evaluation on the test data is already complete, pull out the confusion matrix and operate on that object
 conf = explore_kpclr_obj$test_confusion
-conf
-conf[1, 2] / sum(conf[1, ])
-conf[2, 1] / sum(conf[2, ])
-#out-of-sample cost ratio (for the text)
-conf[2, 1] / conf[1, 2]
-#other fraction needed for text
-conf[2, 1] / sum(conf[, 1])
+conf #rows 1,2 and cols 1,2
+conf[1, 2] / sum(conf[1, ]) #col 3, row 1
+conf[2, 1] / sum(conf[2, ]) #col 3, row 2
+conf[2, 1] / conf[1, 2] #out-of-sample cost ratio (for the text)
+conf[2, 1] / sum(conf[, 1]) #other fraction needed for text 
 

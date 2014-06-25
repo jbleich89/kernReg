@@ -27,18 +27,6 @@
 #' 							this will inform the algorithm of the desired ratio of costs.
 #' @param fp_cost			The target cost of a false positive (defaults to 1). Together with \code{fn_cost},
 #' 							this will inform the algorithm of the desired cost ratio of fp:fn.
-#' @param fp_max_cost		The maximum cost of a false positve. Together with \code{fn_min_cost}, this will inform
-#' 							the algorithm of the maximum cost ratio of fp:fn. If left to the default \code{NULL}, the maximum
-#' 							cost ratio will be 25\% more than the desired cost ratio.
-#' @param fn_min_cost		The minimum cost of a false negative. Together with \code{fp_max_cost}, this will inform
-#' 							the algorithm of the maximum cost ratio of fp:fn. If left to the default \code{NULL}, the maximum
-#' 							cost ratio will be 25\% more than the desired cost ratio. 
-#' @param fp_min_cost		The minimum cost of a false positive. Together with \code{fn_max_cost}, this will inform
-#' 							the algorithm of the minimum cost ratio of fp:fn. If left to the default \code{NULL}, the minimum
-#' 							cost ratio will be 25\% less than the desired cost ratio. 
-#' @param fn_max_cost		The maximum cost of a false negative. Together with \code{fp_min_cost}, this will inform
-#' 							the algorithm of the minimum cost ratio of fp:fn. If left to the default \code{NULL}, the minimum
-#' 							cost ratio will be 25\% less than the desired cost ratio. 
 #' @param family			The family parameter to be passed to the glm function. Default is "binomial." Note that when family 
 #' 							is set to "quasibinomial," AIC calculations are not possible.
 #' @param num_cores			The number of cores to use in parallel during computation.
@@ -56,22 +44,8 @@ explore_kpclr_models = function(X, y,
 								rho_seq = seq(from = 0.30, to = 0.95, by = 0.05),
 								fn_cost = 1,
 								fp_cost = 1,
-								fp_max_cost = NULL,
-								fn_min_cost = NULL,
-								fp_min_cost = NULL,
-								fn_max_cost = NULL,
 								family = "binomial",
 								num_cores = 1){
-							
-	if (is.null(fn_min_cost) && is.null(fn_max_cost) && is.null(fp_min_cost) && is.null(fp_max_cost)){
-		min_fn_fp_ratio = (fp_cost / fn_cost) * 0.75
-		max_fn_fp_ratio	= (fp_cost / fn_cost) * 1.25
-	} else if (!is.null(fn_min_cost) && !is.null(fn_max_cost) && !is.null(fp_min_cost) && !is.null(fp_max_cost)){
-		min_fn_fp_ratio = fp_min_cost / fn_max_cost
-		max_fn_fp_ratio = fp_max_cost / fn_min_cost
-	} else {
-		stop("Either fn_min_cost, fn_max_cost, fp_min_cost, fp_max_cost *all* have to be specified or *none* have to specified.")
-	}							
 
 	obj = explore_common(X, y, kernel_list, seed, split_props, rho_seq)
 	rho_seq = obj$rho_seq
@@ -127,45 +101,19 @@ explore_kpclr_models = function(X, y,
 			fn_over_fp_validation_results[k, r] = confusion[2, 1] / confusion[1, 2]
 			cost_weighted_errors_validation[k, r] = confusion[2, 1] * fn_cost + confusion[1, 2] * fp_cost
 			cat(".")
-			print(rho)
-			print(confusion)
+#			print(rho)
+#			print(confusion)
 		}
 		cat("\n")
 	}
 	
-	#determine winner
-	cost_weighted_errors_validation_with_valid_ratio = matrix(NA, num_kernels, num_rhos)
-	for (k in 1 : num_kernels){
-		for (j in 1 : num_rhos){
-			if (fn_over_fp_validation_results[k, j] >= min_fn_fp_ratio && fn_over_fp_validation_results[k, j] <= max_fn_fp_ratio){
-				cost_weighted_errors_validation_with_valid_ratio[k, j] = fn_over_fp_validation_results[k, j]
-			}
-		}
-	}	
-	
-	if (sum(is.na(cost_weighted_errors_validation_with_valid_ratio)) == num_kernels * num_rhos){
-		cat("WARNING: None of the results were acceptable with the fn/fp ratio bounds provided.\n")
-		winning_kernel_num = NA
-		winning_rho_num = NA
-	} else {
-		winning = which(cost_weighted_errors_validation_with_valid_ratio == min(cost_weighted_errors_validation_with_valid_ratio, na.rm = TRUE), arr.ind = TRUE)
-		winning_kernel_num = winning[1]
-		winning_rho_num = winning[2]
-	}
-
-	#return everything
+	#return everything that the plot function will need
 	obj$family = family
 	obj$fn_cost = fn_cost
 	obj$fp_cost = fp_cost
-	obj$min_fn_fp_ratio = min_fn_fp_ratio
-	obj$max_fn_fp_ratio = max_fn_fp_ratio
 	obj$fn_over_fp_validation_results = fn_over_fp_validation_results
 	obj$cost_weighted_errors_validation = cost_weighted_errors_validation
 	obj$mod_aics = mod_aics
-	obj$winning_kernel = all_kernels[[winning_kernel_num]]
-	obj$winning_kernel_num = winning_kernel_num
-	obj$winning_rho_num = winning_rho_num
-	obj$winning_rho = rho_seq[winning_rho_num]
 	class(obj) = "explore_kpclr"
 	obj
 }
@@ -255,18 +203,9 @@ explore_kpcr_models = function(X, y,
 		cat("\n")		
 	}
 	
-	#determine winner
-	winning = which(sse_validation_results == min(sse_validation_results), arr.ind = TRUE)
-	winning_kernel_num = winning[1]
-	winning_rho_num = winning[2]
-	
-	#return everything
+	#return everything that the plot function will need
 	obj$sse_validation_results = sse_validation_results
 	obj$mod_aics = mod_aics
-	obj$winning_kernel = all_kernels[[winning_kernel_num]]
-	obj$winning_kernel_num = winning_kernel_num
-	obj$winning_rho_num = winning_rho_num
-	obj$winning_rho = rho_seq[winning_rho_num]
 	class(obj) = "explore_kpcr"
 	obj
 }
@@ -385,7 +324,3 @@ explore_common = function(X, y, kernel_list, seed, split_props, rho_seq){
 	)
 	obj
 }
-
-
-
-

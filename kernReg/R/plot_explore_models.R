@@ -24,7 +24,7 @@
 #' @author 								Adam Kapelner and Justin Bleich
 #' @method plot explore_kpclr
 #' @export
-plot.explore_kpclr = function(explore_kpclr_obj, 
+plot.explore_kpclr = function(explore_kpclr_obj,
 		tile_cols = 3, 
 		quantile_aic_to_display = 0.75, 
 		quantile_cwe_to_display = 0.95,
@@ -71,10 +71,17 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 				ylim = ylim,
 				main = main,
 				col = color_num_fn_fp_ratio,
-				type = "o")
-		abline(h = desired_fn_fp_ratio, col = "gray")  
-		abline(h = min_fn_fp_ratio, col = "lightgray")
-		abline(h = max_fn_fp_ratio, col = "lightgray")
+				type = "o",
+				...)
+		
+		#graph the desired ratio line
+		abline(h = desired_fn_fp_ratio, col = "gray") 
+		
+		#if the user set bounds using the auto-selector, graph these too
+		if (!is.null(min_fn_fp_ratio) && !is.null(max_fn_fp_ratio)){
+			abline(h = min_fn_fp_ratio, col = rgb(0.95, 0.95, 0.95))
+			abline(h = max_fn_fp_ratio, col = rgb(0.95, 0.95, 0.95))			
+		}
 
 		points(rho_seq, cost_weighted_errors_validation_scaled[k, ], col = "red", type = "o")
 		points(rho_seq, mod_aics_scaled[k, ], col = "forestgreen", type = "o")
@@ -88,7 +95,7 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 			axis(4, at = fn_over_fp_max, labels = paste(round(quantile(cost_weighted_errors_validation, quantile_cwe_to_display, na.rm = TRUE)), "/", round(quantile(mod_aics, quantile_aic_to_display, na.rm = TRUE))))
 		}
 		
-		if (!is.na(explore_kpclr_obj$winning_kernel_num) && k == explore_kpclr_obj$winning_kernel_num){
+		if (!is.null(explore_kpclr_obj$winning_kernel_num) && !is.na(explore_kpclr_obj$winning_kernel_num) && k == explore_kpclr_obj$winning_kernel_num){
 			abline(v = rho_seq[explore_kpclr_obj$winning_rho_num], col = "blue", lwd = 3)
 		}
 	}
@@ -119,7 +126,7 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 #' @method plot explore_kpcr
 #' @export
 plot.explore_kpcr = function(explore_kpcr_obj, 
-		tile_cols = 3, 
+		tile_cols = 3,
 		quantile_aic_to_display = 0.75,
 		color_winning_model = "blue",
 		color_sse = "black",
@@ -140,8 +147,7 @@ plot.explore_kpcr = function(explore_kpcr_obj,
 	par(mfrow = c(tile_rows, tile_cols))
 	text_label_indices = seq(from = 1, to = length(rho_seq), by = label_skip)
 	
-	#standardize all plots to have the same axes
-	
+	#standardize all plots to have the same axes	
 	ylim = c(min(sse_validation_results), max(sse_validation_results))
 	text_label_offset = text_label_offset_pct * (ylim[2] - ylim[1])
 	mod_aics_scaled = mod_aics / quantile(mod_aics, quantile_aic_to_display, na.rm = TRUE) * ylim[2]
@@ -164,8 +170,9 @@ plot.explore_kpcr = function(explore_kpcr_obj,
 			text(rho_seq[text_label_indices], sse_validation_results[k, text_label_indices] - text_label_offset, text_label_indices)	
 		}		
 		axis(4, at = ylim[2], labels = paste(round(quantile(mod_aics, quantile_aic_to_display, na.rm = TRUE))))
-		if (!is.na(explore_kpcr_obj$winning_kernel_num) && k == explore_kpcr_obj$winning_kernel_num){
+		if (!is.null(explore_kpcr_obj$winning_kernel_num) && !is.na(explore_kpcr_obj$winning_kernel_num) && k == explore_kpcr_obj$winning_kernel_num){
 			abline(v = rho_seq[explore_kpcr_obj$winning_rho_num], col = "blue", lwd = 3)
 		}
 	}
 }
+

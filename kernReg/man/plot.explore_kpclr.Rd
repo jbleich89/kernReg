@@ -3,8 +3,8 @@
 \alias{plot.explore_kpclr}
 \title{Explore kpclr plot}
 \usage{
-\method{plot}{explore_kpclr}(explore_kpclr_obj, plot_tile_cols = 3,
-  quantile_aic_to_display = 0.75, quantile_cwe_to_display = 0.9,
+\method{plot}{explore_kpclr}(explore_kpclr_obj, tile_cols = 3,
+  quantile_aic_to_display = 0.75, quantile_cwe_to_display = 0.95,
   color_winning_model = "blue", color_num_fn_fp_ratio = "black",
   color_aic = "firebrick3", color_cwe = "forestgreen",
   show_rho_numbers = TRUE, text_label_offset_pct = 0.1, ...)
@@ -12,11 +12,11 @@
 \arguments{
 \item{explore_kpclr_obj}{An object of type \code{explore_kpclr} built with \code{\link{explore_kpclr_models}}}
 
-\item{plot_tile_cols}{When plotting all kernel model performances, how many kernels per plot window column?
+\item{tile_cols}{When plotting all kernel model performances, how many kernels per plot window column?
 Default is \code{3}.}
 
 \item{quantile_aic_to_display}{When plotting the AICs for each model, which quantile should be truncated?
-Default is \code{90\%}.}
+Default is \code{95\%}.}
 
 \item{quantile_cwe_to_display}{When plotting the cost-weighted-errors for each model, which quantile should be
 truncated? Default is \code{75\%}.}
