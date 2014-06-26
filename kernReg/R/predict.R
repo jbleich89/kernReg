@@ -64,26 +64,26 @@ kpca_predict_common = function(kpcr_model_object, new_data, X_kernel_dim_red_nam
 	kernel = kpcr_model_object$kpca_object$kernel
 	Xs = kpcr_model_object$kpca_object$Xs	
   
-	#will work on windows -- not sure about unix/mac
-	cluster = makeCluster(num_cores)
-	registerDoParallel(cluster)
-  
-	k_vec_c_list = foreach(i = 1 : n_star) %do% {
-	    k_vec = K_vector(new_data[i,], Xs, kernel)
-	    K = kpcr_model_object$kpca_object$K
-	    k_vec_c = center_kernel_test_vec(k_vec, K)
-	    k_vec_c 
-	}
-  
-  stopCluster(cluster)
-  
-  	k_vecs_c = t(do.call(rbind, k_vec_c_list)) ##?? 
+# 	#will work on windows -- not sure about unix/mac
+# 	cluster = makeCluster(num_cores)
+# 	registerDoParallel(cluster)
+#   
+# 	k_vec_c_list = foreach(i = 1 : n_star) %do% {
+# 	    k_vec = K_vector(new_data[i,], Xs, kernel)
+# 	    K = kpcr_model_object$kpca_object$K
+# 	    k_vec_c = center_kernel_test_vec(k_vec, K)
+# 	    k_vec_c 
+# 	}
+#   
+#   stopCluster(cluster)
+#   
+#   	k_vecs_c = t(do.call(rbind, k_vec_c_list)) ##?? 
 
-# 	k_vecs = t(sapply(1 : n_star, function(s) K_vector(new_data[s, ], Xs, kernel)))
-# 	#now we have to center the kernelized new data vectors
-# 	K = kpcr_model_object$kpca_object$K
-# 	k_vecs_c = sapply(1 : n_star, function(s) center_kernel_test_vec(k_vecs[s, ], K))
-# 	#now we have to take those kernelezied vectors and represent them in the basis of the eigenspace
+	k_vecs = t(sapply(1 : n_star, function(s) K_vector(new_data[s, ], Xs, kernel)))
+	#now we have to center the kernelized new data vectors
+	K = kpcr_model_object$kpca_object$K
+	k_vecs_c = sapply(1 : n_star, function(s) center_kernel_test_vec(k_vecs[s, ], K))
+	#now we have to take those kernelezied vectors and represent them in the basis of the eigenspace
 	
   	rotated_kvecs = (t(k_vecs_c) %*% kpcr_model_object$kpca_object$keigenvecs)
 	#now truncate at the dimension we wish to represent them in the lower dimensional space based on the PC's we chose
