@@ -3,12 +3,14 @@
 \alias{predict.kpcr}
 \title{Predicts for new data}
 \usage{
-\method{predict}{kpcr}(object, new_data, ...)
+\method{predict}{kpcr}(object, new_data, num_cores = 1, ...)
 }
 \arguments{
 \item{object}{The Kernel PCA linear model object used to predict}
 
 \item{new_data}{The new data the user wishes to predict}
+
+\item{num_cores}{Number of cores for parallel prediction}
 
 \item{...}{Other parameters to be passed to \code{predict.lm}}
 }

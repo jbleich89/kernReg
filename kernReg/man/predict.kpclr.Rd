@@ -3,7 +3,8 @@
 \alias{predict.kpclr}
 \title{Predicts for new data}
 \usage{
-\method{predict}{kpclr}(object, new_data, type = "response", ...)
+\method{predict}{kpclr}(object, new_data, type = "response", num_cores = 1,
+  ...)
 }
 \arguments{
 \item{object}{The Kernel PCA logistic model used to predict}
@@ -11,6 +12,8 @@
 \item{new_data}{The new data the user wishes to predict}
 
 \item{type}{Which output to return to the user. Use "response" for predicted probability and "link" for a logit (see \code{predict.glm} for more information)}
+
+\item{num_cores}{Number of cores for parallel prediction}
 
 \item{...}{Other parameters to be passed to \code{predict.glm}}
 }

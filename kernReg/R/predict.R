@@ -27,6 +27,7 @@ predict.kpcr = function(object, new_data, num_cores = 1, ...){
 #' @param object				The Kernel PCA logistic model used to predict 
 #' @param new_data 				The new data the user wishes to predict
 #' @param type 					Which output to return to the user. Use "response" for predicted probability and "link" for a logit (see \code{predict.glm} for more information)
+#' @param num_cores   			Number of cores for parallel prediction
 #' @param ...					Other parameters to be passed to \code{predict.glm}
 #' @return						A vector of predictions with lenth of the number of rows of \code{new_data} generated via \code{predict.glm}
 #' 
@@ -49,7 +50,7 @@ predict.kpclr = function(object, new_data, type = "response", num_cores = 1, ...
 # @param kpcr_model_object		The Kernel PCA logistic model used to predict 
 # @param new_data 				The new data the user wishes to predict
 # @param type 					Which output to return to the user. Use "response" for predicted probability and "link" for a logit (see \code{predict.glm} for more information)
-# @param num_cores   		Number of cores for parallel prediction
+# @param num_cores   			Number of cores for parallel prediction
 # @param ...					Other parameters to be passed to \code{predict.lm} or \code{predict.glm}
 # @return						A vector of predictions with lenth of the number of rows of \code{new_data} generated via \code{predict.lm} or \code{predict.glm}
 # 
@@ -68,7 +69,7 @@ kpca_predict_common = function(kpcr_model_object, new_data, X_kernel_dim_red_nam
 	cluster = makeCluster(num_cores)
 	registerDoParallel(cluster)
   
-	k_vec_c_list = foreach(i = 1 : n_star) %do% {
+	k_vec_c_list = foreach(i = 1 : n_star) %dopar% {
 	    k_vec = K_vector(new_data[i,], Xs, kernel)
 	    K = kpcr_model_object$kpca_object$K
 	    k_vec_c = center_kernel_test_vec(k_vec, K)

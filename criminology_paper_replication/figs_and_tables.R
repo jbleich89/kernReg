@@ -97,3 +97,47 @@ table(explore_kpclr_obj$y_test, y_hat_rf)
 
 
 
+##### repeat the above for n=250 splits
+half_indices = sample(1 : nrow(X), nrow(X) / 2)
+Xhalf = X[half_indices, ]
+yhalf = y[half_indices]
+explore_kpclr_obj = explore_kpclr_models(Xhalf, yhalf, fp_cost = 2, num_cores = 4)
+
+par(mar = c(4,4,3,2))
+plot(explore_kpclr_obj, tile_cols = 2, ylim = c(1,3), xlim = c(0.6, 1), min_fn_fp_ratio = 1.5, max_fn_fp_ratio = 2.5)
+#pick a model holistically based on many considerations outlined in the paper
+explore_kpclr_obj = set_desired_model(explore_kpclr_obj, winning_kernel_num = 3, winning_rho_num = 10)
+#plot again so the desired model is marked with a blue line
+plot(explore_kpclr_obj, tile_cols = 2, ylim = c(1,3), min_fn_fp_ratio = 1.5, max_fn_fp_ratio = 2.5)
+
+explore_kpclr_obj = eval_winning_lr_model_on_test_data(explore_kpclr_obj, use_validation_data = FALSE)
+conf = explore_kpclr_obj$test_confusion
+conf #rows 1,2 and cols 1,2
+conf[1, 2] / sum(conf[1, ]) #col 3, row 1
+conf[2, 1] / sum(conf[2, ]) #col 3, row 2
+conf[2, 1] / conf[1, 2] #out-of-sample cost ratio (for the text)
+conf[2, 1] / sum(conf[, 1]) #other fraction needed for text 
+
+
+#Let's see how RF compares
+library(randomForest)
+#X_train_and_validate = rbind(explore_kpclr_obj$X_train, explore_kpclr_obj$X_validate)
+#y_train_and_validate = as.factor(c(explore_kpclr_obj$y_train, explore_kpclr_obj$y_validate))
+table(explore_kpclr_obj$y_train)
+#0   1 
+#145 105
+rf_mod = randomForest(explore_kpclr_obj$X_train, 
+		as.factor(explore_kpclr_obj$y_train), 
+		sampsize = c(round(2/3 * sum(explore_kpclr_obj$y_train == 0)), 
+			63)) #the num of 1's was cooked until I got the right cost ratio oob
+rf_mod
+#	0   1    class.error
+#0  118 27   0.1862069
+#1  52  53   0.4952381
+
+y_hat_rf = predict(rf_mod, explore_kpclr_obj$X_test)
+table(explore_kpclr_obj$y_test, y_hat_rf)
+#y_hat_rf
+#    0    1
+#0   108  32
+#1   64   46

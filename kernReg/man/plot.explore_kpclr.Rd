@@ -3,18 +3,21 @@
 \alias{plot.explore_kpclr}
 \title{Explore kpclr plot}
 \usage{
-\method{plot}{explore_kpclr}(explore_kpclr_obj, tile_cols = 3,
+\method{plot}{explore_kpclr}(explore_kpclr_obj, tile_cols = 3, ylim = NULL,
   min_fn_fp_ratio = NULL, max_fn_fp_ratio = NULL,
   quantile_aic_to_display = 0.75, quantile_cwe_to_display = 0.95,
   color_winning_model = "blue", color_num_fn_fp_ratio = "black",
   color_aic = "firebrick3", color_cwe = "forestgreen",
-  show_rho_numbers = TRUE, text_label_offset_pct = 0.1, ...)
+  show_rho_numbers = TRUE, text_label_offset_pct = 0.1,
+  kernels_to_plot = NULL, ...)
 }
 \arguments{
 \item{explore_kpclr_obj}{An object of type \code{explore_kpclr} built with \code{\link{explore_kpclr_models}}}
 
 \item{tile_cols}{When plotting all kernel model performances, how many kernels per plot window column?
 Default is \code{3}.}
+
+\item{ylim}{The \code{ylim} parameter which is passed to the plot function.}
 
 \item{min_fn_fp_ratio}{If specified, plots a horizontal line on the y-axis representing the lower bound of
 the ratio of the number of false negatives to false positives. Defaults to the value set
@@ -43,6 +46,8 @@ truncated? Default is \code{75\%}.}
 \item{show_rho_numbers}{Plot the rho number on each of the exploratory plots. Default is \code{TRUE}.}
 
 \item{text_label_offset_pct}{If the rho numbers are plotted, what percent offset below the points? Default is \code{10\%}.}
+
+\item{kernels_to_plot}{A list of indices of the kernels to plot. If left to the default \code{NULL}, all kernels are plotted.}
 
 \item{...}{Other parameters to pass to plot. Of particular interest is \code{xlim} which will limit
                                         some models from being displayed.}
