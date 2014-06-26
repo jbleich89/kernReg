@@ -68,12 +68,14 @@ kpca_predict_common = function(kpcr_model_object, new_data, X_kernel_dim_red_nam
 	cluster = makeCluster(num_cores)
 	registerDoParallel(cluster)
   
-	k_vec_c_list = foreach(i = 1 : n_star) %dopar% {
+	k_vec_c_list = foreach(i = 1 : n_star) %do% {
 	    k_vec = K_vector(new_data[i,], Xs, kernel)
 	    K = kpcr_model_object$kpca_object$K
 	    k_vec_c = center_kernel_test_vec(k_vec, K)
 	    k_vec_c 
 	}
+  
+  stopCluster(cluster)
   
   	k_vecs_c = t(do.call(rbind, k_vec_c_list)) ##?? 
 
