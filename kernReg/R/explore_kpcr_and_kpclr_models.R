@@ -193,7 +193,7 @@ explore_kpcr_models = function(X, y,
 			mod = kpcr(kpca, y_train, frac_var = rho)
 			mod_aics[k, r] = AIC(mod)
 			#predict the model on validation data
-			y_validate_hat = predict(mod, X_validate)
+			y_validate_hat = predict(mod, X_validate, num_cores = num_cores)
 			#compute and store the out-of-sample SSE
 			sse_validation_results[k, r] = sum((y_validate - y_validate_hat)^2)
 			cat(".")
