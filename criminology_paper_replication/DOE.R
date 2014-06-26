@@ -5,10 +5,8 @@ library(kernReg)
 library(randomForest)
 
 kernel_list = list()
-# kernel_list[[1]] = list(kernel_type = "anova", params = c(.1, 3))
 kernel_list[[1]] = list(kernel_type = "anova", params = c(1, 3))
 kernel_list[[2]] = list(kernel_type = "anova", params = c(10, 3))
-#kernel_list[[3]] = list(kernel_type = "anova", params = c(100, 3))
 
 explore_kpclr_obj = explore_kpclr_models(Xd, y, kernel_list = kernel_list, fn_cost = 5, fp_cost = 1)
 plot(explore_kpclr_obj, quantile_cwe_to_display = 0.99, plot_tile_cols = 2)
