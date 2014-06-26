@@ -69,13 +69,13 @@ kpca_predict_common = function(kpcr_model_object, new_data, X_kernel_dim_red_nam
 	registerDoParallel(cluster)
   
 	k_vec_c_list = foreach(i = 1 : n_star) %dopar% {
-    k_vec = K_vector(new_data[i,], Xs, kernel)
-    K = kpcr_model_object$kpca_object$K
-    k_vec_c = center_kernel_test_vec(k_vec, K)
-    k_vec_c 
+	    k_vec = K_vector(new_data[i,], Xs, kernel)
+	    K = kpcr_model_object$kpca_object$K
+	    k_vec_c = center_kernel_test_vec(k_vec, K)
+	    k_vec_c 
 	}
   
-  k_vecs_c = t(do.call(rbind, k_vec_c_list)) ##?? 
+  	k_vecs_c = t(do.call(rbind, k_vec_c_list)) ##?? 
 
 # 	k_vecs = t(sapply(1 : n_star, function(s) K_vector(new_data[s, ], Xs, kernel)))
 # 	#now we have to center the kernelized new data vectors
@@ -83,7 +83,7 @@ kpca_predict_common = function(kpcr_model_object, new_data, X_kernel_dim_red_nam
 # 	k_vecs_c = sapply(1 : n_star, function(s) center_kernel_test_vec(k_vecs[s, ], K))
 # 	#now we have to take those kernelezied vectors and represent them in the basis of the eigenspace
 	
-  rotated_kvecs = (t(k_vecs_c) %*% kpcr_model_object$kpca_object$keigenvecs)
+  	rotated_kvecs = (t(k_vecs_c) %*% kpcr_model_object$kpca_object$keigenvecs)
 	#now truncate at the dimension we wish to represent them in the lower dimensional space based on the PC's we chose
 	rotated_kvecs = as.matrix(rotated_kvecs[, 1 : kpcr_model_object$num_pcs, drop = FALSE])
 
