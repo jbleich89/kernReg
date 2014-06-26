@@ -9,6 +9,7 @@
 #' @param explore_kpclr_obj 			An object of type \code{explore_kpclr} built with \code{\link{explore_kpclr_models}}
 #' @param tile_cols 					When plotting all kernel model performances, how many kernels per plot window column?
 #' 										Default is \code{3}.
+#' @param ylim							The \code{ylim} parameter which is passed to the plot function.
 #' @param min_fn_fp_ratio				If specified, plots a horizontal line on the y-axis representing the lower bound of
 #' 										the ratio of the number of false negatives to false positives. Defaults to the value set
 #' 										by \code{\link{auto_select_best_kpclr_model}} (if it was run previously). If not, no line
@@ -27,6 +28,7 @@
 #' @param color_cwe 					What color are the cost weighted error lines? Default is greenish.
 #' @param show_rho_numbers 				Plot the rho number on each of the exploratory plots. Default is \code{TRUE}.
 #' @param text_label_offset_pct			If the rho numbers are plotted, what percent offset below the points? Default is \code{10\%}.
+#' @param kernels_to_plot				A list of indices of the kernels to plot. If left to the default \code{NULL}, all kernels are plotted.
 #' @param ... 							Other parameters to pass to plot. Of particular interest is \code{xlim} which will limit
 #' 										some models from being displayed.
 #' 
@@ -35,6 +37,7 @@
 #' @export
 plot.explore_kpclr = function(explore_kpclr_obj,
 		tile_cols = 3, 
+		ylim = NULL,
 		min_fn_fp_ratio = NULL,
 		max_fn_fp_ratio = NULL,
 		quantile_aic_to_display = 0.75, 
@@ -45,6 +48,7 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 		color_cwe = "forestgreen",
 		show_rho_numbers = TRUE,
 		text_label_offset_pct = 0.10,
+		kernels_to_plot = NULL,
 		...){
 	#pull out data for convenience
 	rho_seq = explore_kpclr_obj$rho_seq
@@ -62,22 +66,38 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 	cost_weighted_errors_validation = explore_kpclr_obj$cost_weighted_errors_validation
 	mod_aics = explore_kpclr_obj$mod_aics
 	
+	#if the user doesn't want to look at all the kernels
+	if (is.null(kernels_to_plot)){
+		kernels_to_plot = 1 : num_kernels
+	}
+	
 	#now we're going to plot all fp/fn lines and mark the winning model with a vertical line
 	#set the plotting based on the number of kernels the user wishes to try
-	tile_rows = ceiling(explore_kpclr_obj$num_kernels / tile_cols)	
+	tile_rows = ceiling(length(kernels_to_plot) / tile_cols)	
 	par(mfrow = c(tile_rows, tile_cols))
 	text_label_indices = seq(from = 1, to = length(rho_seq), by = 3)
 	
 	#standardize all plots to have the same axes
-	fn_over_fp_max = 3 * max(desired_fn_fp_ratio, desired_fn_fp_ratio^-1)
-	fn_over_fp_min = min(3 * min(desired_fn_fp_ratio, desired_fn_fp_ratio^-1), fn_over_fp_validation_results, min_fn_fp_ratio)
-	cost_max = max(cost_weighted_errors_validation)
-	ylim = c(fn_over_fp_min, fn_over_fp_max)
-	text_label_offset = text_label_offset_pct * (ylim[2] - ylim[1])
-	cost_weighted_errors_validation_scaled = cost_weighted_errors_validation / quantile(cost_weighted_errors_validation, quantile_cwe_to_display, na.rm = TRUE) * fn_over_fp_max
-	mod_aics_scaled = mod_aics / quantile(mod_aics, quantile_aic_to_display, na.rm = TRUE) * fn_over_fp_max
 	
-	for (k in 1 : num_kernels){
+	#if the user did not specify a ylim, create a sensible default
+	if (is.null(ylim)){
+		y_max_sensible = 3 * max(desired_fn_fp_ratio, desired_fn_fp_ratio^-1)
+		y_min_sensible = min(3 * min(desired_fn_fp_ratio, desired_fn_fp_ratio^-1), fn_over_fp_validation_results, min_fn_fp_ratio)
+		cost_max = max(cost_weighted_errors_validation)
+		ylim = c(y_min_sensible, y_max_sensible)
+	}
+	
+	#how far away from the points should the labels appear?
+	text_label_offset = text_label_offset_pct * (ylim[2] - ylim[1])
+	
+	#scale the other dependent variables which are to be plotted so they appear on the same graph,
+	#these will get their own axes marked on the right
+	cost_weighted_errors_validation_scaled = cost_weighted_errors_validation / quantile(cost_weighted_errors_validation, quantile_cwe_to_display, na.rm = TRUE) * ylim[2]
+	mod_aics_scaled = mod_aics / quantile(mod_aics, quantile_aic_to_display, na.rm = TRUE) * ylim[2]
+	
+
+	
+	for (k in kernels_to_plot){
 		kpca = explore_kpclr_obj$all_kernels[[k]]
 		main = paste("#", k, " ", kernel_description(kpca), sep = "")
 		
@@ -96,8 +116,8 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 		
 		#if the user specified bounds, plot these too
 		if (!is.null(min_fn_fp_ratio) && !is.null(max_fn_fp_ratio)){
-			abline(h = min_fn_fp_ratio, col = rgb(0.95, 0.95, 0.95))
-			abline(h = max_fn_fp_ratio, col = rgb(0.95, 0.95, 0.95))			
+			abline(h = min_fn_fp_ratio, col = rgb(0.90, 0.90, 0.90))
+			abline(h = max_fn_fp_ratio, col = rgb(0.90, 0.90, 0.90))			
 		}
 
 		points(rho_seq, cost_weighted_errors_validation_scaled[k, ], col = "red", type = "o")
@@ -106,10 +126,10 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 			text(rho_seq[text_label_indices], fn_over_fp_validation_results[k, text_label_indices] - text_label_offset, text_label_indices)	
 		}		
 		if (sum(is.na(mod_aics_scaled[k, ])) == length(rho_seq)){
-			axis(4, at = fn_over_fp_max, labels = round(quantile(cost_weighted_errors_validation, quantile_cwe_to_display, na.rm = TRUE)))
+			axis(4, at = ylim[2], labels = round(quantile(cost_weighted_errors_validation, quantile_cwe_to_display, na.rm = TRUE)))
 			
 		} else {
-			axis(4, at = fn_over_fp_max, labels = paste(round(quantile(cost_weighted_errors_validation, quantile_cwe_to_display, na.rm = TRUE)), "/", round(quantile(mod_aics, quantile_aic_to_display, na.rm = TRUE))))
+			axis(4, at = ylim[2], labels = paste(round(quantile(cost_weighted_errors_validation, quantile_cwe_to_display, na.rm = TRUE)), "/", round(quantile(mod_aics, quantile_aic_to_display, na.rm = TRUE))))
 		}
 		
 		if (!is.null(explore_kpclr_obj$winning_kernel_num) && !is.na(explore_kpclr_obj$winning_kernel_num) && k == explore_kpclr_obj$winning_kernel_num){

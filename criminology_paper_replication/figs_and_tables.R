@@ -9,7 +9,7 @@
 
 ##load libraries
 library(kernReg)
-library(randomForest)
+
 ## Section 2
 ##
 
@@ -88,6 +88,7 @@ conf[2, 1] / sum(conf[, 1]) #other fraction needed for text
 
 
 #Let's see how RF compares
+library(randomForest)
 X_train_and_validate = rbind(explore_kpclr_obj$X_train, explore_kpclr_obj$X_validate)
 y_train_and_validate = as.factor(c(explore_kpclr_obj$y_train, explore_kpclr_obj$y_validate))
 rf_mod = randomForest(X_train_and_validate, y_train_and_validate)
