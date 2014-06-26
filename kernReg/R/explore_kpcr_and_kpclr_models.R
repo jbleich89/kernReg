@@ -88,7 +88,7 @@ explore_kpclr_models = function(X, y,
 			mod = kpclr(kpca, y_train, frac_var = rho, weights = weights, family = family)
 			mod_aics[k, r] = AIC(mod)
 			#predict the model on validation data
-			y_validate_hat = predict(mod, obj$X_validate)
+			y_validate_hat = predict(mod, obj$X_validate, num_cores = num_cores)
 			confusion = table(c(obj$y_validate, 0, 1), c(ifelse(y_validate_hat > 0.5, 1, 0), 0, 1)) ###FIX LATER!!!
 			confusion = confusion - diag(2)
 			#for logistic regression, the 0 is a negative and the 1 is a positive
