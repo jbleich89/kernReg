@@ -40,9 +40,9 @@ kernel_list[[11]] = list(kernel_type = "anova", params = c(1000, 3))
 kernel_list[[12]] = list(kernel_type = "anova", params = c(10000, 3))
 
 explore_kpclr_obj = explore_kpclr_models(Xd, y, kernel_list = kernel_list, fn_cost = 5, fp_cost = 1, fn_max_cost = 6, fn_min_cost = 4, fp_max_cost = 1, fp_min_cost = 1)
+windows()
 plot(explore_kpclr_obj, quantile_cwe_to_display = 0.99, plot_tile_cols = 2)
 explore_kpclr_obj = eval_winning_lr_model_on_test_data(explore_kpclr_obj)
-<<<<<<< HEAD
 explore_kpclr_obj$test_confusion
 explore_kpclr_obj$fn_over_fp_validation_results
 
@@ -59,16 +59,17 @@ kpca(k)
 
 Xrf = rbind(explore_kpclr_obj$X_train, explore_kpclr_obj$X_validate)
 yrf= c(explore_kpclr_obj$y_train, explore_kpclr_obj$y_validate)
-table(yrf)
+table(explore_kpclr_obj$y_train)
 
-rf = randomForest(Xrf, as.factor(yrf), sampsize = c(130, 175))
+rf = randomForest(explore_kpclr_obj$X_train, as.factor(explore_kpclr_obj$y_train), sampsize = c(70, 90))
+rf
 prf = predict(rf, explore_kpclr_obj$X_test)
 table(explore_kpclr_obj$y_test, prf)
 260*.67
 
-kpca_obj = build_kpca_object(Xrf, kernel_type = "anova", c(100,3))
-weights = weights_for_kpclr(yrf, fn_to_fp_ratio = 5)
-mod = kpclr(kpca_obj, yrf, frac_var = .825, weights = weights)
+kpca_obj = build_kpca_object(explore_kpclr_obj$X_train, kernel_type = "anova", c(10,3))
+weights = weights_for_kpclr(explore_kpclr_obj$y_train, fn_to_fp_ratio = 5)
+mod = kpclr(kpca_obj, explore_kpclr_obj$y_train, frac_var = .75, weights = weights)
 preds = predict(mod, new_data = explore_kpclr_obj$X_test)
 table(explore_kpclr_obj$y_test, preds > .5)
 
