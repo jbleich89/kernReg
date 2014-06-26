@@ -9,6 +9,14 @@
 #' @param explore_kpclr_obj 			An object of type \code{explore_kpclr} built with \code{\link{explore_kpclr_models}}
 #' @param tile_cols 					When plotting all kernel model performances, how many kernels per plot window column?
 #' 										Default is \code{3}.
+#' @param min_fn_fp_ratio				If specified, plots a horizontal line on the y-axis representing the lower bound of
+#' 										the ratio of the number of false negatives to false positives. Defaults to the value set
+#' 										by \code{\link{auto_select_best_kpclr_model}} (if it was run previously). If not, no line
+#' 										is plotted.
+#' @param max_fn_fp_ratio				If specified, plots a horizontal line on the y-axis representing the upper bound of
+#' 										the ratio of the number of false negatives to false positives. Defaults to the value set
+#' 										by \code{\link{auto_select_best_kpclr_model}} (if it was run previously). If not, no line
+#' 										is plotted.
 #' @param quantile_aic_to_display 		When plotting the AICs for each model, which quantile should be truncated?
 #' 										Default is \code{95\%}.
 #' @param quantile_cwe_to_display 		When plotting the cost-weighted-errors for each model, which quantile should be 
@@ -19,13 +27,16 @@
 #' @param color_cwe 					What color are the cost weighted error lines? Default is greenish.
 #' @param show_rho_numbers 				Plot the rho number on each of the exploratory plots. Default is \code{TRUE}.
 #' @param text_label_offset_pct			If the rho numbers are plotted, what percent offset below the points? Default is \code{10\%}.
-#' @param ... 							Other parameters to pass to plot.
+#' @param ... 							Other parameters to pass to plot. Of particular interest is \code{xlim} which will limit
+#' 										some models from being displayed.
 #' 
 #' @author 								Adam Kapelner and Justin Bleich
 #' @method plot explore_kpclr
 #' @export
 plot.explore_kpclr = function(explore_kpclr_obj,
 		tile_cols = 3, 
+		min_fn_fp_ratio = NULL,
+		max_fn_fp_ratio = NULL,
 		quantile_aic_to_display = 0.75, 
 		quantile_cwe_to_display = 0.95,
 		color_winning_model = "blue",
@@ -37,9 +48,15 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 		...){
 	#pull out data for convenience
 	rho_seq = explore_kpclr_obj$rho_seq
-	desired_fn_fp_ratio = explore_kpclr_obj$fp_cost / explore_kpclr_obj$fn_cost	
-	min_fn_fp_ratio = explore_kpclr_obj$min_fn_fp_ratio
-	max_fn_fp_ratio = explore_kpclr_obj$max_fn_fp_ratio	
+	desired_fn_fp_ratio = explore_kpclr_obj$fp_cost / explore_kpclr_obj$fn_cost
+	
+	if (is.null(min_fn_fp_ratio)){
+		min_fn_fp_ratio = explore_kpclr_obj$min_fn_fp_ratio
+	}
+	if (is.null(max_fn_fp_ratio)){
+		max_fn_fp_ratio = explore_kpclr_obj$max_fn_fp_ratio	
+	}
+		
 	num_kernels = explore_kpclr_obj$num_kernels
 	fn_over_fp_validation_results = explore_kpclr_obj$fn_over_fp_validation_results
 	cost_weighted_errors_validation = explore_kpclr_obj$cost_weighted_errors_validation
@@ -53,7 +70,7 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 	
 	#standardize all plots to have the same axes
 	fn_over_fp_max = 3 * max(desired_fn_fp_ratio, desired_fn_fp_ratio^-1)
-	fn_over_fp_min = min(3 * min(desired_fn_fp_ratio, desired_fn_fp_ratio^-1), fn_over_fp_validation_results)
+	fn_over_fp_min = min(3 * min(desired_fn_fp_ratio, desired_fn_fp_ratio^-1), fn_over_fp_validation_results, min_fn_fp_ratio)
 	cost_max = max(cost_weighted_errors_validation)
 	ylim = c(fn_over_fp_min, fn_over_fp_max)
 	text_label_offset = text_label_offset_pct * (ylim[2] - ylim[1])
@@ -77,7 +94,7 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 		#graph the desired ratio line
 		abline(h = desired_fn_fp_ratio, col = "gray") 
 		
-		#if the user set bounds using the auto-selector, graph these too
+		#if the user specified bounds, plot these too
 		if (!is.null(min_fn_fp_ratio) && !is.null(max_fn_fp_ratio)){
 			abline(h = min_fn_fp_ratio, col = rgb(0.95, 0.95, 0.95))
 			abline(h = max_fn_fp_ratio, col = rgb(0.95, 0.95, 0.95))			

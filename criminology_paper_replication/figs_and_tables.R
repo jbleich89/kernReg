@@ -65,7 +65,7 @@ plot(explore_kpclr_obj, tile_cols = 2)
 #pick a model holistically based on many considerations outlined in the paper
 explore_kpclr_obj = set_desired_model(explore_kpclr_obj, winning_kernel_num = 2, winning_rho_num = 9)
 #plot again so the desired model is marked with a blue line
-plot(explore_kpclr_obj, tile_cols = 2)
+plot(explore_kpclr_obj, tile_cols = 2, min_fn_fp_ratio = 1, max_fn_fp_ratio = 4)
 #not in paper but almost made it: use the auto-selection method (not recommended)
 explore_kpclr_obj = auto_select_best_kpclr_model(explore_kpclr_obj)
 plot(explore_kpclr_obj, tile_cols = 2)
