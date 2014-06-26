@@ -7,9 +7,9 @@
 ##
 ## This script is written by Adam Kapelner and Justin Bleich
 
-##load library
+##load libraries
 library(kernReg)
-
+library(randomForest)
 ## Section 2
 ##
 
@@ -85,4 +85,14 @@ conf[1, 2] / sum(conf[1, ]) #col 3, row 1
 conf[2, 1] / sum(conf[2, ]) #col 3, row 2
 conf[2, 1] / conf[1, 2] #out-of-sample cost ratio (for the text)
 conf[2, 1] / sum(conf[, 1]) #other fraction needed for text 
+
+
+#Let's see how RF compares
+X_train_and_validate = rbind(explore_kpclr_obj$X_train, explore_kpclr_obj$X_validate)
+y_train_and_validate = as.factor(c(explore_kpclr_obj$y_train, explore_kpclr_obj$y_validate))
+rf_mod = randomForest(X_train_and_validate, y_train_and_validate)
+y_hat_rf = predict(rf_mod, explore_kpclr_obj$X_test)
+table(explore_kpclr_obj$y_test, y_hat_rf)
+
+
 
