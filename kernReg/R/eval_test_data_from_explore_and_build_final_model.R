@@ -69,7 +69,12 @@ eval_winning_lr_model_on_test_data = function(explore_kpclr_obj, use_validation_
 #' 									which kernel is selected for the final model and setting \code{winning_rho_num} to 
 #' 									denote which proportion of the variance of the kernel matrix is selected for the 
 #' 									final model.
-#'
+#' @param use_validation_data		Should we use the validation data along with the training data. Default is \code{TRUE}.
+#' 									From our experience, leaving this \code{FALSE} allows models with better out-of-sample
+#' 									error ratios (number of false negatives to false positives or vice versa). The tradeoff
+#' 									is a larger overall misclassification error because the model is build with the sample size
+#' 									of the training data, not the training plus the validation data.
+#' 
 #' @return 							An expanded \code{explore_kpcr} list object with new entries
 #' 									that contain information about the performance of the final model on the
 #' 									test data: \code{L2_err}, the sum of squared error; \code{rmse}, the root 
@@ -78,7 +83,7 @@ eval_winning_lr_model_on_test_data = function(explore_kpclr_obj, use_validation_
 #' @seealso 						\code{\link{explore_kplr_models}}
 #' @author 							Adam Kapelner and Justin Bleich
 #' @export
-eval_winning_r_model_on_test_data = function(explore_kpcr){
+eval_winning_r_model_on_test_data = function(explore_kpcr, use_validation_data = TRUE){
 	#predict the model on training and validation data
 	winning_kernel_info = explore_kpcr$kernel_list[[explore_kpcr$winning_kernel_num]]
 	X_train_and_validate = rbind(explore_kpcr$X_train, explore_kpcr$X_validate)
@@ -87,11 +92,11 @@ eval_winning_r_model_on_test_data = function(explore_kpcr){
 	winning_model = kpcr(kpca, y_train_and_validate, frac_var = explore_kpcr$rho_seq[explore_kpcr$winning_rho_num])
 	y_test_hat = predict(winning_model, explore_kpcr$X_test)
 	#pass back the performance data
-	sse = sum((y_test_hat - exploration_kpclr$y_test)^2)
-	exploration_kpclr[["L2_err"]] = sse
-	exploration_kpclr[["rmse"]] = sqrt(sse / explore_kpcr$n_test)	
-	exploration_kpclr[["L1_err"]] = sum(abs(y_test_hat - explore_kpcr$y_test))
-	exploration_kpclr
+	sse = sum((y_test_hat - explore_kpcr$y_test)^2)
+	explore_kpcr$L2_err = sse
+	explore_kpcr$rmse = sqrt(sse / explore_kpcr$n_test)	
+	explore_kpcr$L1_err = sum(abs(y_test_hat - explore_kpcr$y_test))
+	explore_kpcr
 }
 
 #' Create Final Kernel Model
