@@ -4,8 +4,8 @@
 \title{Explore KPCR for many kernels}
 \usage{
 explore_kpcr_models(X, y, kernel_list = NULL, seed = 0,
-  split_props = c(1/3, 1/3, 1/3), rho_seq = seq(0.05, 0.95, 0.05),
-  num_cores = 1)
+  split_props = c(1/3, 1/3, 1/3), rho_seq = seq(from = 0.3, to = 0.95, by =
+  0.05), num_cores = 1)
 }
 \arguments{
 \item{X}{The data's predictor matrix}
@@ -25,7 +25,8 @@ test data. We default this to 0 but please use your own seeds to avoid seed conf
 proportions are assigned to each set? This must be numeric of size 3 and the numbers
 will be normalized to sum to one. The default split is uniform (1/3, 1/3, 1/3).}
 
-\item{rho_seq}{A collection of proportions of the variance explained of the kernel matrix to use.}
+\item{rho_seq}{A collection of proportions of the variance explained of the kernel matrix to use. The default
+is 30\%, 35\%, ..., 95\%.}
 
 \item{num_cores}{The number of cores to use in parallel during computation.}
 }

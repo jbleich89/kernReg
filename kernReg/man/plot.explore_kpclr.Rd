@@ -3,8 +3,9 @@
 \alias{plot.explore_kpclr}
 \title{Explore kpclr plot}
 \usage{
-\method{plot}{explore_kpclr}(explore_kpclr_obj, plot_tile_cols = 3,
-  quantile_aic_to_display = 0.75, quantile_cwe_to_display = 0.9,
+\method{plot}{explore_kpclr}(explore_kpclr_obj, tile_cols = 3,
+  min_fn_fp_ratio = NULL, max_fn_fp_ratio = NULL,
+  quantile_aic_to_display = 0.75, quantile_cwe_to_display = 0.95,
   color_winning_model = "blue", color_num_fn_fp_ratio = "black",
   color_aic = "firebrick3", color_cwe = "forestgreen",
   show_rho_numbers = TRUE, text_label_offset_pct = 0.1, ...)
@@ -12,11 +13,21 @@
 \arguments{
 \item{explore_kpclr_obj}{An object of type \code{explore_kpclr} built with \code{\link{explore_kpclr_models}}}
 
-\item{plot_tile_cols}{When plotting all kernel model performances, how many kernels per plot window column?
+\item{tile_cols}{When plotting all kernel model performances, how many kernels per plot window column?
 Default is \code{3}.}
 
+\item{min_fn_fp_ratio}{If specified, plots a horizontal line on the y-axis representing the lower bound of
+the ratio of the number of false negatives to false positives. Defaults to the value set
+by \code{\link{auto_select_best_kpclr_model}} (if it was run previously). If not, no line
+is plotted.}
+
+\item{max_fn_fp_ratio}{If specified, plots a horizontal line on the y-axis representing the upper bound of
+the ratio of the number of false negatives to false positives. Defaults to the value set
+by \code{\link{auto_select_best_kpclr_model}} (if it was run previously). If not, no line
+is plotted.}
+
 \item{quantile_aic_to_display}{When plotting the AICs for each model, which quantile should be truncated?
-Default is \code{90\%}.}
+Default is \code{95\%}.}
 
 \item{quantile_cwe_to_display}{When plotting the cost-weighted-errors for each model, which quantile should be
 truncated? Default is \code{75\%}.}
@@ -33,7 +44,8 @@ truncated? Default is \code{75\%}.}
 
 \item{text_label_offset_pct}{If the rho numbers are plotted, what percent offset below the points? Default is \code{10\%}.}
 
-\item{...}{Other parameters to pass to plot.}
+\item{...}{Other parameters to pass to plot. Of particular interest is \code{xlim} which will limit
+                                        some models from being displayed.}
 }
 \description{
 Many kernel principle components logistic regression models were fitted on the training data via

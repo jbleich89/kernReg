@@ -9,6 +9,14 @@
 #' @param explore_kpclr_obj 			An object of type \code{explore_kpclr} built with \code{\link{explore_kpclr_models}}
 #' @param tile_cols 					When plotting all kernel model performances, how many kernels per plot window column?
 #' 										Default is \code{3}.
+#' @param min_fn_fp_ratio				If specified, plots a horizontal line on the y-axis representing the lower bound of
+#' 										the ratio of the number of false negatives to false positives. Defaults to the value set
+#' 										by \code{\link{auto_select_best_kpclr_model}} (if it was run previously). If not, no line
+#' 										is plotted.
+#' @param max_fn_fp_ratio				If specified, plots a horizontal line on the y-axis representing the upper bound of
+#' 										the ratio of the number of false negatives to false positives. Defaults to the value set
+#' 										by \code{\link{auto_select_best_kpclr_model}} (if it was run previously). If not, no line
+#' 										is plotted.
 #' @param quantile_aic_to_display 		When plotting the AICs for each model, which quantile should be truncated?
 #' 										Default is \code{95\%}.
 #' @param quantile_cwe_to_display 		When plotting the cost-weighted-errors for each model, which quantile should be 
@@ -19,13 +27,16 @@
 #' @param color_cwe 					What color are the cost weighted error lines? Default is greenish.
 #' @param show_rho_numbers 				Plot the rho number on each of the exploratory plots. Default is \code{TRUE}.
 #' @param text_label_offset_pct			If the rho numbers are plotted, what percent offset below the points? Default is \code{10\%}.
-#' @param ... 							Other parameters to pass to plot.
+#' @param ... 							Other parameters to pass to plot. Of particular interest is \code{xlim} which will limit
+#' 										some models from being displayed.
 #' 
 #' @author 								Adam Kapelner and Justin Bleich
 #' @method plot explore_kpclr
 #' @export
-plot.explore_kpclr = function(explore_kpclr_obj, 
+plot.explore_kpclr = function(explore_kpclr_obj,
 		tile_cols = 3, 
+		min_fn_fp_ratio = NULL,
+		max_fn_fp_ratio = NULL,
 		quantile_aic_to_display = 0.75, 
 		quantile_cwe_to_display = 0.95,
 		color_winning_model = "blue",
@@ -37,9 +48,15 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 		...){
 	#pull out data for convenience
 	rho_seq = explore_kpclr_obj$rho_seq
-	desired_fn_fp_ratio = explore_kpclr_obj$fp_cost / explore_kpclr_obj$fn_cost	
-	min_fn_fp_ratio = explore_kpclr_obj$min_fn_fp_ratio
-	max_fn_fp_ratio = explore_kpclr_obj$max_fn_fp_ratio	
+	desired_fn_fp_ratio = explore_kpclr_obj$fp_cost / explore_kpclr_obj$fn_cost
+	
+	if (is.null(min_fn_fp_ratio)){
+		min_fn_fp_ratio = explore_kpclr_obj$min_fn_fp_ratio
+	}
+	if (is.null(max_fn_fp_ratio)){
+		max_fn_fp_ratio = explore_kpclr_obj$max_fn_fp_ratio	
+	}
+		
 	num_kernels = explore_kpclr_obj$num_kernels
 	fn_over_fp_validation_results = explore_kpclr_obj$fn_over_fp_validation_results
 	cost_weighted_errors_validation = explore_kpclr_obj$cost_weighted_errors_validation
@@ -53,7 +70,7 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 	
 	#standardize all plots to have the same axes
 	fn_over_fp_max = 3 * max(desired_fn_fp_ratio, desired_fn_fp_ratio^-1)
-	fn_over_fp_min = min(3 * min(desired_fn_fp_ratio, desired_fn_fp_ratio^-1), fn_over_fp_validation_results)
+	fn_over_fp_min = min(3 * min(desired_fn_fp_ratio, desired_fn_fp_ratio^-1), fn_over_fp_validation_results, min_fn_fp_ratio)
 	cost_max = max(cost_weighted_errors_validation)
 	ylim = c(fn_over_fp_min, fn_over_fp_max)
 	text_label_offset = text_label_offset_pct * (ylim[2] - ylim[1])
@@ -71,10 +88,17 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 				ylim = ylim,
 				main = main,
 				col = color_num_fn_fp_ratio,
-				type = "o")
-		abline(h = desired_fn_fp_ratio, col = "gray")  
-		abline(h = min_fn_fp_ratio, col = "lightgray")
-		abline(h = max_fn_fp_ratio, col = "lightgray")
+				type = "o",
+				...)
+		
+		#graph the desired ratio line
+		abline(h = desired_fn_fp_ratio, col = "gray") 
+		
+		#if the user specified bounds, plot these too
+		if (!is.null(min_fn_fp_ratio) && !is.null(max_fn_fp_ratio)){
+			abline(h = min_fn_fp_ratio, col = rgb(0.95, 0.95, 0.95))
+			abline(h = max_fn_fp_ratio, col = rgb(0.95, 0.95, 0.95))			
+		}
 
 		points(rho_seq, cost_weighted_errors_validation_scaled[k, ], col = "red", type = "o")
 		points(rho_seq, mod_aics_scaled[k, ], col = "forestgreen", type = "o")
@@ -88,7 +112,7 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 			axis(4, at = fn_over_fp_max, labels = paste(round(quantile(cost_weighted_errors_validation, quantile_cwe_to_display, na.rm = TRUE)), "/", round(quantile(mod_aics, quantile_aic_to_display, na.rm = TRUE))))
 		}
 		
-		if (!is.na(explore_kpclr_obj$winning_kernel_num) && k == explore_kpclr_obj$winning_kernel_num){
+		if (!is.null(explore_kpclr_obj$winning_kernel_num) && !is.na(explore_kpclr_obj$winning_kernel_num) && k == explore_kpclr_obj$winning_kernel_num){
 			abline(v = rho_seq[explore_kpclr_obj$winning_rho_num], col = "blue", lwd = 3)
 		}
 	}
@@ -119,7 +143,7 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 #' @method plot explore_kpcr
 #' @export
 plot.explore_kpcr = function(explore_kpcr_obj, 
-		tile_cols = 3, 
+		tile_cols = 3,
 		quantile_aic_to_display = 0.75,
 		color_winning_model = "blue",
 		color_sse = "black",
@@ -140,8 +164,7 @@ plot.explore_kpcr = function(explore_kpcr_obj,
 	par(mfrow = c(tile_rows, tile_cols))
 	text_label_indices = seq(from = 1, to = length(rho_seq), by = label_skip)
 	
-	#standardize all plots to have the same axes
-	
+	#standardize all plots to have the same axes	
 	ylim = c(min(sse_validation_results), max(sse_validation_results))
 	text_label_offset = text_label_offset_pct * (ylim[2] - ylim[1])
 	mod_aics_scaled = mod_aics / quantile(mod_aics, quantile_aic_to_display, na.rm = TRUE) * ylim[2]
@@ -164,8 +187,9 @@ plot.explore_kpcr = function(explore_kpcr_obj,
 			text(rho_seq[text_label_indices], sse_validation_results[k, text_label_indices] - text_label_offset, text_label_indices)	
 		}		
 		axis(4, at = ylim[2], labels = paste(round(quantile(mod_aics, quantile_aic_to_display, na.rm = TRUE))))
-		if (!is.na(explore_kpcr_obj$winning_kernel_num) && k == explore_kpcr_obj$winning_kernel_num){
+		if (!is.null(explore_kpcr_obj$winning_kernel_num) && !is.na(explore_kpcr_obj$winning_kernel_num) && k == explore_kpcr_obj$winning_kernel_num){
 			abline(v = rho_seq[explore_kpcr_obj$winning_rho_num], col = "blue", lwd = 3)
 		}
 	}
 }
+

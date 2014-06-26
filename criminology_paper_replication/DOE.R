@@ -1,6 +1,6 @@
 ##DOE Example
 setwd("C:/Users/jbleich/Dropbox/Research_Crim/DOE")
-load("DOE_vars_list_updated.Rdata")
+load("fullDOE.Rdata")
 library(kernReg)
 library(randomForest)
 library(bartMachine)
@@ -42,11 +42,14 @@ kernel_list[[12]] = list(kernel_type = "anova", params = c(10000, 3))
 explore_kpclr_obj = explore_kpclr_models(Xd, y, kernel_list = kernel_list, fn_cost = 5, fp_cost = 1, fn_max_cost = 6, fn_min_cost = 4, fp_max_cost = 1, fp_min_cost = 1)
 plot(explore_kpclr_obj, quantile_cwe_to_display = 0.99, plot_tile_cols = 2)
 explore_kpclr_obj = eval_winning_lr_model_on_test_data(explore_kpclr_obj)
+<<<<<<< HEAD
 explore_kpclr_obj$test_confusion
 explore_kpclr_obj$fn_over_fp_validation_results
 
 
 explore_kpclr_obj$winning_rho_num=3
+explore_kpclr_obj
+
 
 adot = anovadot(10,3)
 k = kernelMatrix(kernel=adot, x=Xd)
