@@ -54,7 +54,7 @@ kernel_list[[24]] = list(kernel_type = "anova", params = c(0.0000001, 3))
 explore_kpclr_obj = explore_kpclr_models(Xd, y, kernel_list = kernel_list, fn_cost = 5, fp_cost = 1)
 #fn_max_cost = 6, fn_min_cost = 4, fp_max_cost = 1, fp_min_cost = 1
 windows()
-plot(explore_kpclr_obj, quantile_cwe_to_display = 0.99, plot_tile_cols = 4)
+plot(explore_kpclr_obj, quantile_cwe_to_display = 0.99, tile_cols = 4, kernels_to_plot = 1 : 12, min_fn_fp_ratio = 1/5.5, max_fn_fp_ratio = 1/4.5)
 explore_kpclr_obj = eval_winning_lr_model_on_test_data(explore_kpclr_obj)
 explore_kpclr_obj$test_confusion
 explore_kpclr_obj$fn_over_fp_validation_results
