@@ -106,7 +106,15 @@ summary.kpcr = function(object, ...){
 #' @method print explore_kpclr
 #' @export
 print.explore_kpclr = function(x, ...){
-	cat("Explore Logistic models ", x$num_kernels, " kernels, rhos = [", paste(x$rho_seq, collapse = ", ", sep = ""), "],\n n_train/n_validate/n_test = ", x$n_train, "/", x$n_validate, "/", x$n_test, ", winning kernel/rho = ", x$winning_kernel_num, "/", x$winning_rho_num, "\n", sep = "")	
+	cat("Explore Logistic models ", x$num_kernels, " kernels, rhos = [", paste(x$rho_seq, collapse = ", ", sep = ""), "],\nn_train/n_validate/n_test = ", x$n_train, "/", x$n_validate, "/", x$n_test, "\n", sep = "")
+	if (!is.null(x$winning_kernel_num)){
+		cat("winning kernel/rho = ", x$winning_kernel_num, "/", x$winning_rho_num, "\n", sep = "")
+	}
+	if (!is.null(x$test_confusion)){
+		cat("out-of-sample performance: confusion table:\n")
+		print(x$test_confusion)
+		cat("weighted cost:", round(x$test_weighted_cost, 2), "\nmisclassification error:", round(x$test_misclassification_error, 3), "\n")
+	}
 }
 
 #' Prints a summary of a explore_kpclr object
@@ -131,7 +139,13 @@ summary.explore_kpclr = function(object, ...){
 #' @method print explore_kpcr
 #' @export
 print.explore_kpcr = function(x, ...){
-	cat("Explore Logistic models ", x$num_kernels, " kernels, rhos = [", paste(x$rho_seq, collapse = ", ", sep = ""), "],\n n_train/n_validate/n_test = ", x$n_train, "/", x$n_validate, "/", x$n_test, ", winning kernel/rho = ", x$winning_kernel_num, "/", x$winning_rho_num, "\n", sep = "")	
+	cat("Explore Regression models ", x$num_kernels, " kernels, rhos = [", paste(x$rho_seq, collapse = ", ", sep = ""), "],\nn_train/n_validate/n_test = ", x$n_train, "/", x$n_validate, "/", x$n_test, "\n", sep = "")
+	if (!is.null(x$winning_kernel_num)){
+		cat("winning kernel/rho = ", x$winning_kernel_num, "/", x$winning_rho_num, "\n", sep = "")
+	}
+	if (!is.null(x$L2_err)){
+		cat("out-of-sample performance: L2_err:", round(x$L2_err, 2), "\nrmse:", round(x$rmse, 3), "\nL1_err:", round(x$L1_err, 3), "\n")
+	}
 }
 
 #' Prints a summary of a explore_kpcr object

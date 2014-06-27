@@ -48,15 +48,21 @@ explore_kpclr_models = function(X, y,
 								num_cores = 1){
 
 	obj = explore_common(X, y, kernel_list, seed, split_props, rho_seq)
+	if (length(names(table(y))) != 2){
+		stop("The response variable must be zeroes and ones and must have examples of each.")
+	}
+	if (names(table(y)) != c(0, 1)){
+		stop("The response variable must be zeroes and ones and must have examples of each.")
+	}
+	
 	rho_seq = obj$rho_seq
 	num_rhos = obj$num_rhos
 	split_props = obj$split_props
 	num_kernels = obj$num_kernels
 	all_kernels = obj$all_kernels
-	y_train = obj$y_train
 	
 	#set up weights
-	weights = weights_for_kpclr(y_train, fn_cost / fp_cost)
+	weights = weights_for_kpclr(obj$y_train, fn_cost / fp_cost)
 	
 	cat("running all models...\n")
 	fn_over_fp_validation_results = matrix(NA, nrow = num_kernels, ncol = num_rhos)
@@ -69,15 +75,6 @@ explore_kpclr_models = function(X, y,
 	rownames(mod_aics) = paste("kernel", 1 : num_kernels)
 	colnames(mod_aics) = rho_seq
 	
-	#will work on windows -- not sure about unix/mac
-#	cluster = makeCluster(num_cores)
-#	registerDoParallel(cluster)	
-	
-#	kernel_results = foreach(k = 1 : num_kernels) %dopar% {
-#		library(kernlab)
-#		library(kernReg)
-#		
-#		iter_list = list()
 	for (k in 1 : num_kernels){
 		kpca = all_kernels[[k]]
 		desc = kernel_description(kpca)
@@ -85,7 +82,7 @@ explore_kpclr_models = function(X, y,
 		for (r in 1 : num_rhos){
 			rho = rho_seq[r]
 			#build model on training data
-			mod = kpclr(kpca, y_train, frac_var = rho, weights = weights, family = family)
+			mod = kpclr(kpca, obj$y_train, frac_var = rho, weights = weights, family = family)
 			mod_aics[k, r] = AIC(mod)
 			#predict the model on validation data
 			y_validate_hat = predict(mod, obj$X_validate, num_cores = num_cores)
@@ -160,6 +157,12 @@ explore_kpcr_models = function(X, y,
 		num_cores = 1){
 	
 	obj = explore_common(X, y, kernel_list, seed, split_props, rho_seq)
+	
+	#make sure the user isn't by accident doing classification in which case they should use the other function
+	if (length(table(y)) == 2){
+		warning("Only two levels detected in response. Are you sure you are not doing classification?\nIf so, please use the \"explore_kpclr_models\" function.")	
+	}
+	
 	rho_seq = obj$rho_seq
 	num_rhos = obj$num_rhos
 	split_props = obj$split_props
@@ -174,15 +177,6 @@ explore_kpcr_models = function(X, y,
 	rownames(mod_aics) = paste("kernel", 1 : num_kernels)
 	colnames(mod_aics) = rho_seq
 	
-	#will work on windows -- not sure about unix/mac
-#	cluster = makeCluster(num_cores)
-#	registerDoParallel(cluster)	
-	
-#	kernel_results = foreach(k = 1 : num_kernels) %dopar% {
-#		library(kernlab)
-#		library(kernReg)
-#		
-#		iter_list = list()
 	for (k in 1 : num_kernels){
 		kpca = all_kernels[[k]]
 		desc = kernel_description(kpca)
@@ -190,12 +184,12 @@ explore_kpcr_models = function(X, y,
 		for (r in 1 : num_rhos){
 			rho = rho_seq[r]
 			#build model on training data
-			mod = kpcr(kpca, y_train, frac_var = rho)
+			mod = kpcr(kpca, obj$y_train, frac_var = rho)
 			mod_aics[k, r] = AIC(mod)
 			#predict the model on validation data
-			y_validate_hat = predict(mod, X_validate, num_cores = num_cores)
+			y_validate_hat = predict(mod, obj$X_validate, num_cores = num_cores)
 			#compute and store the out-of-sample SSE
-			sse_validation_results[k, r] = sum((y_validate - y_validate_hat)^2)
+			sse_validation_results[k, r] = sum((obj$y_validate - y_validate_hat)^2)
 			cat(".")
 #			print(rho)
 #			print(sse_validation_results[k, r])
@@ -232,16 +226,11 @@ explore_common = function(X, y, kernel_list, seed, split_props, rho_seq){
 	
 	n = nrow(X)
 	
-	#check that y is correctly formatted
+	#check that y is sized the same as X
 	if (length(y) != n){
 		stop("The response vector must have the same dimension as the predictor matrix")
 	}
-	if (length(names(table(y))) != 2){
-		stop("The response variable must be zeroes and ones and must have examples of each.")
-	}
-	if (names(table(y)) != c(0, 1)){
-		stop("The response variable must be zeroes and ones and must have examples of each.")
-	}
+
 	
 	#check that split_props is correctly formatted
 	if (length(split_props) != 3){

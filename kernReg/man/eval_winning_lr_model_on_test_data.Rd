@@ -3,14 +3,21 @@
 \alias{eval_winning_lr_model_on_test_data}
 \title{Evaluate Test Data}
 \usage{
-eval_winning_lr_model_on_test_data(explore_kpclr_obj)
+eval_winning_lr_model_on_test_data(explore_kpclr_obj,
+  use_validation_data = TRUE)
 }
 \arguments{
 \item{explore_kpclr_obj}{This object is built from \code{explore_kplcr_models}. We assume the user has updated
-                                    this object with a satisfactory model by settings \code{winning_kernel_num} to denote
-                                    which kernel is selected for the final model and setting \code{winning_rho_num} to
-                                    denote which proportion of the variance of the kernel matrix is selected for the
-                                    final model.}
+this object with a satisfactory model by settings \code{winning_kernel_num} to denote
+which kernel is selected for the final model and setting \code{winning_rho_num} to
+denote which proportion of the variance of the kernel matrix is selected for the
+final model.}
+
+\item{use_validation_data}{Should we use the validation data along with the training data. Default is \code{TRUE}.
+                                    From our experience, leaving this \code{FALSE} allows models with better out-of-sample
+                                    error ratios (number of false negatives to false positives or vice versa). The tradeoff
+                                    is a larger overall misclassification error because the model is build with the sample size
+                                    of the training data, not the training plus the validation data.}
 }
 \value{
 An expanded \code{explore_kpclr} list object with new entries

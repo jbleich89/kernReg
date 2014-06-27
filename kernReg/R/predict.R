@@ -27,6 +27,7 @@ predict.kpcr = function(object, new_data, num_cores = 1, ...){
 #' @param object				The Kernel PCA logistic model used to predict 
 #' @param new_data 				The new data the user wishes to predict
 #' @param type 					Which output to return to the user. Use "response" for predicted probability and "link" for a logit (see \code{predict.glm} for more information)
+#' @param num_cores   			Number of cores for parallel prediction
 #' @param ...					Other parameters to be passed to \code{predict.glm}
 #' @return						A vector of predictions with lenth of the number of rows of \code{new_data} generated via \code{predict.glm}
 #' 
@@ -49,7 +50,7 @@ predict.kpclr = function(object, new_data, type = "response", num_cores = 1, ...
 # @param kpcr_model_object		The Kernel PCA logistic model used to predict 
 # @param new_data 				The new data the user wishes to predict
 # @param type 					Which output to return to the user. Use "response" for predicted probability and "link" for a logit (see \code{predict.glm} for more information)
-# @param num_cores   		Number of cores for parallel prediction
+# @param num_cores   			Number of cores for parallel prediction
 # @param ...					Other parameters to be passed to \code{predict.lm} or \code{predict.glm}
 # @return						A vector of predictions with lenth of the number of rows of \code{new_data} generated via \code{predict.lm} or \code{predict.glm}
 # 
