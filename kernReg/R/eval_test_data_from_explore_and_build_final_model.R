@@ -26,8 +26,27 @@
 #' 									the cost of the errors made as defined by the \code{fn_cost} and \code{fp_cost}
 #' 									specified by the user when constructing the model via \code{explore_kplcr_models}.
 #' 
-#' @seealso 						code{explore_kplcr_models}
+#' @seealso 						\code{\link{explore_kpclr_models}}
 #' @author 							Adam Kapelner and Justin Bleich
+#' @examples
+#' \dontrun{
+#' #first create binary classification data
+#' X = matrix(rnorm(300), ncol = 4)
+#' y = rbinom(300, 1, 0.5) 
+#' #now explore kernel models using the default kernel list and misclassification costs
+#' explore_kpclr_obj = explore_kpclr_models(X, y)
+#' #now we plot to see how the models built on the training data performed on the validation data
+#' plot(explore_kpclr_obj)
+#' #suppose we choose the 2nd kernel and the 10th rho
+#' explore_kpclr_obj = set_desired_model(explore_kpclr_obj, 2, 10)
+#' #we can re-plot to ensure the chosen model is properly marked with a vertical line
+#' plot(explore_kpclr_obj)
+#' #now we build this model using the training and validation data and assess
+#' #out-of-sample performance by predicting on the test data
+#' explore_kpclr_obj = eval_winning_lr_model_on_test_data(explore_kpclr_obj)
+#' #show results to console
+#' explore_kpclr_obj
+#' }
 #' @export
 eval_winning_lr_model_on_test_data = function(explore_kpclr_obj, use_validation_data = TRUE){
 	#predict the model on test data and build a confusion matrix
@@ -80,8 +99,28 @@ eval_winning_lr_model_on_test_data = function(explore_kpclr_obj, use_validation_
 #' 									test data: \code{L2_err}, the sum of squared error; \code{rmse}, the root 
 #' 									mean squared error and \code{L1_err}, the sum of absolute error.
 #' 
-#' @seealso 						\code{\link{explore_kplr_models}}
+#' @seealso 						\code{\link{explore_kpcr_models}}
 #' @author 							Adam Kapelner and Justin Bleich
+#' 
+#' @examples
+#' \dontrun{
+#' #first create regression data
+#' X = matrix(rnorm(300), ncol = 4)
+#' y = rnorm(300)
+#' #now explore kernel models using the default kernel list
+#' explore_kpcr_obj = explore_kpcr_models(X, y)
+#' #now we plot to see how the models built on the training data performed on the validation data
+#' plot(explore_kpcr_obj)
+#' #suppose we choose the 2nd kernel and the 10th rho
+#' explore_kpcr_obj = set_desired_model(explore_kpcr_obj, 2, 10)
+#' #we can re-plot to ensure the chosen model is properly marked with a vertical line
+#' plot(explore_kpcr_obj)
+#' #now we build this model using the training and validation data and assess
+#' #out-of-sample performance by predicting on the test data
+#' explore_kpcr_obj = eval_winning_r_model_on_test_data(explore_kpcr_obj)
+#' #show results to console
+#' explore_kpcr_obj
+#' }
 #' @export
 eval_winning_r_model_on_test_data = function(explore_kpcr, use_validation_data = TRUE){
 	#predict the model on training and validation data
@@ -101,8 +140,8 @@ eval_winning_r_model_on_test_data = function(explore_kpcr, use_validation_data =
 
 #' Create Final Kernel Model
 #' 
-#' Once the user has finished exploring different kernel regressions via \code{\link{explore_kplcr_models}} or
-#' \code{\link{explore_kplr_models}} and has estimated future performance on the test data via 
+#' Once the user has finished exploring different kernel regressions via \code{\link{explore_kpclr_models}} or
+#' \code{\link{explore_kpcr_models}} and has estimated future performance on the test data via 
 #' \code{\link{eval_winning_r_model_on_test_data}} or \code{\link{eval_winning_lr_model_on_test_data}},
 #' we now build the final kernel model using all the data from \code{X}, \code{y}.
 #' 
@@ -111,6 +150,29 @@ eval_winning_r_model_on_test_data = function(explore_kpcr, use_validation_data =
 #' 									\code{winning_rho_num} housed in the explore object.
 #' 
 #' @author 							Adam Kapelner and Justin Bleich
+#' 
+#' @examples
+#' \dontrun{
+#' #This example is for regression, but it works the same for logistic regression.
+#' #first create regression data
+#' X = matrix(rnorm(300), ncol = 4)
+#' y = rbinom(300, 1, 0.5) 
+#' #now explore kernel models using the default kernel list and misclassification costs
+#' explore_kpcr_obj = explore_kpclr_models(X, y)
+#' #now we plot to see how the models built on the training data performed on the validation data
+#' plot(explore_kpcr_obj)
+#' #suppose we choose the 2nd kernel and the 10th rho
+#' explore_kpcr_obj = set_desired_model(explore_kpcr_obj, 2, 10)
+#' #now we build this model using the training and validation data and assess
+#' #out-of-sample performance by predicting on the test data
+#' explore_kpcr_obj = eval_winning_lr_model_on_test_data(explore_kpcr_obj)
+#' #show results to console
+#' explore_kpcr_obj
+#' #we build a model using all the data in [X, y] to provide to the user who will use 
+#' #it to predict on future cases. This model should perform slightly better than the 
+#' #out-of-sample test split prediction results printed to console above
+#' model_for_future_prediction = build_final_kpclr_or_kpcr_model(explore_kpcr_obj)
+#' }
 #' @export
 build_final_kpclr_or_kpcr_model = function(explore_kpclr_or_kpcr){
 	#pull out the winning kernel and rebuild this kernel on both the training and validation data

@@ -13,10 +13,33 @@ The model corresponding to the \code{winning_kernel_num} and the
 									\code{winning_rho_num} housed in the explore object.
 }
 \description{
-Once the user has finished exploring different kernel regressions via \code{\link{explore_kplcr_models}} or
-\code{\link{explore_kplr_models}} and has estimated future performance on the test data via
+Once the user has finished exploring different kernel regressions via \code{\link{explore_kpclr_models}} or
+\code{\link{explore_kpcr_models}} and has estimated future performance on the test data via
 \code{\link{eval_winning_r_model_on_test_data}} or \code{\link{eval_winning_lr_model_on_test_data}},
 we now build the final kernel model using all the data from \code{X}, \code{y}.
+}
+\examples{
+\dontrun{
+#This example is for regression, but it works the same for logistic regression.
+#first create regression data
+X = matrix(rnorm(300), ncol = 4)
+y = rbinom(300, 1, 0.5)
+#now explore kernel models using the default kernel list and misclassification costs
+explore_kpcr_obj = explore_kpclr_models(X, y)
+#now we plot to see how the models built on the training data performed on the validation data
+plot(explore_kpcr_obj)
+#suppose we choose the 2nd kernel and the 10th rho
+explore_kpcr_obj = set_desired_model(explore_kpcr_obj, 2, 10)
+#now we build this model using the training and validation data and assess
+#out-of-sample performance by predicting on the test data
+explore_kpcr_obj = eval_winning_lr_model_on_test_data(explore_kpcr_obj)
+#show results to console
+explore_kpcr_obj
+#we build a model using all the data in [X, y] to provide to the user who will use
+#it to predict on future cases. This model should perform slightly better than the
+#out-of-sample test split prediction results printed to console above
+model_for_future_prediction = build_final_kpclr_or_kpcr_model(explore_kpcr_obj)
+}
 }
 \author{
 Adam Kapelner and Justin Bleich

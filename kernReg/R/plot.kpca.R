@@ -1,5 +1,20 @@
 #' Plots the kernel matrix
 #' 
+#' This is an S3 convenience method for the function \code{\link{plot_kpca}}. 
+#' Please follow the link for the full documentation.
+#' 
+#' @param x 			The kpca object to plot
+#' @param ...			Other parameters to pass to \code{\link{plot_kpca}}.	 
+#' 
+#' @author 				Adam Kapelner and Justin Bleich
+#' @method plot kpca
+#' @export
+plot.kpca = function(x, ...){
+	plot_kpca(x, ...)
+}
+
+#' Plots the kernel matrix
+#' 
 #' Illustrates the kernel matrix as a heatmap. 
 #' 
 #' @param kpca_object 					The kpca object to plot
@@ -19,9 +34,16 @@
 #' 										the radial basis kernel with different gamma values).
 #' 
 #' @author 								Adam Kapelner and Justin Bleich
-#' @method plot kpca
+#' @examples 
+#' #create a random predictor matrix with four predictors
+#' X = matrix(rnorm(100), ncol = 4)
+#' #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3 
+#' kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
+#' #visualize the kernel
+#' plot_kpca(kpca_obj) #"plot(kpca_obj)" also works and is recommended
+#' 
 #' @export
-plot.kpca = function(kpca_object, lower_triangular = TRUE, transform = NULL, col.regions = rainbow(200, end = 0.78), main = NULL, ...){
+plot_kpca = function(kpca_object, lower_triangular = TRUE, transform = NULL, col.regions = rainbow(200, end = 0.78), main = NULL, ...){
 	n = kpca_object$n
 	mat = as.matrix(kpca_object$K[1 : n, 1 : n]) #the kernelMatrix class is resistant to be cast as a native matrix, this is the only way I could figure out how to do it
 	colnames(mat) = NULL

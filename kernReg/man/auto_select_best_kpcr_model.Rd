@@ -13,7 +13,23 @@ An object of type \code{explore_kpcr} with information regarding the auto-
 								selected model.
 }
 \description{
-Selects the best KPCR model based on finding the minimum sum of squared error on the validation data.
+Selects the best KPCR model based on finding the minimum sum of squared error on the validation data. The
+model can always be hand-selected using \code{\link{set_desired_model}}.
+}
+\examples{
+\dontrun{
+#first create data
+X = matrix(rnorm(300), ncol = 4)
+y = rnorm(300)
+#now explore kernel models using the default kernel list
+explore_kpcr_obj = explore_kpcr_models(X, y)
+#now we plot to see how the models built on the training data performed on the validation data
+plot(explore_kpcr_obj)
+#we are comfortable with allowing the computer to decide which model is best based on lowest SSE
+explore_kpcr_obj = auto_select_best_kpcr_model(explore_kpcr_obj)
+#re-plotting shows a blue line indicating the favored model
+plot(explore_kpcr_obj)
+}
 }
 \author{
 Adam Kapelner and Justin Bleich

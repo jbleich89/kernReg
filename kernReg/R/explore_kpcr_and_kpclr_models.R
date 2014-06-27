@@ -146,7 +146,7 @@ explore_kpclr_models = function(X, y,
 #' @return 					An object of class \code{explore_kplcr} which is a list housing the results of the procedure.
 #' 
 #' @author 					Justin Bleich and Adam Kapelner
-#' @seealso 				\code{\link{kpclr}}
+#' @seealso 				\code{\link{kpcr}}
 #' @references 				Berk, R., Bleich, J., Kapelner, A., Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 #' @export
 explore_kpcr_models = function(X, y, 

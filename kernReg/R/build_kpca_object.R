@@ -17,8 +17,17 @@ MIN_POSITIVE_EIGENVALUE = 1e-4
 #' @return 				A list composed of the original data, the kernel, the K matrix, the centered K matrix, the non-zero eigenvalues and eigenvectors of K and K in the eigenbasis	
 #' 
 #' @author 				Justin Bleich and Adam Kapelner
-#' @seealso 			See \code{\link[kernlab]{dots}} for more information.
+#' @seealso 			\code{\link[kernlab]{dots}}
 #' @references 			Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
+#' 
+#' @examples 
+#' #create a random predictor matrix with four predictors
+#' X = matrix(rnorm(100), ncol = 4)
+#' #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3 
+#' kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
+#' #display some information to the console
+#' kpca_obj
+#' 
 #' @export
 build_kpca_object = function(X, kernel_type, params = c()){
 	checkObjectType(X, "X", "matrix")

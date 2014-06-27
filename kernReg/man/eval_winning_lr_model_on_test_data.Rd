@@ -36,10 +36,30 @@ Warning: once this is done, you cannot "go back" and "try" to assess performance
 would then be snooping. Run this function when you are ready to close the books on this data set and never
 look back.
 }
+\examples{
+\dontrun{
+#first create binary classification data
+X = matrix(rnorm(300), ncol = 4)
+y = rbinom(300, 1, 0.5)
+#now explore kernel models using the default kernel list and misclassification costs
+explore_kpclr_obj = explore_kpclr_models(X, y)
+#now we plot to see how the models built on the training data performed on the validation data
+plot(explore_kpclr_obj)
+#suppose we choose the 2nd kernel and the 10th rho
+explore_kpclr_obj = set_desired_model(explore_kpclr_obj, 2, 10)
+#we can re-plot to ensure the chosen model is properly marked with a vertical line
+plot(explore_kpclr_obj)
+#now we build this model using the training and validation data and assess
+#out-of-sample performance by predicting on the test data
+explore_kpclr_obj = eval_winning_lr_model_on_test_data(explore_kpclr_obj)
+#show results to console
+explore_kpclr_obj
+}
+}
 \author{
 Adam Kapelner and Justin Bleich
 }
 \seealso{
-code{explore_kplcr_models}
+\code{\link{explore_kpclr_models}}
 }
 

@@ -19,6 +19,11 @@ for each observation in the training data based on two things (1) the
 ratio of 1's and 0's in the training set and (2) the user-set false-negative
 to false-positive ratio.
 }
+\examples{
+y_train = c(rep(0, 100), rep(1, 200))
+weights = weights_for_kpclr(y_train)
+table(weights)
+}
 \author{
 Justin Bleich and Adam Kapelner
 }

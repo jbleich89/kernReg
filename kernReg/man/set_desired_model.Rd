@@ -25,6 +25,23 @@ object returned by the \code{\link{explore_kpclr_models}} or \code{\link{explore
 wishes to reset the desired model, run this function with \code{NULL} for the arguments \code{winning_kernel_num} and
 \code{winning_rho_num}.
 }
+\examples{
+\dontrun{
+#Note this is example is for classification, but it works the same for regression
+#first create classification data
+X = matrix(rnorm(300), ncol = 4)
+y = rbinom(300, 1, 0.5)
+#now explore kernel models using the default kernel list
+explore_kpclr_obj = explore_kpclr_models(X, y)
+#now we plot to see how the models built on the training data performed on the validation data
+plot(explore_kpclr_obj)
+#we believe that the third kernel and the 9th value of rho is the "best" model
+explore_kpclr_obj = set_desired_model(explore_kpclr_obj,
+						winning_kernel_num = 3, winning_rho_num = 9)
+#re-plotting shows a blue line indicating the model we just set
+plot(explore_kpclr_obj)
+}
+}
 \author{
 Adam Kapelner and Justin Bleich
 }

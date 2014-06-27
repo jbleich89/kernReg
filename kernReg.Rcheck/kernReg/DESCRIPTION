@@ -1,0 +1,12 @@
+Package: kernReg
+Type: Package
+Title: Linear Principal Components Kernel Regression Methods
+Version: 1.0
+Date: 2014-6-8
+Author: Justin Bleich, Adam Kapelner
+Maintainer: Justin Bleich <jbleich@wharton.upenn.edu>
+Description: A tool to select and run kernel PCA linear models for regression
+    and classification
+License: MIT + file LICENSE
+Depends: R (>= 3.0), lattice, kernlab, ICEbox, doParallel
+Built: R 3.1.0; ; 2014-06-27 04:16:24 UTC; windows

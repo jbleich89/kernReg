@@ -31,10 +31,30 @@ Warning: once this is done, you cannot "go back" and "try" to assess performance
 would then be snooping. Run this function when you are ready to close the books on this data set and never
 look back.
 }
+\examples{
+\dontrun{
+#first create regression data
+X = matrix(rnorm(300), ncol = 4)
+y = rnorm(300)
+#now explore kernel models using the default kernel list
+explore_kpcr_obj = explore_kpcr_models(X, y)
+#now we plot to see how the models built on the training data performed on the validation data
+plot(explore_kpcr_obj)
+#suppose we choose the 2nd kernel and the 10th rho
+explore_kpcr_obj = set_desired_model(explore_kpcr_obj, 2, 10)
+#we can re-plot to ensure the chosen model is properly marked with a vertical line
+plot(explore_kpcr_obj)
+#now we build this model using the training and validation data and assess
+#out-of-sample performance by predicting on the test data
+explore_kpcr_obj = eval_winning_r_model_on_test_data(explore_kpcr_obj)
+#show results to console
+explore_kpcr_obj
+}
+}
 \author{
 Adam Kapelner and Justin Bleich
 }
 \seealso{
-\code{\link{explore_kplr_models}}
+\code{\link{explore_kpcr_models}}
 }
 

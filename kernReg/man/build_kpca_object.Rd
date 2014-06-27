@@ -22,6 +22,14 @@ Based on the original design matrix (the "data"), build an object which houses i
 the data in a transformed / kernelized space based on a kernel of the user's choice. This function
 will standardize (i.e. center and scale) each predictor column.
 }
+\examples{
+#create a random predictor matrix with four predictors
+X = matrix(rnorm(100), ncol = 4)
+#build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3
+kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
+#display some information to the console
+kpca_obj
+}
 \author{
 Justin Bleich and Adam Kapelner
 }
@@ -29,6 +37,6 @@ Justin Bleich and Adam Kapelner
 Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 }
 \seealso{
-See \code{\link[kernlab]{dots}} for more information.
+\code{\link[kernlab]{dots}}
 }
 

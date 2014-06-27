@@ -6,9 +6,8 @@ y = Boston$medv
 Boston$medv = NULL
 X = as.matrix(Boston)
 
-explore_kpcr_obj = explore_kpcr_models(X, y)
-
-plot(explore_kpcr_obj, tile_cols = 4)
+explore_kpcr_obj = explore_kpcr_models(X, y, num_cores = 6)
+plot(explore_kpcr_obj, tile_cols = 2)
 
 #we now let the automatic selector try to find a good kernel
 explore_kpcr_obj = auto_select_best_kpcr_model(explore_kpcr_obj)

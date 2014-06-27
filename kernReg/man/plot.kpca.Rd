@@ -3,33 +3,16 @@
 \alias{plot.kpca}
 \title{Plots the kernel matrix}
 \usage{
-\method{plot}{kpca}(kpca_object, lower_triangular = TRUE, transform = NULL,
-  col.regions = rainbow(200, end = 0.78), main = NULL, ...)
+\method{plot}{kpca}(x, ...)
 }
 \arguments{
-\item{kpca_object}{The kpca object to plot}
+\item{x}{The kpca object to plot}
 
-\item{lower_triangular}{If the kernel is symmetric (the usual case), setting this to \code{TRUE}
-will only plot the lower triangle. Default is \code{TRUE}.}
-
-\item{col.regions}{How to color the heatmap. The default is color but if you would like to produce a
-grayscale images for publication, you can use something like \code{gray(100 : 0 / 100)}.}
-
-\item{transform}{An optional function to transform the entries of \code{K}.}
-
-\item{main}{Title of the plot. Default is the description of the kernel.}
-
-\item{...}{Other parameters to pass to levelplot.
-                                        Especially useful are \code{xlim} and \code{ylim} to look at a portion
-                                        of the matrix. Also, use the \code{at} to mimic limits
-                                        on the magnitudes of the entries of K. For instance \code{seq(1000, 2000, by = 20)}
-                                        will only graph entries between 1,000 and 2,000. Do not change the "by" parameter here,
-                                        20 seems to be a good choice. Standardize the \code{at} parameter allows better
-                                        apples : apples comparisons across the same kernel with different hyperparameters (e.g.
-                                        the radial basis kernel with different gamma values).}
+\item{...}{Other parameters to pass to \code{\link{plot_kpca}}.}
 }
 \description{
-Illustrates the kernel matrix as a heatmap.
+This is an S3 convenience method for the function \code{\link{plot_kpca}}.
+Please follow the link for the full documentation.
 }
 \author{
 Adam Kapelner and Justin Bleich

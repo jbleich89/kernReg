@@ -1,5 +1,20 @@
 #' Explore kpclr plot
 #' 
+#' This is an S3 convenience method for the function \code{\link{plot_explore_kpclr}}. 
+#' Please follow the link for the full documentation.
+#' 
+#' @param x 					The \code{explore_kpclr} object to plot
+#' @param ...					Other parameters to pass to \code{\link{plot_explore_kpclr}}.
+#' 
+#' @author 						Adam Kapelner and Justin Bleich
+#' @method plot explore_kpclr
+#' @export
+plot.explore_kpclr = function(x, ...){
+	plot_explore_kpclr(x, ...)
+}
+
+#' Explore kpclr plot
+#' 
 #' Many kernel principle components logistic regression models were fitted on the training data via 
 #' \code{\link{explore_kpclr_models}}. This function will create one plot for each of the kernel models investigated.
 #' At every value of rho (the proportion of variance of the kernel matrix explained), the following three things 
@@ -33,9 +48,8 @@
 #' 										some models from being displayed.
 #' 
 #' @author 								Adam Kapelner and Justin Bleich
-#' @method plot explore_kpclr
 #' @export
-plot.explore_kpclr = function(explore_kpclr_obj,
+plot_explore_kpclr = function(explore_kpclr_obj,
 		tile_cols = 3, 
 		ylim = NULL,
 		min_fn_fp_ratio = NULL,
@@ -138,8 +152,23 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 	}
 }
 
+#' Explore KPCR plot
+#' 
+#' This is an S3 convenience method for the function \code{\link{plot_explore_kpcr}}. 
+#' Please follow the link for the full documentation.
+#' 
+#' @param x 					The \code{explore_kpcr} object to plot
+#' @param ...					Other parameters to pass to \code{\link{plot_explore_kpcr}}.
+#' 
+#' @author 						Adam Kapelner and Justin Bleich
+#' @method plot explore_kpcr
+#' @export
+plot.explore_kpcr = function(x, ...){
+	plot_explore_kpcr(x, ...)
+}
 
-#' Explore kpcr plot
+
+#' Explore KPCR plot
 #' 
 #' Many kernel principle components logistic regression models were fitted on the training data via 
 #' \code{\link{explore_kpcr_models}}. This function will create one plot for each of the kernel models investigated.
@@ -160,9 +189,8 @@ plot.explore_kpclr = function(explore_kpclr_obj,
 #' @param ... 							Other parameters to pass to plot.
 #' 
 #' @author 								Adam Kapelner and Justin Bleich
-#' @method plot explore_kpcr
 #' @export
-plot.explore_kpcr = function(explore_kpcr_obj, 
+plot_explore_kpcr = function(explore_kpcr_obj, 
 		tile_cols = 3,
 		quantile_aic_to_display = 0.75,
 		color_winning_model = "blue",

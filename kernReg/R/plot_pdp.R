@@ -15,7 +15,7 @@
 #' @references 				Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 #' @export
 plot_pdp = function(kpca_model, predictor, type = "link", frac_to_build = 1, ...){
-	checkObjectType(kpca_model, "kpca_model", "kpcr", c("kpcr", "kpclr"))
+	checkObjectType(kpca_model, "kpca_model", c("kpcr", "kpclr"), c("kpcr", "kpclr"))
 	
 	kernel_pca_model_ice = ice(kpca_model, kpca_model$kpca_object$Xs, predictor = predictor, 
 			predictfcn = function(object, newdata){predict(object, newdata, type = type)},

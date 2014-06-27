@@ -10,20 +10,6 @@ print.kpca = function(x, ...){
 	cat("Kernel PCA: ", x$n," x ", x$n, " matrix built with the ", kernel_description(x), "\n", sep = "")
 }
 
-#private method which generates a description of this kernel as a string
-kernel_description = function(kpca_object){
-	kernel_name = gsub("kernel", "", class(kpca_object$kernel)[1])
-	parameters = names(kpar(kpca_object$kernel))
-	vals = paste(kpar(kpca_object$kernel))
-	
-	if (is.null(parameters)){
-		paste("\"", kernel_name, "\" kernel\n(no params)", sep = "")
-	} else {
-		paste("\"", kernel_name, "\" kernel w/params\n", 
-			paste(parameters, vals, sep = " = ", collapse = ", "), sep = "")		
-	}
-}
-
 #' Prints a summary of a kpca object
 #' 
 #' @param object		The kpca object to be summarized in the console
@@ -158,4 +144,19 @@ print.explore_kpcr = function(x, ...){
 #' @export
 summary.explore_kpcr = function(object, ...){
 	print(object, ...)
+}
+
+
+#private method which generates a description of this kernel as a string
+kernel_description = function(kpca_object){
+	kernel_name = gsub("kernel", "", class(kpca_object$kernel)[1])
+	parameters = names(kpar(kpca_object$kernel))
+	vals = paste(kpar(kpca_object$kernel))
+	
+	if (is.null(parameters)){
+		paste("\"", kernel_name, "\" kernel\n(no params)", sep = "")
+	} else {
+		paste("\"", kernel_name, "\" kernel w/params\n", 
+				paste(parameters, vals, sep = " = ", collapse = ", "), sep = "")		
+	}
 }

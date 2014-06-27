@@ -7,7 +7,7 @@ auto_select_best_kpclr_model(explore_kpclr_obj, fp_max_cost = NULL,
   fn_min_cost = NULL, fp_min_cost = NULL, fn_max_cost = NULL)
 }
 \arguments{
-\item{explore_kpcr_obj}{An object of type \code{explore_kpclr}.}
+\item{explore_kpclr_obj}{An object of type \code{explore_kpclr}.}
 
 \item{fp_max_cost}{The maximum cost of a false positve. Together with \code{fn_min_cost}, this will inform
 the algorithm of the maximum cost ratio of fp:fn. If left to the default \code{NULL}, the maximum
@@ -32,7 +32,23 @@ An object of type \code{explore_kpclr} with information regarding the auto-
 \description{
 Selects the best KPCLR model based based on finding the minimum cost-weighted error model that has a fn:fp ratio
 within the bounds defined by \code{fp_max_cost}, \code{fn_min_cost}, \code{fp_min_cost}
-and \code{fn_max_cost}.
+and \code{fn_max_cost}.  The model can always be hand-selected using \code{\link{set_desired_model}}.
+}
+\examples{
+\dontrun{
+#first create classification data
+X = matrix(rnorm(300), ncol = 4)
+y = rbinom(300, 1, 0.5)
+#now explore kernel models using the default kernel list
+explore_kpclr_obj = explore_kpclr_models(X, y)
+#now we plot to see how the models built on the training data performed on the validation data
+plot(explore_kpclr_obj)
+#we are comfortable with allowing the computer to decide which model is best based on
+#the minimum cost-weighted error model which falls wthin a default range of the error ratio.
+explore_kpclr_obj = auto_select_best_kpclr_model(explore_kpclr_obj)
+#re-plotting shows a blue line indicating the favored model
+plot(explore_kpclr_obj)
+}
 }
 \author{
 Adam Kapelner and Justin Bleich

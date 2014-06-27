@@ -10,7 +10,7 @@
 #' @return 					An lm object with the kpca_object embedded as well as the number of principal components used
 #' 
 #' @author 					Justin Bleich and Adam Kapelner
-#' @seealso 				\code{\link{kpca_logistic_regression}}
+#' @seealso 				\code{\link{kpclr}}
 #' @references 				Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 #' @export
 kpcr = function(kpca_object, y, num_pcs = NULL, frac_var = NULL){

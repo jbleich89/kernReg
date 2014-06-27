@@ -33,6 +33,6 @@ Justin Bleich and Adam Kapelner
 Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 }
 \seealso{
-\code{\link{kpca_regression}}
+\code{\link{kpcr}}
 }
 

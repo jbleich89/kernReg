@@ -1,12 +1,28 @@
 #' Auto-Select Best KPCR Model
 #' 
-#' Selects the best KPCR model based on finding the minimum sum of squared error on the validation data.
+#' Selects the best KPCR model based on finding the minimum sum of squared error on the validation data. The 
+#' model can always be hand-selected using \code{\link{set_desired_model}}.
 #' 
 #' @param explore_kpcr_obj 		An object of type \code{explore_kpcr}.
 #' @return 						An object of type \code{explore_kpcr} with information regarding the auto-
 #' 								selected model.
 #' 
 #' @author 						Adam Kapelner and Justin Bleich
+#' 
+#' @examples
+#' \dontrun{
+#' #first create data
+#' X = matrix(rnorm(300), ncol = 4)
+#' y = rnorm(300)
+#' #now explore kernel models using the default kernel list
+#' explore_kpcr_obj = explore_kpcr_models(X, y)
+#' #now we plot to see how the models built on the training data performed on the validation data
+#' plot(explore_kpcr_obj)
+#' #we are comfortable with allowing the computer to decide which model is best based on lowest SSE
+#' explore_kpcr_obj = auto_select_best_kpcr_model(explore_kpcr_obj)
+#' #re-plotting shows a blue line indicating the favored model
+#' plot(explore_kpcr_obj)
+#' }
 #' @export
 auto_select_best_kpcr_model = function(explore_kpcr_obj){
 	winning = which(explore_kpcr_obj$sse_validation_results == min(explore_kpcr_obj$sse_validation_results), arr.ind = TRUE)
@@ -20,9 +36,9 @@ auto_select_best_kpcr_model = function(explore_kpcr_obj){
 #' 
 #' Selects the best KPCLR model based based on finding the minimum cost-weighted error model that has a fn:fp ratio
 #' within the bounds defined by \code{fp_max_cost}, \code{fn_min_cost}, \code{fp_min_cost} 
-#' and \code{fn_max_cost}.
+#' and \code{fn_max_cost}.  The model can always be hand-selected using \code{\link{set_desired_model}}.
 #' 
-#' @param explore_kpcr_obj 		An object of type \code{explore_kpclr}.
+#' @param explore_kpclr_obj		An object of type \code{explore_kpclr}.
 #' @param fp_max_cost			The maximum cost of a false positve. Together with \code{fn_min_cost}, this will inform
 #' 								the algorithm of the maximum cost ratio of fp:fn. If left to the default \code{NULL}, the maximum
 #' 								cost ratio will be 25\% more than the desired cost ratio.
@@ -39,6 +55,22 @@ auto_select_best_kpcr_model = function(explore_kpcr_obj){
 #' 								selected model.
 #' 
 #' @author 						Adam Kapelner and Justin Bleich
+#' 
+#' @examples
+#' \dontrun{
+#' #first create classification data
+#' X = matrix(rnorm(300), ncol = 4)
+#' y = rbinom(300, 1, 0.5)
+#' #now explore kernel models using the default kernel list
+#' explore_kpclr_obj = explore_kpclr_models(X, y)
+#' #now we plot to see how the models built on the training data performed on the validation data
+#' plot(explore_kpclr_obj)
+#' #we are comfortable with allowing the computer to decide which model is best based on 
+#' #the minimum cost-weighted error model which falls wthin a default range of the error ratio. 
+#' explore_kpclr_obj = auto_select_best_kpclr_model(explore_kpclr_obj)
+#' #re-plotting shows a blue line indicating the favored model
+#' plot(explore_kpclr_obj)
+#' }
 #' @export
 auto_select_best_kpclr_model = function(explore_kpclr_obj, fp_max_cost = NULL, fn_min_cost = NULL, fp_min_cost = NULL, fn_max_cost = NULL){
 	#pull information our for convenience
@@ -95,6 +127,23 @@ auto_select_best_kpclr_model = function(explore_kpclr_obj, fp_max_cost = NULL, f
 #' 										information about the user's desired model.
 #' 
 #' @author 								Adam Kapelner and Justin Bleich
+#' 
+#' @examples
+#' \dontrun{
+#' #Note this is example is for classification, but it works the same for regression
+#' #first create classification data
+#' X = matrix(rnorm(300), ncol = 4)
+#' y = rbinom(300, 1, 0.5)
+#' #now explore kernel models using the default kernel list
+#' explore_kpclr_obj = explore_kpclr_models(X, y)
+#' #now we plot to see how the models built on the training data performed on the validation data
+#' plot(explore_kpclr_obj)
+#' #we believe that the third kernel and the 9th value of rho is the "best" model
+#' explore_kpclr_obj = set_desired_model(explore_kpclr_obj, 
+#' 						winning_kernel_num = 3, winning_rho_num = 9)
+#' #re-plotting shows a blue line indicating the model we just set
+#' plot(explore_kpclr_obj)
+#' }
 #' @export
 set_desired_model = function(explore_kpcr_or_kpclr_obj, winning_kernel_num, winning_rho_num){
 	checkObjectType(explore_kpcr_or_kpclr_obj, "explore_kpcr_or_kpclr_obj", c("explore_kpcr", "explore_kpclr"), c("explore_kpcr_models", "explore_kpclr_models"))

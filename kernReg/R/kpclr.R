@@ -13,7 +13,7 @@
 #' @return 					An lm object with the kpca_object embedded as well as the number of principal components used
 #' 
 #' @author 					Justin Bleich and Adam Kapelner
-#' @seealso 				\code{\link{kpca_regression}}
+#' @seealso 				\code{\link{kpcr}}
 #' @references 				Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 #' @export
 kpclr = function(kpca_object, y, num_pcs = NULL, frac_var = NULL, weights = NULL, family = "binomial"){
@@ -30,7 +30,7 @@ kpclr = function(kpca_object, y, num_pcs = NULL, frac_var = NULL, weights = NULL
 	#then rotated onto a subset of the principal components. Use glm's binomial
 	#method for a vanilla logistic regression implementation
 	X_kern_pca_red = as.data.frame(kpca_object$pc_mat[, 1 : num_pcs, drop = FALSE]) #creating a variable here makes the print statement nicer
-	mod = glm(y ~ ., data = X_kern_pca_red, family = family, weights = weights) #we use quasibinomial to avoid the non-integer successes warning
+	mod = glm(y ~ ., data = X_kern_pca_red, family = family, weights = weights) #we can use quasibinomial to avoid the non-integer successes warning, weights of NULL defaults to uniform weighting
 	
 	#return some other data to the user and mark this object as type "kpclr" et al.
 	mod$kpca_object = kpca_object
@@ -39,4 +39,18 @@ kpclr = function(kpca_object, y, num_pcs = NULL, frac_var = NULL, weights = NULL
 	mod$weights = weights
 	class(mod) = c("kpclr", "kpcr", "glm", "lm") #kpclr is first in order to invoke it in the predict and print methods
 	mod
+}
+
+# Number of PC's from a fraction
+# 
+# A private helper method to get the number of PC's from the percentage of variation we wish to explain
+# as a proportion.
+# 
+# @param kpca_object				The Kernel PCA object 
+# @param frac_var_to_explain 		The proportion of variance we wish to explain
+# @return 							The number of PC's needed
+# 
+# @author 							Justin Bleich and Adam Kapelner 
+get_num_pcs_from_frac = function(kpca_object, frac_var_to_explain){
+	sum(cumsum(kpca_object$keigenvals / sum(kpca_object$keigenvals)) <= frac_var_to_explain) + 1
 }

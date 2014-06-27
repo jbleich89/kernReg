@@ -9,8 +9,22 @@
 #' @return						A vector of predictions with lenth of the number of rows of \code{new_data} generated via \code{predict.lm}
 #' 
 #' @author 						Justin Bleich and Adam Kapelner
-#' @seealso 					\code{predict.lm}
+#' @seealso 					\code{\link{predict.lm}}
 #' @method predict kpcr
+#' 
+#' @examples
+#' \dontrun{
+#' #first create regression data
+#' X = matrix(rnorm(300), ncol = 4)
+#' y = rnorm(300) 
+#' #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3 
+#' kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
+#' #build a kpcr model using 75% of the variance in the kernel matrix
+#' kpcr_mod = kpclr(kpca_obj, y, frac_var = 0.75)
+#' #create 10 new data records and forecast on the new data
+#' x_star = matrix(rnorm(40), ncol = 4)
+#' y_hat = predict(kpcr_mod, x_star)
+#' }
 #' @export
 predict.kpcr = function(object, new_data, num_cores = 1, ...){
 	checkObjectType(object, "kpcr_model_object", "kpcr", "kpca_regression")
@@ -32,15 +46,29 @@ predict.kpcr = function(object, new_data, num_cores = 1, ...){
 #' @return						A vector of predictions with lenth of the number of rows of \code{new_data} generated via \code{predict.glm}
 #' 
 #' @author 						Justin Bleich and Adam Kapelner
-#' @seealso 					\code{predict.glm}
+#' @seealso 					\code{\link{predict.glm}}
 #' @method predict kpclr
+#' 
+#' @examples
+#' \dontrun{
+#' #first create binary classification data
+#' X = matrix(rnorm(300), ncol = 4)
+#' y = rbinom(300, 1, 0.5) 
+#' #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3 
+#' kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
+#' #build a kpclr model using 75% of the variance in the kernel matrix and weights for 1:1 cost ratio
+#' kpclr_mod = kpclr(kpca_obj, y, frac_var = 0.75, weights = weights_for_kpclr(y))
+#' #create 10 new data records and forecast on the new data
+#' x_star = matrix(rnorm(40), ncol = 4)
+#' y_hat = predict(kpclr_mod, x_star)
+#' }
 #' @export
 predict.kpclr = function(object, new_data, type = "response", num_cores = 1, ...){
 	checkObjectType(object, "kpclr_model_object", "kpclr", "kpca_logistic_regression")
 	#procure the design matrix (i.e. the original data rotated onto the principal components)
 	X_kernel_dim_red_names = colnames(as.matrix(object$data))
 	#use the common code to predict
-	kpca_predict_common(object, new_data, X_kernel_dim_red_names, type, num_cores = num_cores)
+	kpca_predict_common(object, new_data, X_kernel_dim_red_names, type, num_cores)
 }
 
 # Private method that does the heavy lifting for the predictions for new data 
@@ -76,10 +104,11 @@ kpca_predict_common = function(kpcr_model_object, new_data, X_kernel_dim_red_nam
 	    k_vec_c 
 	}
   
-  stopCluster(cluster)
+  	stopCluster(cluster)
   
   	k_vecs_c = t(do.call(rbind, k_vec_c_list)) ##?? 
 
+##### serial code commented out
 # 	k_vecs = t(sapply(1 : n_star, function(s) K_vector(new_data[s, ], Xs, kernel)))
 # 	#now we have to center the kernelized new data vectors
 # 	K = kpcr_model_object$kpca_object$K

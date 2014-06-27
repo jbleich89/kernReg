@@ -10,6 +10,12 @@
 #' @return 					A vector of weights of length \code{n}.
 #' 
 #' @author 					Justin Bleich and Adam Kapelner
+#' 
+#' @examples
+#' y_train = c(rep(0, 100), rep(1, 200))
+#' weights = weights_for_kpclr(y_train)
+#' table(weights)
+#' 
 #' @export
 weights_for_kpclr = function(y_train, fn_to_fp_ratio = 1){
 	n_1 = sum(y_train == 1)
