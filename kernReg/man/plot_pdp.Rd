@@ -3,10 +3,11 @@
 \alias{plot_pdp}
 \title{Plots a PDP for a kernel regression}
 \usage{
-plot_pdp(kpca_model, predictor, type = "link", frac_to_build = 1, ...)
+plot_pdp(kpcr_or_kpclr_model, predictor, type = "link", frac_to_build = 1,
+  ...)
 }
 \arguments{
-\item{kpca_model}{A linear or logistic kernel PCA regression model}
+\item{kpcr_or_kpclr_model}{A linear or logistic kernel PCA regression model}
 
 \item{predictor}{The predictor to build a PDP for. It can be the number of the column or the column's name}
 
@@ -20,6 +21,25 @@ plot_pdp(kpca_model, predictor, type = "link", frac_to_build = 1, ...)
 \code{plot_pdp} plots a partial dependence plot (PDP; Friedman, 2001) for one of the predictors. The function
 allows the PDP to be plotted to arbitrary accuracy and allows parameters to be passed for customization
 of the plotting. This function relies on package \pkg{ICEbox}.
+}
+\examples{
+\dontrun{
+#Note this is example is for regression, but it works the same for classification
+#pull the predictor matrix and response from the Boston Housing Data
+data(Boston)
+y = Boston$medv
+Boston$medv = NULL
+X = as.matrix(Boston)
+#build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3
+kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
+#build a KPCR model using 75\% of the variance explained by the kernel matrix
+kpcr_mod = kpcr(kpca_obj, y, frac_var = 0.75)
+#now we want to illustrate a Partial Dependence Plot for the 6th of the 13 predictors,
+#number of average rooms in the houses in the census tract. Since we don't need perfect resolution,
+#we can allow it to build on only half of the data. For better resolution later, we can set
+#frac_to_build to 1.
+plot_pdp(kpcr_mod, 2, frac_to_build = 0.5)
+}
 }
 \author{
 Justin Bleich and Adam Kapelner

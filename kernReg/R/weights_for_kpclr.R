@@ -12,8 +12,12 @@
 #' @author 					Justin Bleich and Adam Kapelner
 #' 
 #' @examples
-#' y_train = c(rep(0, 100), rep(1, 200))
+#' #pull the predictor matrix and dummify the response from the Boston Housing Data
+#' data(Boston)
+#' y = ifelse(Boston$medv > median(Boston$medv), 1, 0)
+#' y_train = y[1 : 100]
 #' weights = weights_for_kpclr(y_train)
+#' #ensure the weights are what we expect
 #' table(weights)
 #' 
 #' @export

@@ -22,15 +22,17 @@ A vector of predictions with lenth of the number of rows of \code{new_data} gene
 }
 \examples{
 \dontrun{
-#first create regression data
-X = matrix(rnorm(300), ncol = 4)
-y = rnorm(300)
+#pull the predictor matrix and response from the Boston Housing Data
+data(Boston)
+y = Boston$medv
+Boston$medv = NULL
+X = as.matrix(Boston)
 #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3
 kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
 #build a kpcr model using 75\% of the variance in the kernel matrix
 kpcr_mod = kpclr(kpca_obj, y, frac_var = 0.75)
-#create 10 new data records and forecast on the new data
-x_star = matrix(rnorm(40), ncol = 4)
+#forecast on the "new" data which here will just be the first 10 rows of the Boston Housing Data
+x_star = X[1 : 10, ]
 y_hat = predict(kpcr_mod, x_star)
 }
 }

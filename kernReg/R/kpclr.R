@@ -15,6 +15,21 @@
 #' @author 					Justin Bleich and Adam Kapelner
 #' @seealso 				\code{\link{kpcr}}
 #' @references 				Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
+#' 
+#' @examples
+#' \dontrun{
+#' #pull the predictor matrix and dummify the response from the Boston Housing Data
+#' data(Boston)
+#' y = ifelse(Boston$medv > median(Boston$medv), 1, 0)
+#' Boston$medv = NULL
+#' X = as.matrix(Boston)
+#' #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3 
+#' kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
+#' #build a kpclr model using 75% of the variance in the kernel matrix and weights for 1:1 cost ratio
+#' kpclr_mod = kpclr(kpca_obj, y, frac_var = 0.75, weights = weights_for_kpclr(y))
+#' #printing the object will run the default print of a glm, more useful is summary:
+#' summary(kpclr_mod)
+#' }
 #' @export
 kpclr = function(kpca_object, y, num_pcs = NULL, frac_var = NULL, weights = NULL, family = "binomial"){
 	checkObjectType(kpca_object, "kpca_object", "kpca", "build_kpca_object")

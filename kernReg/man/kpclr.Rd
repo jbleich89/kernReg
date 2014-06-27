@@ -26,6 +26,21 @@ An lm object with the kpca_object embedded as well as the number of principal co
 \code{kpclr} runs a logistic regression on features created from an eigendecomposition
 of a certain dimension of the kernelized data
 }
+\examples{
+\dontrun{
+#pull the predictor matrix and dummify the response from the Boston Housing Data
+data(Boston)
+y = ifelse(Boston$medv > median(Boston$medv), 1, 0)
+Boston$medv = NULL
+X = as.matrix(Boston)
+#build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3
+kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
+#build a kpclr model using 75\% of the variance in the kernel matrix and weights for 1:1 cost ratio
+kpclr_mod = kpclr(kpca_obj, y, frac_var = 0.75, weights = weights_for_kpclr(y))
+#printing the object will run the default print of a glm, more useful is summary:
+summary(kpclr_mod)
+}
+}
 \author{
 Justin Bleich and Adam Kapelner
 }

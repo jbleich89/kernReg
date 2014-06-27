@@ -52,6 +52,18 @@ each kernel, we have a model. We then predict all models on the validation data 
 and pick the best model. Using this best model, we predict on the test data (the third split)
 and report the out-of-sample statistics
 }
+\examples{
+\dontrun{
+#pull the predictor matrix and dummify the response from the Boston Housing Data
+data(Boston)
+y = ifelse(Boston$medv > median(Boston$medv), 1, 0)
+Boston$medv = NULL
+X = as.matrix(Boston)
+#now explore kernel models using the default kernel list.
+#Use parallelization for speed.
+explore_kpclr_obj = explore_kpclr_models(X, y, num_cores = 4)
+}
+}
 \author{
 Justin Bleich and Adam Kapelner
 }

@@ -21,6 +21,21 @@ An lm object with the kpca_object embedded as well as the number of principal co
 \code{kpcr} runs a linear regression on features created from an eigendecomposition
 of a certain dimension of the kernelized data
 }
+\examples{
+\dontrun{
+#pull the predictor matrix and response from the Boston Housing Data
+data(Boston)
+y = Boston$medv
+Boston$medv = NULL
+X = as.matrix(Boston)
+#build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3
+kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
+#build a KPCR model using 75\% of the variance explained by the kernel matrix
+kpcr_mod = kpcr(kpca_obj, y, frac_var = 0.75)
+#printing the object will run the default print for the lm object, more useful is summary:
+summary(kpcr_mod)
+}
+}
 \author{
 Justin Bleich and Adam Kapelner
 }

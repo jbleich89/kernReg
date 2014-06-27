@@ -33,11 +33,14 @@ look back.
 }
 \examples{
 \dontrun{
-#first create regression data
-X = matrix(rnorm(300), ncol = 4)
-y = rnorm(300)
-#now explore kernel models using the default kernel list
-explore_kpcr_obj = explore_kpcr_models(X, y)
+#pull the predictor matrix and response from the Boston Housing Data
+data(Boston)
+y = Boston$medv
+Boston$medv = NULL
+X = as.matrix(Boston)
+#now explore kernel models using the default kernel list.
+#Use parallelization for speed.
+explore_kpcr_obj = explore_kpcr_models(X, y, num_cores = 4)
 #now we plot to see how the models built on the training data performed on the validation data
 plot(explore_kpcr_obj)
 #suppose we choose the 2nd kernel and the 10th rho

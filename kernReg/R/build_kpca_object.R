@@ -21,8 +21,10 @@ MIN_POSITIVE_EIGENVALUE = 1e-4
 #' @references 			Berk, R., Bleich, J., Kapelner, A.,  Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
 #' 
 #' @examples 
-#' #create a random predictor matrix with four predictors
-#' X = matrix(rnorm(100), ncol = 4)
+#' #pull the predictor matrix from the Boston Housing Data
+#' data(Boston)
+#' Boston$medv = NULL
+#' X = as.matrix(Boston)
 #' #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3 
 #' kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
 #' #display some information to the console

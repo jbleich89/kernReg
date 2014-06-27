@@ -3,7 +3,7 @@
 \alias{plot_explore_kpclr}
 \title{Explore kpclr plot}
 \usage{
-plot_explore_kpclr(explore_kpclr_obj, tile_cols = 3, ylim = NULL,
+plot_explore_kpclr(explore_kpclr_obj, tile_cols = 2, ylim = NULL,
   min_fn_fp_ratio = NULL, max_fn_fp_ratio = NULL,
   quantile_aic_to_display = 0.75, quantile_cwe_to_display = 0.95,
   color_winning_model = "blue", color_num_fn_fp_ratio = "black",
@@ -15,7 +15,7 @@ plot_explore_kpclr(explore_kpclr_obj, tile_cols = 3, ylim = NULL,
 \item{explore_kpclr_obj}{An object of type \code{explore_kpclr} built with \code{\link{explore_kpclr_models}}}
 
 \item{tile_cols}{When plotting all kernel model performances, how many kernels per plot window column?
-Default is \code{3}.}
+Default is \code{2}.}
 
 \item{ylim}{The \code{ylim} parameter which is passed to the plot function.}
 
@@ -58,6 +58,20 @@ Many kernel principle components logistic regression models were fitted on the t
 At every value of rho (the proportion of variance of the kernel matrix explained), the following three things
 will be plotted (1) the ratio of the number of false negatives to the number of false positives when predicted
 out of sample (2) the AIC of the model (3) the cost-weighted error of the out-of-sample validation data.
+}
+\examples{
+\dontrun{
+#pull the predictor matrix and dummify the response from the Boston Housing Data
+data(Boston)
+y = ifelse(Boston$medv > median(Boston$medv), 1, 0)
+Boston$medv = NULL
+X = as.matrix(Boston)
+#now explore kernel models using the default kernel list and misclassification costs.
+#Use parallelization for speed.
+explore_kpclr_obj = explore_kpclr_models(X, y, num_cores = 4)
+#now we plot to see how the models built on the training data performed on the validation data
+plot_explore_kpclr(explore_kpclr_obj) #plot(explore_kpclr_obj) also works and is recommended
+}
 }
 \author{
 Adam Kapelner and Justin Bleich

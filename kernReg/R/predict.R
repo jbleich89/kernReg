@@ -14,15 +14,17 @@
 #' 
 #' @examples
 #' \dontrun{
-#' #first create regression data
-#' X = matrix(rnorm(300), ncol = 4)
-#' y = rnorm(300) 
+#' #pull the predictor matrix and response from the Boston Housing Data
+#' data(Boston)
+#' y = Boston$medv
+#' Boston$medv = NULL
+#' X = as.matrix(Boston)
 #' #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3 
 #' kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
 #' #build a kpcr model using 75% of the variance in the kernel matrix
 #' kpcr_mod = kpclr(kpca_obj, y, frac_var = 0.75)
-#' #create 10 new data records and forecast on the new data
-#' x_star = matrix(rnorm(40), ncol = 4)
+#' #forecast on the "new" data which here will just be the first 10 rows of the Boston Housing Data
+#' x_star = X[1 : 10, ]
 #' y_hat = predict(kpcr_mod, x_star)
 #' }
 #' @export
@@ -51,15 +53,17 @@ predict.kpcr = function(object, new_data, num_cores = 1, ...){
 #' 
 #' @examples
 #' \dontrun{
-#' #first create binary classification data
-#' X = matrix(rnorm(300), ncol = 4)
-#' y = rbinom(300, 1, 0.5) 
+#' #pull the predictor matrix and dummify the response from the Boston Housing Data
+#' data(Boston)
+#' y = ifelse(Boston$medv > median(Boston$medv), 1, 0)
+#' Boston$medv = NULL
+#' X = as.matrix(Boston)
 #' #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3 
 #' kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
 #' #build a kpclr model using 75% of the variance in the kernel matrix and weights for 1:1 cost ratio
 #' kpclr_mod = kpclr(kpca_obj, y, frac_var = 0.75, weights = weights_for_kpclr(y))
-#' #create 10 new data records and forecast on the new data
-#' x_star = matrix(rnorm(40), ncol = 4)
+#' #forecast on the "new" data which here will just be the first 10 rows of the Boston Housing Data
+#' x_star = X[1 : 10, ]
 #' y_hat = predict(kpclr_mod, x_star)
 #' }
 #' @export
@@ -97,6 +101,7 @@ kpca_predict_common = function(kpcr_model_object, new_data, X_kernel_dim_red_nam
 	cluster = makeCluster(num_cores)
 	registerDoParallel(cluster)
   
+	i = NULL #this is only to shut up the --as-cran check NOTE that appears about i not having a binding
 	k_vec_c_list = foreach(i = 1 : n_star) %dopar% {
 	    k_vec = K_vector(new_data[i,], Xs, kernel)
 	    K = kpcr_model_object$kpca_object$K

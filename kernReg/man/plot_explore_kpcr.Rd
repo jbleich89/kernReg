@@ -3,7 +3,7 @@
 \alias{plot_explore_kpcr}
 \title{Explore KPCR plot}
 \usage{
-plot_explore_kpcr(explore_kpcr_obj, tile_cols = 3,
+plot_explore_kpcr(explore_kpcr_obj, tile_cols = 2,
   quantile_aic_to_display = 0.75, color_winning_model = "blue",
   color_sse = "black", color_aic = "firebrick3", show_rho_numbers = TRUE,
   text_label_offset_pct = 0.1, label_skip = 3, ...)
@@ -12,7 +12,7 @@ plot_explore_kpcr(explore_kpcr_obj, tile_cols = 3,
 \item{explore_kpcr_obj}{An object of type \code{explore_kpcr} built with \code{\link{explore_kpcr_models}}}
 
 \item{tile_cols}{When plotting all kernel model performances, how many kernels per plot window column?
-Default is \code{3}.}
+Default is \code{2}.}
 
 \item{quantile_aic_to_display}{When plotting the AICs for each model, which quantile should be truncated?
 Default is \code{75\%}.}
@@ -36,6 +36,20 @@ Many kernel principle components logistic regression models were fitted on the t
 \code{\link{explore_kpcr_models}}. This function will create one plot for each of the kernel models investigated.
 At every value of rho (the proportion of variance of the kernel matrix explained), the AIC of the model and the sse
 of the out-of-sample validation data is plotted.
+}
+\examples{
+\dontrun{
+#pull the predictor matrix and response from the Boston Housing Data
+data(Boston)
+y = Boston$medv
+Boston$medv = NULL
+X = as.matrix(Boston)
+#now explore kernel models using the default kernel list.
+#Use parallelization for speed.
+explore_kpcr_obj = explore_kpcr_models(X, y, num_cores = 4)
+#now we plot to see how the models built on the training data performed on the validation data
+plot_explore_kpcr(explore_kpcr_obj) #plot(explore_kpcr_obj) also works and is recommended
+}
 }
 \author{
 Adam Kapelner and Justin Bleich

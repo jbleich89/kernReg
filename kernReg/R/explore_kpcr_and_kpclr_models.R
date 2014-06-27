@@ -36,6 +36,18 @@
 #' @author 					Justin Bleich and Adam Kapelner
 #' @seealso 				\code{\link{kpclr}}
 #' @references 				Berk, R., Bleich, J., Kapelner, A., Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
+#' 
+#' @examples
+#' \dontrun{
+#' #pull the predictor matrix and dummify the response from the Boston Housing Data
+#' data(Boston)
+#' y = ifelse(Boston$medv > median(Boston$medv), 1, 0)
+#' Boston$medv = NULL
+#' X = as.matrix(Boston)
+#' #now explore kernel models using the default kernel list.
+#' #Use parallelization for speed.
+#' explore_kpclr_obj = explore_kpclr_models(X, y, num_cores = 4)
+#' }
 #' @export
 explore_kpclr_models = function(X, y, 
 								kernel_list = NULL, 
@@ -148,6 +160,19 @@ explore_kpclr_models = function(X, y,
 #' @author 					Justin Bleich and Adam Kapelner
 #' @seealso 				\code{\link{kpcr}}
 #' @references 				Berk, R., Bleich, J., Kapelner, A., Henderson, J. and Kurtz, E., Using Regression Kernels to Forecast A Failure to Appear in Court. (2014) working paper
+#' 
+#' @examples
+#' \dontrun{
+#' #pull the predictor matrix and response from the Boston Housing Data
+#' data(Boston)
+#' y = Boston$medv
+#' Boston$medv = NULL
+#' X = as.matrix(Boston)
+#' #now explore kernel models using the default kernel list
+#' #Use parallelization for speed.
+#' explore_kpcr_obj = explore_kpcr_models(X, y, num_cores = 4)
+#' }
+#' 
 #' @export
 explore_kpcr_models = function(X, y, 
 		kernel_list = NULL, 

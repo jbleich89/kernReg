@@ -32,8 +32,10 @@ grayscale images for publication, you can use something like \code{gray(100 : 0 
 Illustrates the kernel matrix as a heatmap.
 }
 \examples{
-#create a random predictor matrix with four predictors
-X = matrix(rnorm(100), ncol = 4)
+#pull the predictor matrix from the Boston Housing Data
+data(Boston)
+Boston$medv = NULL
+X = as.matrix(Boston)
 #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3
 kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
 #visualize the kernel

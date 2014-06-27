@@ -14,18 +14,21 @@ The model corresponding to the \code{winning_kernel_num} and the
 }
 \description{
 Once the user has finished exploring different kernel regressions via \code{\link{explore_kpclr_models}} or
-\code{\link{explore_kpcr_models}} and has estimated future performance on the test data via
+\code{\link{explore_kpcr_models}} and has estimated future performance on the test data via the function
 \code{\link{eval_winning_r_model_on_test_data}} or \code{\link{eval_winning_lr_model_on_test_data}},
 we now build the final kernel model using all the data from \code{X}, \code{y}.
 }
 \examples{
 \dontrun{
 #This example is for regression, but it works the same for logistic regression.
-#first create regression data
-X = matrix(rnorm(300), ncol = 4)
-y = rbinom(300, 1, 0.5)
-#now explore kernel models using the default kernel list and misclassification costs
-explore_kpcr_obj = explore_kpclr_models(X, y)
+#pull the predictor matrix and response from the Boston Housing Data
+data(Boston)
+y = Boston$medv
+Boston$medv = NULL
+X = as.matrix(Boston)
+#now explore kernel models using the default kernel list and misclassification costs.
+#Use parallelization for speed.
+explore_kpcr_obj = explore_kpclr_models(X, y, num_cores = 4)
 #now we plot to see how the models built on the training data performed on the validation data
 plot(explore_kpcr_obj)
 #suppose we choose the 2nd kernel and the 10th rho

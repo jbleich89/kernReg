@@ -38,11 +38,14 @@ look back.
 }
 \examples{
 \dontrun{
-#first create binary classification data
-X = matrix(rnorm(300), ncol = 4)
-y = rbinom(300, 1, 0.5)
-#now explore kernel models using the default kernel list and misclassification costs
-explore_kpclr_obj = explore_kpclr_models(X, y)
+#pull the predictor matrix and dummify the response from the Boston Housing Data
+data(Boston)
+y = ifelse(Boston$medv > median(Boston$medv), 1, 0)
+Boston$medv = NULL
+X = as.matrix(Boston)
+#now explore kernel models using the default kernel list and misclassification costs.
+#Use parallelization for speed.
+explore_kpclr_obj = explore_kpclr_models(X, y, num_cores = 4)
 #now we plot to see how the models built on the training data performed on the validation data
 plot(explore_kpclr_obj)
 #suppose we choose the 2nd kernel and the 10th rho

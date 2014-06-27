@@ -23,7 +23,7 @@ plot.explore_kpclr = function(x, ...){
 #' 
 #' @param explore_kpclr_obj 			An object of type \code{explore_kpclr} built with \code{\link{explore_kpclr_models}}
 #' @param tile_cols 					When plotting all kernel model performances, how many kernels per plot window column?
-#' 										Default is \code{3}.
+#' 										Default is \code{2}.
 #' @param ylim							The \code{ylim} parameter which is passed to the plot function.
 #' @param min_fn_fp_ratio				If specified, plots a horizontal line on the y-axis representing the lower bound of
 #' 										the ratio of the number of false negatives to false positives. Defaults to the value set
@@ -48,9 +48,23 @@ plot.explore_kpclr = function(x, ...){
 #' 										some models from being displayed.
 #' 
 #' @author 								Adam Kapelner and Justin Bleich
+#' 
+#' @examples
+#' \dontrun{
+#' #pull the predictor matrix and dummify the response from the Boston Housing Data
+#' data(Boston)
+#' y = ifelse(Boston$medv > median(Boston$medv), 1, 0)
+#' Boston$medv = NULL
+#' X = as.matrix(Boston)
+#' #now explore kernel models using the default kernel list and misclassification costs.
+#' #Use parallelization for speed.
+#' explore_kpclr_obj = explore_kpclr_models(X, y, num_cores = 4)
+#' #now we plot to see how the models built on the training data performed on the validation data
+#' plot_explore_kpclr(explore_kpclr_obj) #plot(explore_kpclr_obj) also works and is recommended
+#' }
 #' @export
 plot_explore_kpclr = function(explore_kpclr_obj,
-		tile_cols = 3, 
+		tile_cols = 2, 
 		ylim = NULL,
 		min_fn_fp_ratio = NULL,
 		max_fn_fp_ratio = NULL,
@@ -177,7 +191,7 @@ plot.explore_kpcr = function(x, ...){
 #' 
 #' @param explore_kpcr_obj 				An object of type \code{explore_kpcr} built with \code{\link{explore_kpcr_models}}
 #' @param tile_cols 					When plotting all kernel model performances, how many kernels per plot window column?
-#' 										Default is \code{3}.
+#' 										Default is \code{2}.
 #' @param quantile_aic_to_display 		When plotting the AICs for each model, which quantile should be truncated?
 #' 										Default is \code{75\%}.
 #' @param color_winning_model 			What color is the vertical line of the winning model. Default is blue.
@@ -189,9 +203,23 @@ plot.explore_kpcr = function(x, ...){
 #' @param ... 							Other parameters to pass to plot.
 #' 
 #' @author 								Adam Kapelner and Justin Bleich
+#' 
+#' @examples
+#' \dontrun{
+#' #pull the predictor matrix and response from the Boston Housing Data
+#' data(Boston)
+#' y = Boston$medv
+#' Boston$medv = NULL
+#' X = as.matrix(Boston)
+#' #now explore kernel models using the default kernel list.
+#' #Use parallelization for speed.
+#' explore_kpcr_obj = explore_kpcr_models(X, y, num_cores = 4)
+#' #now we plot to see how the models built on the training data performed on the validation data
+#' plot_explore_kpcr(explore_kpcr_obj) #plot(explore_kpcr_obj) also works and is recommended
+#' }
 #' @export
 plot_explore_kpcr = function(explore_kpcr_obj, 
-		tile_cols = 3,
+		tile_cols = 2,
 		quantile_aic_to_display = 0.75,
 		color_winning_model = "blue",
 		color_sse = "black",
