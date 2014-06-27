@@ -22,7 +22,7 @@
 #' #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3 
 #' kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
 #' #build a kpcr model using 75% of the variance in the kernel matrix
-#' kpcr_mod = kpclr(kpca_obj, y, frac_var = 0.75)
+#' kpcr_mod = kpcr(kpca_obj, y, frac_var = 0.75)
 #' #forecast on the "new" data which here will just be the first 10 rows of the Boston Housing Data
 #' x_star = X[1 : 10, ]
 #' y_hat = predict(kpcr_mod, x_star)

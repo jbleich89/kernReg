@@ -32,8 +32,8 @@ X = as.matrix(Boston)
 kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
 #build a KPCR model using 75\% of the variance explained by the kernel matrix
 kpcr_mod = kpcr(kpca_obj, y, frac_var = 0.75)
-#printing the object will run the default print for the lm object, more useful is summary:
-summary(kpcr_mod)
+#print a summary of the model
+kpcr_mod
 }
 }
 \author{

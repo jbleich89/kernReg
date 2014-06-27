@@ -35,13 +35,15 @@ plot(explore_kpcr_obj)
 explore_kpcr_obj = set_desired_model(explore_kpcr_obj, 2, 10)
 #now we build this model using the training and validation data and assess
 #out-of-sample performance by predicting on the test data
-explore_kpcr_obj = eval_winning_lr_model_on_test_data(explore_kpcr_obj)
+explore_kpcr_obj = eval_winning_r_model_on_test_data(explore_kpcr_obj)
 #show results to console
 explore_kpcr_obj
 #we build a model using all the data in [X, y] to provide to the user who will use
 #it to predict on future cases. This model should perform slightly better than the
 #out-of-sample test split prediction results printed to console above
 model_for_future_prediction = build_final_kpclr_or_kpcr_model(explore_kpcr_obj)
+#print a summary of the model
+model_for_future_prediction
 }
 }
 \author{

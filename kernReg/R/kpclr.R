@@ -27,8 +27,8 @@
 #' kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
 #' #build a kpclr model using 75% of the variance in the kernel matrix and weights for 1:1 cost ratio
 #' kpclr_mod = kpclr(kpca_obj, y, frac_var = 0.75, weights = weights_for_kpclr(y))
-#' #printing the object will run the default print of a glm, more useful is summary:
-#' summary(kpclr_mod)
+#' #print a summary of the model
+#' kpclr_mod
 #' }
 #' @export
 kpclr = function(kpca_object, y, num_pcs = NULL, frac_var = NULL, weights = NULL, family = "binomial"){
