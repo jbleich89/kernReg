@@ -13,8 +13,8 @@
 #' @param y 				The data's response vector.
 #' @param kernel_list		A list of kernels to assess performance of over a variety of PC's by \% explained. 
 #' 							Each element of this list is a list itself with keys "kernel_type" and "params." If
-#' 							left unspecified, the default are four ANOVA models: (1) sigma = 0.1, d = 2 (2) sigma = 100
-#' 							d = 2 (3) sigma = 0.1, d = 3 (4) sigma = 100, d = 3
+#' 							left unspecified, the default are four ANOVA models: (1) gamma = 0.1, d = 2 (2) gamma = 100
+#' 							d = 2 (3) gamma = 0.1, d = 3 (4) gamma = 100, d = 3
 #' @param seed				A seed to set the random generator. This is required because re-runs will result in
 #' 							different training-validation-test splits which would allow a user to snoop on the 
 #' 							test data. We default this to 0 but please use your own seeds to avoid seed conflict.

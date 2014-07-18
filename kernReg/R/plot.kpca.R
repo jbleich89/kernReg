@@ -39,7 +39,7 @@ plot.kpca = function(x, ...){
 #' data(Boston)
 #' Boston$medv = NULL
 #' X = as.matrix(Boston)
-#' #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3 
+#' #build a KPCA object using the anova kernel with hyperparameters gamma = 0.1 and d = 3 
 #' kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
 #' #visualize the kernel
 #' plot_kpca(kpca_obj) #"plot(kpca_obj)" also works and is recommended

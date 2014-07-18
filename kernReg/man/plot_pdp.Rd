@@ -30,7 +30,7 @@ data(Boston)
 y = Boston$medv
 Boston$medv = NULL
 X = as.matrix(Boston)
-#build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3
+#build a KPCA object using the anova kernel with hyperparameters gamma = 0.1 and d = 3
 kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
 #build a KPCR model using 75\% of the variance explained by the kernel matrix
 kpcr_mod = kpcr(kpca_obj, y, frac_var = 0.75)

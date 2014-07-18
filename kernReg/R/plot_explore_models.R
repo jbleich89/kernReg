@@ -35,6 +35,7 @@ plot.explore_kpclr = function(x, ...){
 #' 										is plotted.
 #' @param quantile_aic_to_display 		When plotting the AICs for each model, which quantile should be truncated?
 #' 										Default is \code{95\%}.
+#' @param plot_aic						Should we plot AIC's for each of the models? Default is \code{FALSE}.
 #' @param quantile_cwe_to_display 		When plotting the cost-weighted-errors for each model, which quantile should be 
 #' 										truncated? Default is \code{75\%}.
 #' @param color_winning_model 			What color is the vertical line of the winning model. Default is blue.
@@ -44,6 +45,8 @@ plot.explore_kpclr = function(x, ...){
 #' @param show_rho_numbers 				Plot the rho number on each of the exploratory plots. Default is \code{TRUE}.
 #' @param text_label_offset_pct			If the rho numbers are plotted, what percent offset below the points? Default is \code{10\%}.
 #' @param kernels_to_plot				A list of indices of the kernels to plot. If left to the default \code{NULL}, all kernels are plotted.
+#' @param num_right_y_axis_gridlines	How many gridlines to print on the right y-axis? Default is \code{7}.
+#' @param rounding_right_y_axis			Rounding on the right y-axis. Default is \code{0}.
 #' @param ... 							Other parameters to pass to plot. Of particular interest is \code{xlim} which will limit
 #' 										some models from being displayed.
 #' 
@@ -68,7 +71,8 @@ plot_explore_kpclr = function(explore_kpclr_obj,
 		ylim = NULL,
 		min_fn_fp_ratio = NULL,
 		max_fn_fp_ratio = NULL,
-		quantile_aic_to_display = 0.75, 
+		quantile_aic_to_display = 0.75,
+		plot_aic = FALSE,
 		quantile_cwe_to_display = 0.95,
 		color_winning_model = "blue",
 		color_num_fn_fp_ratio = "black",
@@ -77,6 +81,8 @@ plot_explore_kpclr = function(explore_kpclr_obj,
 		show_rho_numbers = TRUE,
 		text_label_offset_pct = 0.10,
 		kernels_to_plot = NULL,
+		num_right_y_axis_gridlines = 7,
+		rounding_right_y_axis = 0,
 		...){
 	#pull out data for convenience
 	rho_seq = explore_kpclr_obj$rho_seq
@@ -123,8 +129,6 @@ plot_explore_kpclr = function(explore_kpclr_obj,
 	cost_weighted_errors_validation_scaled = cost_weighted_errors_validation / quantile(cost_weighted_errors_validation, quantile_cwe_to_display, na.rm = TRUE) * ylim[2]
 	mod_aics_scaled = mod_aics / quantile(mod_aics, quantile_aic_to_display, na.rm = TRUE) * ylim[2]
 	
-
-	
 	for (k in kernels_to_plot){
 		kpca = explore_kpclr_obj$all_kernels[[k]]
 		main = paste("#", k, " ", kernel_description(kpca), sep = "")
@@ -149,15 +153,20 @@ plot_explore_kpclr = function(explore_kpclr_obj,
 		}
 
 		points(rho_seq, cost_weighted_errors_validation_scaled[k, ], col = "red", type = "o")
-		points(rho_seq, mod_aics_scaled[k, ], col = "forestgreen", type = "o")
+		if (plot_aic){
+			points(rho_seq, mod_aics_scaled[k, ], col = "forestgreen", type = "o")	
+		}
+		
 		if (show_rho_numbers){
 			text(rho_seq[text_label_indices], fn_over_fp_validation_results[k, text_label_indices] - text_label_offset, text_label_indices)	
 		}		
-		if (sum(is.na(mod_aics_scaled[k, ])) == length(rho_seq)){
-			axis(4, at = ylim[2], labels = round(quantile(cost_weighted_errors_validation, quantile_cwe_to_display, na.rm = TRUE)))
-			
+		if (!plot_aic || sum(is.na(mod_aics_scaled[k, ])) == length(rho_seq)){
+			labels = seq(0, quantile(cost_weighted_errors_validation, quantile_cwe_to_display, na.rm = TRUE), length.out = num_right_y_axis_gridlines)
+			axis(4, at = seq(ylim[1], ylim[2], length.out = num_right_y_axis_gridlines), labels = round(labels, rounding_right_y_axis))
+			mtext("cost weighted error", 4, line = 2.5)
 		} else {
 			axis(4, at = ylim[2], labels = paste(round(quantile(cost_weighted_errors_validation, quantile_cwe_to_display, na.rm = TRUE)), "/", round(quantile(mod_aics, quantile_aic_to_display, na.rm = TRUE))))
+			mtext("cost weighted error / AIC", 4, line = 2.5)
 		}
 		
 		if (!is.null(explore_kpclr_obj$winning_kernel_num) && !is.na(explore_kpclr_obj$winning_kernel_num) && k == explore_kpclr_obj$winning_kernel_num){

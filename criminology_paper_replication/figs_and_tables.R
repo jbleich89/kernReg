@@ -60,7 +60,7 @@ X = as.matrix(X)
 ### Figure 7
 explore_kpclr_obj = explore_kpclr_models(X, y, fp_cost = 2)
 #use the plot function to visualize all model choices
-par(mar = c(4,4,3,2))
+par(mar = c(4,4,3,6))
 plot(explore_kpclr_obj, tile_cols = 2)
 #pick a model holistically based on many considerations outlined in the paper
 explore_kpclr_obj = set_desired_model(explore_kpclr_obj, winning_kernel_num = 2, winning_rho_num = 9)

@@ -27,7 +27,7 @@ will standardize (i.e. center and scale) each predictor column.
 data(Boston)
 Boston$medv = NULL
 X = as.matrix(Boston)
-#build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3
+#build a KPCA object using the anova kernel with hyperparameters gamma = 0.1 and d = 3
 kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
 #display some information to the console
 kpca_obj

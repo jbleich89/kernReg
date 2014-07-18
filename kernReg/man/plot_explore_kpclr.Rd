@@ -5,11 +5,12 @@
 \usage{
 plot_explore_kpclr(explore_kpclr_obj, tile_cols = 2, ylim = NULL,
   min_fn_fp_ratio = NULL, max_fn_fp_ratio = NULL,
-  quantile_aic_to_display = 0.75, quantile_cwe_to_display = 0.95,
-  color_winning_model = "blue", color_num_fn_fp_ratio = "black",
-  color_aic = "firebrick3", color_cwe = "forestgreen",
-  show_rho_numbers = TRUE, text_label_offset_pct = 0.1,
-  kernels_to_plot = NULL, ...)
+  quantile_aic_to_display = 0.75, plot_aic = FALSE,
+  quantile_cwe_to_display = 0.95, color_winning_model = "blue",
+  color_num_fn_fp_ratio = "black", color_aic = "firebrick3",
+  color_cwe = "forestgreen", show_rho_numbers = TRUE,
+  text_label_offset_pct = 0.1, kernels_to_plot = NULL,
+  num_right_y_axis_gridlines = 7, rounding_right_y_axis = 0, ...)
 }
 \arguments{
 \item{explore_kpclr_obj}{An object of type \code{explore_kpclr} built with \code{\link{explore_kpclr_models}}}
@@ -32,6 +33,8 @@ is plotted.}
 \item{quantile_aic_to_display}{When plotting the AICs for each model, which quantile should be truncated?
 Default is \code{95\%}.}
 
+\item{plot_aic}{Should we plot AIC's for each of the models? Default is \code{FALSE}.}
+
 \item{quantile_cwe_to_display}{When plotting the cost-weighted-errors for each model, which quantile should be
 truncated? Default is \code{75\%}.}
 
@@ -48,6 +51,10 @@ truncated? Default is \code{75\%}.}
 \item{text_label_offset_pct}{If the rho numbers are plotted, what percent offset below the points? Default is \code{10\%}.}
 
 \item{kernels_to_plot}{A list of indices of the kernels to plot. If left to the default \code{NULL}, all kernels are plotted.}
+
+\item{num_right_y_axis_gridlines}{How many gridlines to print on the right y-axis? Default is \code{7}.}
+
+\item{rounding_right_y_axis}{Rounding on the right y-axis. Default is \code{0}.}
 
 \item{...}{Other parameters to pass to plot. Of particular interest is \code{xlim} which will limit
                                         some models from being displayed.}

@@ -25,7 +25,7 @@ MIN_POSITIVE_EIGENVALUE = 1e-4
 #' data(Boston)
 #' Boston$medv = NULL
 #' X = as.matrix(Boston)
-#' #build a KPCA object using the anova kernel with hyperparameters sigma = 0.1 and d = 3 
+#' #build a KPCA object using the anova kernel with hyperparameters gamma = 0.1 and d = 3 
 #' kpca_obj = build_kpca_object(X, "anova", c(0.1, 3))
 #' #display some information to the console
 #' kpca_obj

@@ -151,6 +151,7 @@ summary.explore_kpcr = function(object, ...){
 kernel_description = function(kpca_object){
 	kernel_name = gsub("kernel", "", class(kpca_object$kernel)[1])
 	parameters = names(kpar(kpca_object$kernel))
+	parameters[parameters == "sigma"] = "gamma" #We've made the decision to rename "sigma" => "gamma" to emphasize the point that gamma = inverse of (2 * sigsq).
 	vals = paste(kpar(kpca_object$kernel))
 	
 	if (is.null(parameters)){
