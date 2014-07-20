@@ -24,6 +24,7 @@ plot.kpca = function(x, ...){
 #' 										grayscale images for publication, you can use something like \code{gray(100 : 0 / 100)}.
 #' @param transform						An optional function to transform the entries of \code{K}. 
 #' @param main							Title of the plot. Default is the description of the kernel.
+#' @param centered						Plot the centered kernel matrix? Defaults to \code{FALSE}.
 #' @param ... 							Other parameters to pass to levelplot. 
 #' 										Especially useful are \code{xlim} and \code{ylim} to look at a portion
 #' 										of the matrix. Also, use the \code{at} to mimic limits
@@ -45,9 +46,14 @@ plot.kpca = function(x, ...){
 #' plot_kpca(kpca_obj) #"plot(kpca_obj)" also works and is recommended
 #' 
 #' @export
-plot_kpca = function(kpca_object, lower_triangular = TRUE, transform = NULL, col.regions = rainbow(200, end = 0.78), main = NULL, ...){
+plot_kpca = function(kpca_object, lower_triangular = TRUE, transform = NULL, col.regions = rainbow(200, end = 0.78), main = NULL, centered = FALSE, ...){
 	n = kpca_object$n
-	mat = as.matrix(kpca_object$K[1 : n, 1 : n]) #the kernelMatrix class is resistant to be cast as a native matrix, this is the only way I could figure out how to do it
+	if (centered){
+		mat = as.matrix(kpca_object$Kc[1 : n, 1 : n]) #the kernelMatrix class is resistant to be cast as a native matrix, this is the only way I could figure out how to do it
+	} else {
+		mat = as.matrix(kpca_object$K[1 : n, 1 : n]) #the kernelMatrix class is resistant to be cast as a native matrix, this is the only way I could figure out how to do it	
+	}
+	
 	colnames(mat) = NULL
 	rownames(mat) = NULL
 	

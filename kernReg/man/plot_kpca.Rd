@@ -4,7 +4,8 @@
 \title{Plots the kernel matrix}
 \usage{
 plot_kpca(kpca_object, lower_triangular = TRUE, transform = NULL,
-  col.regions = rainbow(200, end = 0.78), main = NULL, ...)
+  col.regions = rainbow(200, end = 0.78), main = NULL, centered = FALSE,
+  ...)
 }
 \arguments{
 \item{kpca_object}{The kpca object to plot}
@@ -18,6 +19,8 @@ grayscale images for publication, you can use something like \code{gray(100 : 0 
 \item{transform}{An optional function to transform the entries of \code{K}.}
 
 \item{main}{Title of the plot. Default is the description of the kernel.}
+
+\item{centered}{Plot the centered kernel matrix? Defaults to \code{FALSE}.}
 
 \item{...}{Other parameters to pass to levelplot.
                                         Especially useful are \code{xlim} and \code{ylim} to look at a portion
