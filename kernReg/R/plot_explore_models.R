@@ -42,7 +42,7 @@ plot.explore_kpclr = function(x, ...){
 #' @param color_num_fn_fp_ratio			What color are the ratios of false negatives to false positive? The default is black.
 #' @param color_aic 					What color are the AIC lines? Default is reddish.
 #' @param color_cwe 					What color are the cost weighted error lines? Default is greenish.
-#' @param show_rho_numbers 				Plot the rho number on each of the exploratory plots. Default is \code{TRUE}.
+#' @param show_rho_numbers 				Plot the rho number on each of the exploratory plots. Default is \code{FALSE}.
 #' @param text_label_offset_pct			If the rho numbers are plotted, what percent offset below the points? Default is \code{10\%}.
 #' @param kernels_to_plot				A list of indices of the kernels to plot. If left to the default \code{NULL}, all kernels are plotted.
 #' @param num_right_y_axis_gridlines	How many gridlines to print on the right y-axis? Default is \code{7}.
@@ -78,7 +78,7 @@ plot_explore_kpclr = function(explore_kpclr_obj,
 		color_num_fn_fp_ratio = "black",
 		color_aic = "firebrick3",
 		color_cwe = "forestgreen",
-		show_rho_numbers = TRUE,
+		show_rho_numbers = FALSE,
 		text_label_offset_pct = 0.10,
 		kernels_to_plot = NULL,
 		num_right_y_axis_gridlines = 7,
