@@ -8,7 +8,7 @@ plot_explore_kpclr(explore_kpclr_obj, tile_cols = 2, ylim = NULL,
   quantile_aic_to_display = 0.75, plot_aic = FALSE,
   quantile_cwe_to_display = 0.95, color_winning_model = "blue",
   color_num_fn_fp_ratio = "black", color_aic = "firebrick3",
-  color_cwe = "forestgreen", show_rho_numbers = TRUE,
+  color_cwe = "forestgreen", show_rho_numbers = FALSE,
   text_label_offset_pct = 0.1, kernels_to_plot = NULL,
   num_right_y_axis_gridlines = 7, rounding_right_y_axis = 0, ...)
 }
@@ -46,7 +46,7 @@ truncated? Default is \code{75\%}.}
 
 \item{color_cwe}{What color are the cost weighted error lines? Default is greenish.}
 
-\item{show_rho_numbers}{Plot the rho number on each of the exploratory plots. Default is \code{TRUE}.}
+\item{show_rho_numbers}{Plot the rho number on each of the exploratory plots. Default is \code{FALSE}.}
 
 \item{text_label_offset_pct}{If the rho numbers are plotted, what percent offset below the points? Default is \code{10\%}.}
 
