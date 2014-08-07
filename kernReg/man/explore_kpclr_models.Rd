@@ -14,8 +14,7 @@ explore_kpclr_models(X, y, kernel_list = NULL, seed = 0,
 
 \item{kernel_list}{A list of kernels to assess performance of over a variety of PC's by \% explained.
 Each element of this list is a list itself with keys "kernel_type" and "params." If
-left unspecified, the default are four ANOVA models: (1) gamma = 0.1, d = 2 (2) gamma = 100
-d = 2 (3) gamma = 0.1, d = 3 (4) gamma = 100, d = 3}
+left unspecified, the default list contains 8 ANOVA models:  the combinations of gamma = \{.1, 1, 10, 100\} and d = \{2,3\}.}
 
 \item{seed}{A seed to set the random generator. This is required because re-runs will result in
 different training-validation-test splits which would allow a user to snoop on the
