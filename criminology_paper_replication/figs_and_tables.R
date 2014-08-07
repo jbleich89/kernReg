@@ -55,26 +55,33 @@ load("criminology_data.RData") ###this data is not released publically due to pr
 X = X[,-c(1:3)]
 X = as.matrix(X)
 
-kernel_list = list()
-kernel_list[[1]] = list(kernel_type = "anova", params = c(1, 2))
-kernel_list[[2]] = list(kernel_type = "anova", params = c(3, 2))
-kernel_list[[3]] = list(kernel_type = "anova", params = c(10, 2))
-kernel_list[[4]] = list(kernel_type = "anova", params = c(100, 2))
-kernel_list[[5]] = list(kernel_type = "anova", params = c(1, 3))
-kernel_list[[6]] = list(kernel_type = "anova", params = c(3, 3))
-kernel_list[[7]] = list(kernel_type = "anova", params = c(10, 3))
-kernel_list[[8]] = list(kernel_type = "anova", params = c(100, 3))
+#kernel_list = list()
+# kernel_list[[1]] = list(kernel_type = "anova", params = c(1, 2))
+# kernel_list[[2]] = list(kernel_type = "anova", params = c(3, 2))
+# kernel_list[[3]] = list(kernel_type = "anova", params = c(10, 2))
+# kernel_list[[4]] = list(kernel_type = "anova", params = c(100, 2))
+# kernel_list[[5]] = list(kernel_type = "anova", params = c(1, 3))
+# kernel_list[[6]] = list(kernel_type = "anova", params = c(3, 3))
+# kernel_list[[7]] = list(kernel_type = "anova", params = c(10, 3))
+# kernel_list[[8]] = list(kernel_type = "anova", params = c(100, 3))
 
-rho_seq = seq(.6, .95, .05)
+
+kernel_list = list()
+kernel_list[[1]] = list(kernel_type = "anova", params = c(.1, 2))
+kernel_list[[2]] = list(kernel_type = "anova", params = c(3, 2))
+kernel_list[[3]] = list(kernel_type = "anova", params = c(.1, 3))
+kernel_list[[4]] = list(kernel_type = "anova", params = c(3, 3))
 
 
 ### Figure 7
-explore_kpclr_obj = explore_kpclr_models(X, y, fp_cost = 2, kernel_list = kernel_list, rho_seq = rho_seq, num_cores = 4)
+explore_kpclr_obj = explore_kpclr_models(X, y, fp_cost = 2, kernel_list = kernel_list, num_cores = 4)
 #use the plot function to visualize all model choices
+windows()
 par(mar = c(4,4,3,6))
-plot(explore_kpclr_obj, tile_cols = 2)
+plot(explore_kpclr_obj, tile_cols = 2, min_fn_fp_ratio = 1, max_fn_fp_ratio = 3, show_rho_numbers = F, ylim = c(0,12))
+
 #pick a model holistically based on many considerations outlined in the paper
-explore_kpclr_obj_win = set_desired_model(explore_kpclr_obj, winning_kernel_num = 3, winning_rho_num = 5)
+explore_kpclr_obj_win = set_desired_model(explore_kpclr_obj, winning_kernel_num = 4, winning_rho_num = 12)
 #plot again so the desired model is marked with a blue line
 plot(explore_kpclr_obj_win, tile_cols = 2, min_fn_fp_ratio = 1, max_fn_fp_ratio = 4)
 #not in paper but almost made it: use the auto-selection method (not recommended)
