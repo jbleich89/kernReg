@@ -254,9 +254,13 @@ explore_common = function(X, y, kernel_list, seed, split_props, rho_seq, num_cor
 	if (is.null(kernel_list)){
 		kernel_list = list()
 		kernel_list[[1]] = list(kernel_type = "anova", params = c(0.1, 2))
-		kernel_list[[2]] = list(kernel_type = "anova", params = c(100, 2))
-		kernel_list[[3]] = list(kernel_type = "anova", params = c(0.1, 3))
-		kernel_list[[4]] = list(kernel_type = "anova", params = c(100, 3))
+		kernel_list[[2]] = list(kernel_type = "anova", params = c(1, 2))
+		kernel_list[[3]] = list(kernel_type = "anova", params = c(10, 2))
+		kernel_list[[4]] = list(kernel_type = "anova", params = c(100, 2))
+		kernel_list[[5]] = list(kernel_type = "anova", params = c(0.1, 3))
+		kernel_list[[6]] = list(kernel_type = "anova", params = c(1, 3))
+		kernel_list[[7]] = list(kernel_type = "anova", params = c(10, 3))
+		kernel_list[[8]] = list(kernel_type = "anova", params = c(100, 3))
 	}
 	
 	checkObjectType(kernel_list, "kernel_list", "list", "list()")

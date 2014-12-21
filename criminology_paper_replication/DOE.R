@@ -1,5 +1,5 @@
 ##DOE Example
-setwd("C:/Users/jbleich/Dropbox/Research_Crim/DOE")
+setwd("C:/Users/jbleich/Dropbox/berk_et_al_kernel_paper/DOE")
 load("fullDOE.Rdata")
 library(kernReg)
 library(randomForest)
@@ -18,8 +18,9 @@ Xd = as.matrix(dummify_data(X))
 kernel_list = list()
 # kernel_list[[1]] = list(kernel_type = "anova", params = c(.1, 3))
 kernel_list[[1]] = list(kernel_type = "anova", params = c(1, 3))
-kernel_list[[2]] = list(kernel_type = "anova", params = c(10, 3))
-kernel_list[[3]] = list(kernel_type = "anova", params = c(100, 3))
+kernel_list[[2]] = list(kernel_type = "anova", params = c(5, 3))
+kernel_list[[3]] = list(kernel_type = "anova", params = c(10, 3))
+kernel_list[[4]] = list(kernel_type = "anova", params = c(100, 3))
 
 # kernel_list = list()
 # kernel_list[[1]] = list(kernel_type = "anova", params = c(0.1, 2))
