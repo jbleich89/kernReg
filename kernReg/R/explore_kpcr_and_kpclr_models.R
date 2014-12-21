@@ -63,7 +63,7 @@ explore_kpclr_models = function(X, y,
 	if (length(names(table(y))) != 2){
 		stop("The response variable must be zeroes and ones and must have examples of each.")
 	}
-	if (names(table(y)) != c(0, 1)){
+	if (!all(names(table(y)) == c(0, 1))){
 		stop("The response variable must be zeroes and ones and must have examples of each.")
 	}
 	
