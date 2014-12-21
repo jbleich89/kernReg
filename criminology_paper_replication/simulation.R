@@ -36,8 +36,8 @@ kernel_list[[2]] = list(kernel_type = "anova", params = c(1, 3))
 #kernel_list[[3]] = list(kernel_type = "anova", params = c(10, 3))
 # kernel_list[[4]] = list(kernel_type = "anova", params = c(10, 3))
 
-explore_kpclr_obj = explore_kpclr_models(X, y, kernel_list = kernel_list)
-plot(explore_kpclr_obj, quantile_cwe_to_display = 0.99, plot_tile_cols = 2)
+explore_kpclr_obj = explore_kpclr_models(X, y, kernel_list = kernel_list, num_cores = 4)
+plot(explore_kpclr_obj, quantile_cwe_to_display = 0.992)
 explore_kpclr_obj = eval_winning_lr_model_on_test_data(explore_kpclr_obj)
 
 kpca_obj = build_kpca_object(X[1:500,], kernel_type = "anova", params = c(1,3))

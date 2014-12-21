@@ -59,7 +59,7 @@ explore_kpclr_models = function(X, y,
 								family = "binomial",
 								num_cores = 1){
 
-	obj = explore_common(X, y, kernel_list, seed, split_props, rho_seq)
+	obj = explore_common(X, y, kernel_list, seed, split_props, rho_seq, num_cores)
 	if (length(names(table(y))) != 2){
 		stop("The response variable must be zeroes and ones and must have examples of each.")
 	}
@@ -91,13 +91,23 @@ explore_kpclr_models = function(X, y,
 		kpca = all_kernels[[k]]
 		desc = kernel_description(kpca)
 		cat(desc)
-		for (r in 1 : num_rhos){
+		
+		cluster = makeCluster(num_cores)
+		registerDoParallel(cluster)
+		
+		r = NULL #this is only to shut up the --as-cran check NOTE that appears about i not having a binding
+		y_validate_hats = foreach(r = 1 : num_rhos) %dopar% {
 			rho = rho_seq[r]
 			#build model on training data
 			mod = kpclr(kpca, obj$y_train, frac_var = rho, weights = weights, family = family)
 			mod_aics[k, r] = AIC(mod)
 			#predict the model on validation data
-			y_validate_hat = predict(mod, obj$X_validate, num_cores = num_cores)
+			predict(mod, obj$X_validate, num_cores = num_cores)
+		}
+		stopCluster(cluster)
+		
+		for (r in 1 : num_rhos){
+			y_validate_hat = y_validate_hats[[r]]
 			confusion = table(c(obj$y_validate, 0, 1), c(ifelse(y_validate_hat > 0.5, 1, 0), 0, 1)) ###FIX LATER!!!
 			confusion = confusion - diag(2)
 			#for logistic regression, the 0 is a negative and the 1 is a positive
@@ -110,8 +120,6 @@ explore_kpclr_models = function(X, y,
 			fn_over_fp_validation_results[k, r] = confusion[2, 1] / confusion[1, 2]
 			cost_weighted_errors_validation[k, r] = confusion[2, 1] * fn_cost + confusion[1, 2] * fp_cost
 			cat(".")
-#			print(rho)
-#			print(confusion)
 		}
 		cat("\n")
 	}
@@ -181,7 +189,7 @@ explore_kpcr_models = function(X, y,
 		rho_seq = seq(from = 0.30, to = 0.95, by = 0.05),
 		num_cores = 1){
 	
-	obj = explore_common(X, y, kernel_list, seed, split_props, rho_seq)
+	obj = explore_common(X, y, kernel_list, seed, split_props, rho_seq, num_cores)
 	
 	#make sure the user isn't by accident doing classification in which case they should use the other function
 	if (length(table(y)) == 2){
@@ -206,7 +214,12 @@ explore_kpcr_models = function(X, y,
 		kpca = all_kernels[[k]]
 		desc = kernel_description(kpca)
 		cat(desc)
-		for (r in 1 : num_rhos){
+		
+		cluster = makeCluster(num_cores)
+		registerDoParallel(cluster)
+		
+		r = NULL #this is only to shut up the --as-cran check NOTE that appears about i not having a binding
+		sse_validation_results[k, ] = foreach(r = 1 : num_rhos, .combine = c) %dopar% {
 			rho = rho_seq[r]
 			#build model on training data
 			mod = kpcr(kpca, obj$y_train, frac_var = rho)
@@ -214,11 +227,10 @@ explore_kpcr_models = function(X, y,
 			#predict the model on validation data
 			y_validate_hat = predict(mod, obj$X_validate, num_cores = num_cores)
 			#compute and store the out-of-sample SSE
-			sse_validation_results[k, r] = sum((obj$y_validate - y_validate_hat)^2)
-			cat(".")
-#			print(rho)
-#			print(sse_validation_results[k, r])
+			sum((obj$y_validate - y_validate_hat)^2)			
 		}
+		stopCluster(cluster)
+
 		cat("\n")		
 	}
 	
@@ -230,7 +242,7 @@ explore_kpcr_models = function(X, y,
 }
 
 #common code for both fuctions
-explore_common = function(X, y, kernel_list, seed, split_props, rho_seq){
+explore_common = function(X, y, kernel_list, seed, split_props, rho_seq, num_cores){
 	set.seed(seed)
 	#do a bunch of error checking... lots of things need to be right 
 	#in order to divert the function blowing up without the user knowing
@@ -304,18 +316,21 @@ explore_common = function(X, y, kernel_list, seed, split_props, rho_seq){
 	
 	#now build the kernels
 	num_kernels = length(kernel_list)
-	
-	
-	#construct all the kernels first so if there's an error, the function doesn't blow up after wasting the user's time
-	all_kernels = list()
-	cat("building all kernels")	
+	#first check if the type is correct
 	for (k in 1 : num_kernels){
 		checkObjectType(kernel_list[[k]], paste("Element #", k, " of kernel_list", sep = ""), "list", "list()")
-		#build a kpca object. The build function will check for all errors.
-		all_kernels[[k]] = build_kpca_object(X_train, kernel_list[[k]]$kernel_type, kernel_list[[k]]$params)
+	}	
+	
+	cluster = makeCluster(num_cores)
+	registerDoParallel(cluster)
+	
+	k = NULL #this is only to shut up the --as-cran check NOTE that appears about i not having a binding
+	all_kernels = foreach(k = 1 : num_kernels) %dopar% {
 		cat(".")
+		build_kpca_object(X_train, kernel_list[[k]]$kernel_type, kernel_list[[k]]$params)		
 	}
 	cat("done\n")
+	stopCluster(cluster)
 	
 	obj = list(
 		kernel_list = kernel_list,
