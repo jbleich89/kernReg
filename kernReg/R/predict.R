@@ -97,29 +97,29 @@ kpca_predict_common = function(kpcr_model_object, new_data, X_kernel_dim_red_nam
 	kernel = kpcr_model_object$kpca_object$kernel
 	Xs = kpcr_model_object$kpca_object$Xs	
   
-	#will work on windows -- not sure about unix/mac
-	cluster = makeCluster(num_cores)
-	registerDoParallel(cluster)
-  
-	i = NULL #this is only to shut up the --as-cran check NOTE that appears about i not having a binding
-	k_vec_c_list = foreach(i = 1 : n_star) %dopar% {
-	    k_vec = K_vector(new_data[i,], Xs, kernel)
-	    K = kpcr_model_object$kpca_object$K
-	    k_vec_c = center_kernel_test_vec(k_vec, K)
-	    k_vec_c 
+	if (num_cores > 1){
+		#will work on windows -- not sure about unix/mac
+		cluster = makeCluster(num_cores)
+		registerDoParallel(cluster)
+		
+		i = NULL #this is only to shut up the --as-cran check NOTE that appears about i not having a binding
+		k_vec_c_list = foreach(i = 1 : n_star) %dopar% {
+			k_vec = K_vector(new_data[i,], Xs, kernel)
+			K = kpcr_model_object$kpca_object$K
+			k_vec_c = center_kernel_test_vec(k_vec, K)
+			k_vec_c 
+		}		
+		stopCluster(cluster)
+		#change to .combine = rbind above one day when I can test
+		k_vecs_c = t(do.call(rbind, k_vec_c_list))
+	} else {
+		k_vecs = t(sapply(1 : n_star, function(s) K_vector(new_data[s, ], Xs, kernel)))
+		#now we have to center the kernelized new data vectors
+		K = kpcr_model_object$kpca_object$K
+		k_vecs_c = sapply(1 : n_star, function(s) center_kernel_test_vec(k_vecs[s, ], K))		
 	}
-  
-  	stopCluster(cluster)
-  
-  	k_vecs_c = t(do.call(rbind, k_vec_c_list)) ##?? 
-
-##### serial code commented out
-# 	k_vecs = t(sapply(1 : n_star, function(s) K_vector(new_data[s, ], Xs, kernel)))
-# 	#now we have to center the kernelized new data vectors
-# 	K = kpcr_model_object$kpca_object$K
-# 	k_vecs_c = sapply(1 : n_star, function(s) center_kernel_test_vec(k_vecs[s, ], K))
-# 	#now we have to take those kernelezied vectors and represent them in the basis of the eigenspace
-# 	
+	
+ 	#now we have to take those kernelezied vectors and represent them in the basis of the eigenspace	
   	rotated_kvecs = (t(k_vecs_c) %*% kpcr_model_object$kpca_object$keigenvecs)
 	#now truncate at the dimension we wish to represent them in the lower dimensional space based on the PC's we chose
 	rotated_kvecs = as.matrix(rotated_kvecs[, 1 : kpcr_model_object$num_pcs, drop = FALSE])

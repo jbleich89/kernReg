@@ -102,7 +102,7 @@ explore_kpclr_models = function(X, y,
 			mod = kpclr(kpca, obj$y_train, frac_var = rho, weights = weights, family = family)
 			mod_aics[k, r] = AIC(mod)
 			#predict the model on validation data
-			predict(mod, obj$X_validate, num_cores = num_cores)
+			predict(mod, obj$X_validate, num_cores = 1) #can't run this in parallel doubly
 		}
 		stopCluster(cluster)
 		
@@ -330,10 +330,8 @@ explore_common = function(X, y, kernel_list, seed, split_props, rho_seq, num_cor
 	
 	k = NULL #this is only to shut up the --as-cran check NOTE that appears about i not having a binding
 	all_kernels = foreach(k = 1 : num_kernels) %dopar% {
-		cat(".")
 		build_kpca_object(X_train, kernel_list[[k]]$kernel_type, kernel_list[[k]]$params)		
 	}
-	cat("done\n")
 	stopCluster(cluster)
 	
 	obj = list(
